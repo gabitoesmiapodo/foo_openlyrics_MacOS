@@ -624,3 +624,27 @@ void SpawnManualSearchMac(void)
     [g_searchPanel showWindow:nil];
     // g_searchPanel is released in -windowWillClose:
 }
+
+void SpawnManualSearchMacForTrack(metadb_handle_ptr track, const metadb_v2_rec_t& info)
+{
+    if (!core_api::are_services_available()) return;
+
+    if (![NSThread isMainThread]) {
+        metadb_v2_rec_t infoCopy = info;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SpawnManualSearchMacForTrack(track, infoCopy);
+        });
+        return;
+    }
+
+    if (g_searchPanel) {
+        [[g_searchPanel window] makeKeyAndOrderFront:nil];
+        return;
+    }
+
+    g_searchPanel = [[OpenLyricsManualSearchPanel alloc]
+        initWithTrack:track
+            trackInfo:info];
+    [g_searchPanel showWindow:nil];
+    // g_searchPanel is released in -windowWillClose:
+}

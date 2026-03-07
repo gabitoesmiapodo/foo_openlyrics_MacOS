@@ -13,6 +13,10 @@
 void SpawnManualSearchMac(void);
 
 #ifdef __cplusplus
+// Opens the manual lyric search panel for a specific track (e.g. from playlist context menu).
+// May be called from any thread; will dispatch to main thread if needed.
+void SpawnManualSearchMacForTrack(metadb_handle_ptr track, const metadb_v2_rec_t& info);
+
 // NSWindowController managing the manual lyric search panel.
 @interface OpenLyricsManualSearchPanel : NSWindowController <NSWindowDelegate, NSTableViewDelegate, NSTableViewDataSource>
 

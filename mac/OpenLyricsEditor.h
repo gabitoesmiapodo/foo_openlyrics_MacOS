@@ -13,6 +13,11 @@
 void SpawnLyricEditorMac(void);
 
 #ifdef __cplusplus
+// Opens the lyric editor for a specific track (e.g. from playlist context menu).
+// Must be called on the main thread.
+void SpawnLyricEditorMacForTrack(const LyricData& lyrics, metadb_handle_ptr track,
+                                  const metadb_v2_rec_t& trackInfo);
+
 // NSWindowController subclass managing the lyric editor panel.
 @interface OpenLyricsEditorPanel : NSWindowController <NSWindowDelegate>
 

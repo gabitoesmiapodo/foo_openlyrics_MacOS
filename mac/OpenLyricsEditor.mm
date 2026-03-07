@@ -633,3 +633,30 @@ void SpawnLyricEditorMac(void)
     [g_editorPanel showWindow:nil];
     // g_editorPanel is released in -windowWillClose:
 }
+
+void SpawnLyricEditorMacForTrack(const LyricData& lyrics, metadb_handle_ptr track,
+                                  const metadb_v2_rec_t& trackInfo)
+{
+    if (!core_api::are_services_available()) return;
+
+    if (![NSThread isMainThread]) {
+        LyricData lyricsCopy   = lyrics;
+        metadb_v2_rec_t infoCopy = trackInfo;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SpawnLyricEditorMacForTrack(lyricsCopy, track, infoCopy);
+        });
+        return;
+    }
+
+    if (g_editorPanel) {
+        [[g_editorPanel window] makeKeyAndOrderFront:nil];
+        return;
+    }
+
+    g_editorPanel = [[OpenLyricsEditorPanel alloc]
+        initWithLyrics:lyrics
+                 track:track
+             trackInfo:trackInfo];
+    [g_editorPanel showWindow:nil];
+    // g_editorPanel is released in -windowWillClose:
+}
