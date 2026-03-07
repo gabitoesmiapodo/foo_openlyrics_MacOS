@@ -3,13 +3,44 @@
 
 // C++ function under test (declared in OpenLyricsView.h when __cplusplus is defined)
 #ifdef __cplusplus
+#include "../../src/lyric_data.h"
 void clear_all_lyric_panels();
 #endif
+
+// Helper: build a LyricData with plain (unsynced) lines.
+static LyricData make_unsynced_lyrics(NSArray<NSString *> *lines) {
+    LyricData data;
+    for (NSString *line in lines) {
+        LyricDataLine dl;
+        dl.text = std::string([line UTF8String]);
+        dl.timestamp = DBL_MAX; // unsynced
+        data.lines.push_back(dl);
+    }
+    return data;
+}
+
+// Helper: build a LyricData with timestamped (synced) lines.
+static LyricData make_synced_lyrics(NSArray<NSString *> *lines) {
+    LyricData data;
+    double ts = 1.0;
+    for (NSString *line in lines) {
+        LyricDataLine dl;
+        dl.text = std::string([line UTF8String]);
+        dl.timestamp = ts;
+        ts += 3.0;
+        data.lines.push_back(dl);
+    }
+    return data;
+}
 
 @interface OpenLyricsViewTests : XCTestCase
 @end
 
 @implementation OpenLyricsViewTests
+
+// ---------------------------------------------------------------------------
+// Existing tests (preserved)
+// ---------------------------------------------------------------------------
 
 - (void)testViewCreation {
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
@@ -78,18 +109,75 @@ void clear_all_lyric_panels();
 }
 
 - (void)testClearAllLyricPanelsClearsRegisteredViews {
-    // Create a view so it registers itself in the global panel list.
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
     [view setLyricsText:@"Some lyrics to clear"];
     XCTAssertTrue([view hasLyrics], @"Precondition: view should have lyrics before clear");
 
-    // clear_all_lyric_panels dispatches to the main queue; drain it.
-    // dispatch_async to main queue posts a run-loop source, so run the loop
-    // briefly to let it fire without relying on a wall-clock timer.
     clear_all_lyric_panels();
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, false);
 
     XCTAssertFalse([view hasLyrics], @"hasLyrics should be NO after clear_all_lyric_panels");
+    [view release];
+}
+
+// ---------------------------------------------------------------------------
+// New Core Text / synced scrolling tests
+// ---------------------------------------------------------------------------
+
+- (void)testUpdateLyricsPopulatesView {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    LyricData data = make_unsynced_lyrics(@[@"Hello world", @"Second line"]);
+    [view updateLyrics:data];
+    XCTAssertTrue([view hasLyrics], @"hasLyrics should be YES after updateLyrics: with lines");
+    [view release];
+}
+
+- (void)testClearLyricsMakesEmpty {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    LyricData data = make_unsynced_lyrics(@[@"Some line"]);
+    [view updateLyrics:data];
+    XCTAssertTrue([view hasLyrics], @"Precondition: should have lyrics");
+    [view clearLyrics];
+    XCTAssertFalse([view hasLyrics], @"hasLyrics should be NO after clearLyrics");
+    [view release];
+}
+
+- (void)testSyncedLyricsStartsTimer {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    LyricData data = make_synced_lyrics(@[@"Line one", @"Line two", @"Line three"]);
+    [view updateLyrics:data];
+    XCTAssertTrue([view isTimerRunning],
+                  @"Scroll timer should be running after setting timestamped lyrics");
+    [view release];
+}
+
+- (void)testUnsyncedLyricsDoesNotStartTimer {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    LyricData data = make_unsynced_lyrics(@[@"Line one", @"Line two"]);
+    [view updateLyrics:data];
+    XCTAssertFalse([view isTimerRunning],
+                   @"Scroll timer should NOT run for unsynced lyrics");
+    [view release];
+}
+
+- (void)testClearStopsTimer {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    LyricData data = make_synced_lyrics(@[@"Line one", @"Line two"]);
+    [view updateLyrics:data];
+    XCTAssertTrue([view isTimerRunning], @"Precondition: timer should be running");
+    [view clearLyrics];
+    XCTAssertFalse([view isTimerRunning],
+                   @"Scroll timer should be stopped after clearLyrics");
+    [view release];
+}
+
+- (void)testUpdateLyricsCurrentLyricsTextMatchesLines {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    LyricData data = make_unsynced_lyrics(@[@"Never gonna give you up", @"Never gonna let you down"]);
+    [view updateLyrics:data];
+    NSString *text = [view currentLyricsText];
+    XCTAssertTrue([text containsString:@"Never gonna give you up"]);
+    XCTAssertTrue([text containsString:@"Never gonna let you down"]);
     [view release];
 }
 

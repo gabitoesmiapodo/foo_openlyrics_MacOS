@@ -26,6 +26,11 @@
 		C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */; };
 		A1FFD025F69746FFB4E44CED /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A568C7C1D2A9410BAAD9E40C /* XCTest.framework */; };
 		B9CBE483268F4A5F99872233 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D002BA792BF34441AC69085D /* Cocoa.framework */; };
+		T056EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */; };
+		T0995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = 974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */; };
+		T0E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */; };
+		T0F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = 31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */; };
+		T00B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = 7079C6FA865741CEBE3A5895 /* libshared.a */; };
 		C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1C23D43CF14E4D87B46A96 /* PCH.cpp */; };
 		2C2ECE56ECD5458C88C6E3D0 /* lyric_metadb_index_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E248C0E0F11947AD953E74B3 /* lyric_metadb_index_client.cpp */; };
 		074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8E3FFEC597CE404D9D0B8017 /* MacStubs.mm */; };
@@ -35,6 +40,7 @@
 		274AD124C9334EB9971B9B24 /* logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 29FF6283FA554236847D4E11 /* logging.cpp */; };
 		0AB246A515F84A1D82470375 /* lyric_auto_edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D89776C61945239CF3F1CF /* lyric_auto_edit.cpp */; };
 		33B739C661C548F496E5AE1E /* lyric_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA4C6263655E4265B096F20A /* lyric_data.cpp */; };
+		T033B739C661C548F496E5AE1E /* lyric_data.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = AA4C6263655E4265B096F20A /* lyric_data.cpp */; };
 		ED7A8AE3E3534B7284F680E6 /* lyric_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3490ADBAAB74E8ABB79BED1 /* lyric_io.cpp */; };
 		E2C7DDAA74FC4EA0B1C6B6F9 /* lyric_metadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F23F80FDE0484F1AB6F3127B /* lyric_metadata.cpp */; };
 		150B50AEAEF8424780D1B73F /* lyric_search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B312A5095948638704369C /* lyric_search.cpp */; };
@@ -196,6 +202,11 @@
 			files = (
 				B9CBE483268F4A5F99872233 /* Cocoa.framework in Frameworks */,
 				A1FFD025F69746FFB4E44CED /* XCTest.framework in Frameworks */,
+				T00B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks (Tests) */,
+				T0F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks (Tests) */,
+				T0E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks (Tests) */,
+				T0995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks (Tests) */,
+				T056EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks (Tests) */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +448,7 @@
 				BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */,
 				C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */,
 				F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */,
+				T033B739C661C548F496E5AE1E /* lyric_data.cpp in Sources (Tests) */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -679,6 +691,13 @@
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -706,6 +725,13 @@
 					"$(SRCROOT)/../3rdparty",
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";

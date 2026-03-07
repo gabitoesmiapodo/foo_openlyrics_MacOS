@@ -1,6 +1,13 @@
 // mac/OpenLyricsView.h
 #pragma once
 
+// lyric_data.h must come before the ObjC @interface so LyricData is visible
+// in both C++ and ObjC++ translation units.
+#ifdef __cplusplus
+#include "../src/lyric_data.h"
+#include "../src/lyric_io.h"
+#endif
+
 #ifdef __OBJC__
 #import <Cocoa/Cocoa.h>
 
@@ -12,11 +19,22 @@
 /// Returns YES if lyrics have been loaded (non-empty line count).
 - (BOOL)hasLyrics;
 
-/// Returns the current plain-text lyrics string, or nil if none are loaded.
+/// Returns the current plain-text lyrics string (all lines joined by newline), or nil if none.
+/// Kept for tests.
 - (NSString *)currentLyricsText;
 
-/// Sets plain-text lyrics for display.  Pass nil or empty string to clear.
-/// This method is the bridge between C++ LyricData and the ObjC view layer.
+#ifdef __cplusplus
+/// Updates the view with new LyricData. Starts scroll timer if lyrics are timestamped.
+- (void)updateLyrics:(const LyricData&)lyrics;
+#endif
+
+/// Clears lyrics and stops the scroll timer.
+- (void)clearLyrics;
+
+/// Returns YES if the scroll timer is currently running (i.e. synced lyrics are loaded).
+- (BOOL)isTimerRunning;
+
+/// Legacy plain-text setter kept for test compatibility.
 - (void)setLyricsText:(NSString *)text;
 
 @end
@@ -24,7 +42,12 @@
 #endif // __OBJC__
 
 #ifdef __cplusplus
-/// Clears lyrics on all active panels. Safe to call from any thread
-/// (dispatches to the main queue internally).
+/// Repaints all active panels (dispatches to main queue).
+void repaint_all_lyric_panels();
+
+/// Clears lyrics on all active panels. Safe to call from any thread.
 void clear_all_lyric_panels();
+
+/// Called when a lyric search result arrives (any thread).
+void announce_lyric_update(LyricUpdate update);
 #endif
