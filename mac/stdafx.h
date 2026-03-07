@@ -9,6 +9,8 @@
 #include <optional>
 #include <string>
 #include <string_view>
+
+#include "PlatformUtil.h"
 #endif
 
 #ifdef __OBJC__
