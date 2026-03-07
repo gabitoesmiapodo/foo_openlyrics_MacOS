@@ -13,3 +13,5 @@ Release/
 releases/
 metrics/metrics_data/
 metrics/.venv
+
+.worktrees/
