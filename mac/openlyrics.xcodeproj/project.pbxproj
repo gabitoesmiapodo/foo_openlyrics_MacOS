@@ -1,0 +1,510 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */; };
+		56EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */; };
+		995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */; };
+		E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */; };
+		F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */; };
+		0B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7079C6FA865741CEBE3A5895 /* libshared.a */; };
+		DF17D0F81D714E62ACE2D820 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D002BA792BF34441AC69085D /* Cocoa.framework */; };
+		252EBF78C23740E4B7AB5D19 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25543FC2712D4815AF91FD57 /* Security.framework */; };
+		4B823349763B4CE4B96BE1AA /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90B611BBC0924F24A91E26FB /* CoreFoundation.framework */; };
+		8C7FE58D94C74C44877465C6 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A1B8653064DD097E8A7DF /* SystemConfiguration.framework */; };
+		C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */; };
+		A1FFD025F69746FFB4E44CED /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A568C7C1D2A9410BAAD9E40C /* XCTest.framework */; };
+		B9CBE483268F4A5F99872233 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D002BA792BF34441AC69085D /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		6A623AF8125548C8953E5B91 /* foo_openlyrics.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = foo_openlyrics.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsRegistration.mm; path = OpenLyricsRegistration.mm; sourceTree = "<group>"; };
+		31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsTests.mm; path = tests/OpenLyricsTests.mm; sourceTree = "<group>"; };
+		ED800983836547708F5ED86F /* openlyricsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = openlyricsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A568C7C1D2A9410BAAD9E40C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
+		D002BA792BF34441AC69085D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		25543FC2712D4815AF91FD57 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		90B611BBC0924F24A91E26FB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		781A1B8653064DD097E8A7DF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpfc-Mac.a"; path = "../deps/foobar2000-sdk/pfc/build/Release/libpfc-Mac.a"; sourceTree = "<group>"; };
+		974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK.a; path = "../deps/foobar2000-sdk/foobar2000/SDK/build/Release/libfoobar2000_SDK.a"; sourceTree = "<group>"; };
+		A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK_helpers.a; path = "../deps/foobar2000-sdk/foobar2000/helpers/build/Release/libfoobar2000_SDK_helpers.a"; sourceTree = "<group>"; };
+		31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_component_client.a; path = "../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release/libfoobar2000_component_client.a"; sourceTree = "<group>"; };
+		7079C6FA865741CEBE3A5895 /* libshared.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libshared.a; path = "../deps/foobar2000-sdk/foobar2000/shared/build/Release/libshared.a"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F513554553004585A81472B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks */,
+				F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks */,
+				E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks */,
+				995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks */,
+				56EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks */,
+				DF17D0F81D714E62ACE2D820 /* Cocoa.framework in Frameworks */,
+				252EBF78C23740E4B7AB5D19 /* Security.framework in Frameworks */,
+				4B823349763B4CE4B96BE1AA /* CoreFoundation.framework in Frameworks */,
+				8C7FE58D94C74C44877465C6 /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		735CDBFE7DDC48F6A5236B64 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9CBE483268F4A5F99872233 /* Cocoa.framework in Frameworks */,
+				A1FFD025F69746FFB4E44CED /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		303246F298224F309E1E6642 = {
+			isa = PBXGroup;
+			children = (
+				09A66935666B4956AED3DE6A /* Sources */,
+				C410B049EB7041E38C97808A /* Frameworks */,
+				9310B529F2A3406CAEB1652A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		09A66935666B4956AED3DE6A /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */,
+				8345C604167042049726FE2D /* Tests */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		8345C604167042049726FE2D /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */,
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		9310B529F2A3406CAEB1652A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6A623AF8125548C8953E5B91 /* foo_openlyrics.component */,
+				ED800983836547708F5ED86F /* openlyricsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C410B049EB7041E38C97808A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A568C7C1D2A9410BAAD9E40C /* XCTest.framework */,
+				7079C6FA865741CEBE3A5895 /* libshared.a */,
+				31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */,
+				A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */,
+				974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */,
+				AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */,
+				781A1B8653064DD097E8A7DF /* SystemConfiguration.framework */,
+				90B611BBC0924F24A91E26FB /* CoreFoundation.framework */,
+				25543FC2712D4815AF91FD57 /* Security.framework */,
+				D002BA792BF34441AC69085D /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4DF1FB760DF84FF29658D926 /* openlyrics */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2567A70D1BC46E3B45836AB /* Build configuration list for PBXNativeTarget "openlyrics" */;
+			buildPhases = (
+				FA6209B70ACA441099F52941 /* Sources */,
+				F513554553004585A81472B7 /* Frameworks */,
+				700C2054E2ED491C985A934B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = openlyrics;
+			packageProductDependencies = (
+			);
+			productName = openlyrics;
+			productReference = 6A623AF8125548C8953E5B91 /* foo_openlyrics.component */;
+			productType = "com.apple.product-type.bundle";
+		};
+		D8052217FE294CE78A92416C /* openlyricsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 39ECEBD1FF454BE58A0480B4 /* Build configuration list for PBXNativeTarget "openlyricsTests" */;
+			buildPhases = (
+				A7FD33995C8A400080282899 /* Sources */,
+				735CDBFE7DDC48F6A5236B64 /* Frameworks */,
+				F6C6BBB299744A53A2BA4310 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = openlyricsTests;
+			packageProductDependencies = (
+			);
+			productName = openlyricsTests;
+			productReference = ED800983836547708F5ED86F /* openlyricsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C27CFBDC3BDC43EDBE70BF55 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					4DF1FB760DF84FF29658D926 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					D8052217FE294CE78A92416C = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 4DF1FB760DF84FF29658D926;
+					};
+				};
+			};
+			buildConfigurationList = 57363133832D4458A014103B /* Build configuration list for PBXProject "openlyrics" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 303246F298224F309E1E6642;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9310B529F2A3406CAEB1652A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4DF1FB760DF84FF29658D926 /* openlyrics */,
+				D8052217FE294CE78A92416C /* openlyricsTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		700C2054E2ED491C985A934B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6C6BBB299744A53A2BA4310 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA6209B70ACA441099F52941 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7FD33995C8A400080282899 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3020417A418945A0ABFD890D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"NDEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B524F1CCF17E48B3BEEF9D6A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		DBC8ED1C7948405BB69CC501 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = stdafx.h;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../deps/curl/include",
+					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../src",
+					"$(SRCROOT)",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../deps/curl/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.0.1;
+				OTHER_LDFLAGS = (
+					"-lpfc-Mac",
+					"-lfoobar2000_SDK",
+					"-lfoobar2000_SDK_helpers",
+					"-lfoobar2000_component_client",
+					"-lshared",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
+				PRODUCT_NAME = foo_openlyrics;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = component;
+			};
+			name = Debug;
+		};
+		946BF1E46D85425E80160A6F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = stdafx.h;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../deps/curl/include",
+					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../src",
+					"$(SRCROOT)",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../deps/curl/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.0.1;
+				OTHER_LDFLAGS = (
+					"-lpfc-Mac",
+					"-lfoobar2000_SDK",
+					"-lfoobar2000_SDK_helpers",
+					"-lfoobar2000_component_client",
+					"-lshared",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
+				PRODUCT_NAME = foo_openlyrics;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = component;
+			};
+			name = Release;
+		};
+		05782023FD154698A5CA8928 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		777D6960738A4A0A8952FA45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		57363133832D4458A014103B /* Build configuration list for PBXProject "openlyrics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3020417A418945A0ABFD890D /* Debug */,
+				B524F1CCF17E48B3BEEF9D6A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2567A70D1BC46E3B45836AB /* Build configuration list for PBXNativeTarget "openlyrics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBC8ED1C7948405BB69CC501 /* Debug */,
+				946BF1E46D85425E80160A6F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		39ECEBD1FF454BE58A0480B4 /* Build configuration list for PBXNativeTarget "openlyricsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05782023FD154698A5CA8928 /* Debug */,
+				777D6960738A4A0A8952FA45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C27CFBDC3BDC43EDBE70BF55 /* Project object */;
+}
