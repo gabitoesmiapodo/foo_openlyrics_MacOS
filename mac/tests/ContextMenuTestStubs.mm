@@ -198,3 +198,19 @@ LyricSourceBase* LyricSourceBase::get(GUID /*guid*/)
 {
     return nullptr;
 }
+
+// ---------------------------------------------------------------------------
+// lyric_metadata / metrics stubs (used by OpenLyricsBulkSearch.mm)
+// ---------------------------------------------------------------------------
+
+#include "../src/lyric_metadata.h"
+
+void lyric_metadata_log_retrieved(const metadb_v2_rec_t& /*track_info*/,
+                                   const LyricData& /*lyrics*/) {}
+
+#include "../src/metrics.h"
+
+namespace metrics
+{
+    void log_used_bulk_search() {}
+}

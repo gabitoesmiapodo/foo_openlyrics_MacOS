@@ -100,6 +100,9 @@
 		MS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsManualSearch.mm in Sources */ = {isa = PBXBuildFile; fileRef = MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */; };
 		MS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsManualSearch.mm in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */; };
 		MS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsManualSearchTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = MS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsManualSearchTests.mm */; };
+		BS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsBulkSearch.mm in Sources */ = {isa = PBXBuildFile; fileRef = BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */; };
+		BS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsBulkSearch.mm in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */; };
+		BS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsBulkSearchTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = BS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsBulkSearchTests.mm */; };
 		T0571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 48A742FAFE944BC59DC864E1 /* lrc.cpp */; };
 		T0274AD124C9334EB9971B9B24 /* logging.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 29FF6283FA554236847D4E11 /* logging.cpp */; };
 		T05F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */; };
@@ -195,6 +198,9 @@
 		MS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsManualSearch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsManualSearch.h; path = OpenLyricsManualSearch.h; sourceTree = "<group>"; };
 		MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsManualSearch.mm; path = OpenLyricsManualSearch.mm; sourceTree = "<group>"; };
 		MS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsManualSearchTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsManualSearchTests.mm; path = tests/OpenLyricsManualSearchTests.mm; sourceTree = "<group>"; };
+		BS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsBulkSearch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsBulkSearch.h; path = OpenLyricsBulkSearch.h; sourceTree = "<group>"; };
+		BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsBulkSearch.mm; path = OpenLyricsBulkSearch.mm; sourceTree = "<group>"; };
+		BS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsBulkSearchTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsBulkSearchTests.mm; path = tests/OpenLyricsBulkSearchTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -250,6 +256,8 @@
 				F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */,
 				MS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsManualSearch.h */,
 				MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */,
+				BS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsBulkSearch.h */,
+				BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */,
 				E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */,
 				B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */,
 				8345C604167042049726FE2D /* Tests */,
@@ -264,6 +272,7 @@
 				FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */,
 				F3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm */,
 				MS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsManualSearchTests.mm */,
+				BS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsBulkSearchTests.mm */,
 				D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */,
 				B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */,
 			);
@@ -401,6 +410,7 @@
 				AA11BB22CC33DD44EE55FF66 /* OpenLyricsView.mm in Sources */,
 				E1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm in Sources */,
 				MS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsManualSearch.mm in Sources */,
+				BS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsBulkSearch.mm in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */,
 				074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */,
 				C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */,
@@ -474,9 +484,11 @@
 				CC33DD44EE55FF6677AABB11 /* OpenLyricsViewTests.mm in Sources */,
 				E3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm in Sources */,
 				MS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsManualSearchTests.mm in Sources */,
+				BS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsBulkSearchTests.mm in Sources */,
 				BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */,
 				E2A3B4C5D6E7F8A9B0C1D2E3 /* OpenLyricsEditor.mm in Sources (Tests) */,
 				MS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsManualSearch.mm in Sources (Tests) */,
+				BS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsBulkSearch.mm in Sources (Tests) */,
 				/* NOTE: lyric_io.cpp, lyric_source.cpp, and their deps are NOT compiled in the
 				   test target; ContextMenuTestStubs.mm provides the required stub symbols instead. */
 				C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */,
