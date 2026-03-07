@@ -229,6 +229,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
                                            action:@selector(openPreferences:)
                                     keyEquivalent:@""];
     [prefsItem setTarget:self];
+    [prefsItem setEnabled:NO]; // TODO(Task 9.1): enable when preferences page is implemented
 
     return menu;
 }
