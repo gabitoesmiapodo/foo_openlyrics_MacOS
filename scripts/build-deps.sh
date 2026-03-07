@@ -85,25 +85,25 @@ if [ -f "$CURL_LIB" ] && has_all_arches "$CURL_LIB"; then
 else
     rm -f "$CURL_LIB"
 
-    TMPDIR="$(mktemp -d)"
-    CURL_TARBALL="$TMPDIR/curl-${CURL_VERSION}.tar.gz"
-    CURL_SRC="$TMPDIR/curl-${CURL_VERSION}"
+    CURL_TMPDIR="$(mktemp -d)"
+    CURL_TARBALL="$CURL_TMPDIR/curl-${CURL_VERSION}.tar.gz"
+    CURL_SRC="$CURL_TMPDIR/curl-${CURL_VERSION}"
 
     echo "  Downloading curl ${CURL_VERSION}..."
     curl -L --silent --show-error -o "$CURL_TARBALL" "$CURL_URL"
 
     echo "  Extracting..."
-    tar -xzf "$CURL_TARBALL" -C "$TMPDIR"
+    tar -xzf "$CURL_TARBALL" -C "$CURL_TMPDIR"
 
     SLICE_LIBS=()
     for arch in "${ARCHS[@]}"; do
         echo "  Configuring for $arch..."
-        BUILD_DIR="$TMPDIR/build-$arch"
+        BUILD_DIR="$CURL_TMPDIR/build-$arch"
         mkdir -p "$BUILD_DIR"
 
-        cd "$CURL_SRC"
-        make distclean > /dev/null 2>&1 || true
+        (cd "$CURL_SRC" && make distclean > /dev/null || true)
 
+        (cd "$CURL_SRC" && \
         CFLAGS="-arch $arch -mmacosx-version-min=13.0 -O2" \
         ./configure \
             --host="${arch}-apple-darwin" \
@@ -131,24 +131,26 @@ else
             --without-brotli \
             --without-zstd \
             --without-nghttp2 \
-            > /dev/null 2>&1
+            > /dev/null)
 
         echo "  Building for $arch..."
-        make -j"$(sysctl -n hw.ncpu)" > /dev/null 2>&1
-        make install > /dev/null 2>&1
+        (cd "$CURL_SRC" && make -j"$(sysctl -n hw.ncpu)" > /dev/null)
+        (cd "$CURL_SRC" && make install > /dev/null)
 
         SLICE_LIBS+=("$BUILD_DIR/install/lib/libcurl.a")
     done
+
+    cd "$PROJECT_DIR"
 
     echo "  Creating universal binary..."
     lipo -create "${SLICE_LIBS[@]}" -output "$CURL_LIB"
 
     # Copy headers from the last built arch (they are arch-independent)
     if [ ! -d "$CURL_DIR/include/curl" ]; then
-        cp -R "${TMPDIR}/build-${ARCHS[-1]}/install/include/curl" "$CURL_DIR/include/"
+        cp -R "${CURL_TMPDIR}/build-${ARCHS[-1]}/install/include/curl" "$CURL_DIR/include/"
     fi
 
-    rm -rf "$TMPDIR"
+    rm -rf "$CURL_TMPDIR"
     echo "libcurl built and installed to deps/curl/"
 fi
 
