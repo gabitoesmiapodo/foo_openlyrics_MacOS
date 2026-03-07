@@ -102,8 +102,7 @@ static LyricData make_synced_lyrics(NSArray<NSString *> *lines) {
     NSString *expected = @"Line one\nLine two\nLine three";
     [view setLyricsText:expected];
     XCTAssertTrue([view hasLyrics]);
-    XCTAssertTrue([view.currentLyricsText containsString:@"Line 1"] ||
-                  [view.currentLyricsText containsString:@"Line one"],
+    XCTAssertTrue([view.currentLyricsText containsString:@"Line one"],
                   @"currentLyricsText should contain the set content");
     [view release];
 }

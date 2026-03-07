@@ -21,12 +21,6 @@ static const CGFloat kColorDim[4]       = { 0.55, 0.55, 0.55, 1.0 };
 static const CGFloat kColorBackground[4]= { 0.102, 0.102, 0.102, 1.0 }; // #1A1A1A
 
 // ---------------------------------------------------------------------------
-// Global lyrics state (main thread only)
-// ---------------------------------------------------------------------------
-
-static LyricData g_current_lyrics;
-
-// ---------------------------------------------------------------------------
 // Active panel registry (weak references via CF)
 // ---------------------------------------------------------------------------
 
@@ -76,6 +70,11 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     CGFloat   _scrollOffset;     // current scroll offset in points (pixels from top of content)
     CGFloat   _targetScrollOffset;
     NSInteger _currentLineIndex;
+
+    // CTLine cache — rebuilt when lyrics change, not per frame
+    NSArray      *_cachedLines;      // array of CTLine (bridged as id via NSValue+pointerValue)
+    CGColorSpaceRef _colorSpace;     // device RGB, created once in initWithFrame:
+    CGFloat       _cachedLineHeight; // pre-computed line height stored alongside cache
 }
 @end
 
@@ -116,6 +115,10 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         CGFloat leading = [_font leading];
         _lineHeight = ascent + descent + leading + kLineGap;
 
+        _colorSpace = CGColorSpaceCreateDeviceRGB();
+        _cachedLines = nil;
+        _cachedLineHeight = _lineHeight;
+
         dispatch_sync(g_panels_queue, ^{
             CFArrayAppendValue(g_active_panels_cf, (__bridge void *)self);
         });
@@ -128,6 +131,10 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     [_scrollTimer release];
     _scrollTimer = nil;
 
+    // Safe: g_active_panels_cf holds weak refs (null callbacks), so it cannot
+    // be the last retainer of self. dealloc is only called when the last strong
+    // ref drops (from the foobar2000 ui_element or the superview hierarchy), which
+    // always happens on the main thread, not from g_panels_queue. No deadlock risk.
     dispatch_sync(g_panels_queue, ^{
         CFIndex idx = CFArrayGetFirstIndexOfValue(
             g_active_panels_cf,
@@ -137,6 +144,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
             CFArrayRemoveValueAtIndex(g_active_panels_cf, idx);
         }
     });
+
+    [self _invalidateLineCache];
+    if (_colorSpace) { CGColorSpaceRelease(_colorSpace); _colorSpace = NULL; }
 
     [_lyricsText release];
     [_font release];
@@ -184,6 +194,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _currentLineIndex   = -1;
 
     [self _stopTimer];
+    [self _buildLineCache];
 
     if (lyrics.IsTimestamped()) {
         [self _startTimer];
@@ -204,6 +215,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _currentLineIndex   = -1;
 
     [self _stopTimer];
+    [self _invalidateLineCache];
     [self setNeedsDisplay:YES];
 }
 
@@ -239,6 +251,56 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _scrollTimer = nil;
 }
 
+// ---------------------------------------------------------------------------
+// CTLine cache management
+// ---------------------------------------------------------------------------
+
+- (void)_invalidateLineCache {
+    for (NSValue *v in _cachedLines) {
+        CTLineRef line = (CTLineRef)[v pointerValue];
+        if (line) CFRelease(line);
+    }
+    [_cachedLines release];
+    _cachedLines = nil;
+}
+
+- (void)_buildLineCache {
+    [self _invalidateLineCache];
+    if (_lyrics.IsEmpty()) return;
+
+    NSUInteger count = _lyrics.lines.size();
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:count];
+
+    NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
+    paraStyle.alignment = NSTextAlignmentCenter;
+
+    for (NSUInteger i = 0; i < count; i++) {
+        const std::string& lineText = _lyrics.lines[i].text;
+        NSString *nsLine = [NSString stringWithUTF8String:lineText.c_str()];
+        if (!nsLine) nsLine = @"";
+
+        NSDictionary *attrs = @{
+            NSFontAttributeName: _font,
+            NSParagraphStyleAttributeName: paraStyle
+        };
+        NSAttributedString *attrStr = [[NSAttributedString alloc]
+                                       initWithString:nsLine attributes:attrs];
+
+        CTLineRef ctLine = CTLineCreateWithAttributedString(
+            (__bridge CFAttributedStringRef)attrStr);
+        [attrStr release];
+
+        // CFRetain was done implicitly by CTLineCreateWithAttributedString.
+        // Wrap raw pointer — NSValue does NOT retain CF objects.
+        [arr addObject:[NSValue valueWithPointer:(const void *)ctLine]];
+    }
+
+    [paraStyle release];
+    _cachedLines = [arr copy];
+    [arr release];
+    _cachedLineHeight = _lineHeight;
+}
+
 - (void)_timerFired:(NSTimer *)timer {
     [self _updateScrollPosition];
     [self setNeedsDisplay:YES];
@@ -251,6 +313,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     double now = get_playback_time();
     NSInteger lineCount = (NSInteger)_lyrics.lines.size();
 
+    // Assumes LyricData::lines are sorted by timestamp ascending (guaranteed by LRC parser).
     // Find last line whose timestamp <= now
     NSInteger newLine = -1;
     for (NSInteger i = 0; i < lineCount; i++) {
@@ -336,6 +399,8 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         startY = 8.0;
     }
 
+    CGFloat ascent = [_font ascender];
+
     for (NSInteger i = 0; i < lineCount; i++) {
         // Top edge of this line in top-origin space
         CGFloat lineTop = startY + i * _lineHeight;
@@ -357,43 +422,27 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
             color = kColorNormal;
         }
 
-        // Build attributed string
-        const std::string& lineText = _lyrics.lines[i].text;
-        NSString *nsLine = [NSString stringWithUTF8String:lineText.c_str()];
-        if (!nsLine) nsLine = @"";
-
-        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-        CGColorRef cgColor = CGColorCreate(colorSpace, color);
-        CGColorSpaceRelease(colorSpace);
-
-        NSDictionary *attrs = @{
-            NSFontAttributeName: _font,
-            NSForegroundColorAttributeName: [NSColor colorWithCGColor:cgColor]
-        };
+        // Apply color to a temporary copy of the cached CTLine.
+        // CTLineCreateWithAttributedString was done once in _buildLineCache;
+        // here we only re-apply the per-frame color via a new attributed string
+        // built from the cached line's runs, or we draw and set the fill color
+        // via CGContextSetFillColorSpace before drawing.
+        CGColorRef cgColor = CGColorCreate(_colorSpace, color);
+        CGContextSetFillColorWithColor(ctx, cgColor);
         CGColorRelease(cgColor);
 
-        NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]
-                                              initWithString:nsLine
-                                                  attributes:attrs];
-
-        // Center alignment via paragraph style
-        NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
-        paraStyle.alignment = NSTextAlignmentCenter;
-        [attrStr addAttribute:NSParagraphStyleAttributeName
-                        value:paraStyle
-                        range:NSMakeRange(0, attrStr.length)];
-        [paraStyle release];
-
-        CTLineRef ctLine = CTLineCreateWithAttributedString(
-            (__bridge CFAttributedStringRef)attrStr);
-        [attrStr release];
+        // Retrieve cached CTLine (no allocation per frame).
+        CTLineRef ctLine = NULL;
+        if (_cachedLines && i < (NSInteger)[_cachedLines count]) {
+            ctLine = (CTLineRef)[[_cachedLines objectAtIndex:(NSUInteger)i] pointerValue];
+        }
+        if (!ctLine) continue;
 
         // CTLineDraw draws at the current text position (baseline).
         // In flipped Core Text space: Y increases upward.
         // lineTop is distance from the *top* of the view.
         // Convert to Core Text Y (distance from bottom) and place baseline at
         // (viewHeight - lineTop - ascent).
-        CGFloat ascent  = [_font ascender];
         CGFloat lineBaselineCT = viewHeight - lineTop - ascent;
 
         // Compute line width for centering
@@ -403,7 +452,6 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
         CGContextSetTextPosition(ctx, xPos, lineBaselineCT);
         CTLineDraw(ctLine, ctx);
-        CFRelease(ctLine);
     }
 
     CGContextRestoreGState(ctx);
@@ -499,8 +547,6 @@ void announce_lyric_update(LyricUpdate update) {
     LyricData *lyricsPtr = new LyricData(std::move(update.lyrics));
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        g_current_lyrics = *lyricsPtr;
-
         __block NSArray *snapshot = nil;
         dispatch_sync(g_panels_queue, ^{
             CFIndex count = CFArrayGetCount(g_active_panels_cf);
