@@ -55,6 +55,8 @@ if [ "${1:-}" = "--build" ]; then
     xcodebuild -project "$XCODE_PROJECT" -configuration Release -arch x86_64 -arch arm64 clean build
 fi
 
+# Always run tests before deploying, even on deploy-only runs (no --build).
+# This guards against deploying a previously-built but now-broken component.
 "$SCRIPT_DIR/run-tests.sh"
 
 if [ ! -d "$SRC_COMPONENT" ]; then
@@ -64,8 +66,9 @@ if [ ! -d "$SRC_COMPONENT" ]; then
 fi
 
 mkdir -p "$DEST_DIR"
+cp -R "$SRC_COMPONENT" "$DEST_COMPONENT.tmp"
 rm -rf "$DEST_COMPONENT"
-cp -R "$SRC_COMPONENT" "$DEST_DIR/"
+mv "$DEST_COMPONENT.tmp" "$DEST_COMPONENT"
 
 src_uuid_lines="$(dwarfdump --uuid "$SRC_BINARY" | awk '{print $2, $3}' | sort)"
 dst_uuid_lines="$(dwarfdump --uuid "$DEST_BINARY" | awk '{print $2, $3}' | sort)"
