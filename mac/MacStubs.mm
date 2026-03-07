@@ -10,24 +10,24 @@
 // UI panel hooks
 // ---------------------------------------------------------------------------
 
-size_t num_visible_lyric_panels()
+size_t num_visible_lyric_panels() // TODO(stub): implement in Task 3.1
 {
     return 0;
 }
 
-void repaint_all_lyric_panels()
+void repaint_all_lyric_panels() // TODO(stub): implement in Task 3.1
 {
 }
 
-void recompute_lyric_panel_backgrounds()
+void recompute_lyric_panel_backgrounds() // TODO(stub): implement in Task 10.2
 {
 }
 
-void announce_lyric_update(LyricUpdate /*update*/)
+void announce_lyric_update(LyricUpdate /*update*/) // TODO(stub): implement in Task 3.1
 {
 }
 
-void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceReason /*reason*/)
+void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceReason /*reason*/) // TODO(stub): implement in Task 4.1
 {
 }
 
@@ -35,7 +35,7 @@ void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceR
 // External window
 // ---------------------------------------------------------------------------
 
-void SpawnExternalLyricWindow()
+void SpawnExternalLyricWindow() // TODO(stub): implement in Task 11.1
 {
 }
 
@@ -47,55 +47,55 @@ namespace preferences
 {
 namespace searching
 {
-    uint64_t source_config_generation()
+    uint64_t source_config_generation() // TODO(stub): implement in Task 9.1
     {
         return 0;
     }
 
-    std::vector<GUID> active_sources()
+    std::vector<GUID> active_sources() // TODO(stub): implement in Task 9.1
     {
         return {};
     }
 
-    bool exclude_trailing_brackets()
+    bool exclude_trailing_brackets() // TODO(stub): implement in Task 9.1
     {
         return false;
     }
 
-    const pfc::string8& skip_filter()
+    const pfc::string8& skip_filter() // TODO(stub): implement in Task 9.1
     {
         static pfc::string8 s;
         return s;
     }
 
-    LyricType preferred_lyric_type()
+    LyricType preferred_lyric_type() // TODO(stub): implement in Task 9.1
     {
         return LyricType::Synced;
     }
 
-    bool should_search_without_panels()
+    bool should_search_without_panels() // TODO(stub): implement in Task 9.1
     {
         return false;
     }
 
-    std::vector<std::string> tags()
+    std::vector<std::string> tags() // TODO(stub): implement in Task 9.1
     {
         return {};
     }
 
-    std::string_view musixmatch_api_key()
+    std::string_view musixmatch_api_key() // TODO(stub): implement in Task 9.1
     {
         return {};
     }
 
     namespace raw
     {
-        std::vector<GUID> active_sources_configured()
+        std::vector<GUID> active_sources_configured() // TODO(stub): implement in Task 9.1
         {
             return {};
         }
 
-        bool is_skip_filter_default()
+        bool is_skip_filter_default() // TODO(stub): implement in Task 9.1
         {
             return true;
         }
@@ -108,7 +108,7 @@ namespace searching
 
 namespace editing
 {
-    std::vector<AutoEditType> automated_auto_edits()
+    std::vector<AutoEditType> automated_auto_edits() // TODO(stub): implement in Task 9.1
     {
         return {};
     }
@@ -120,39 +120,39 @@ namespace editing
 
 namespace saving
 {
-    AutoSaveStrategy autosave_strategy()
+    AutoSaveStrategy autosave_strategy() // TODO(stub): implement in Task 9.1
     {
         return AutoSaveStrategy::Never;
     }
 
-    GUID save_source()
+    GUID save_source() // TODO(stub): implement in Task 9.1
     {
         return {};
     }
 
-    std::string filename(metadb_handle_ptr /*track*/, const metadb_v2_rec_t& /*track_info*/)
+    std::string filename(metadb_handle_ptr /*track*/, const metadb_v2_rec_t& /*track_info*/) // TODO(stub): implement in Task 9.1
     {
         return {};
     }
 
-    std::string_view untimed_tag()
+    std::string_view untimed_tag() // TODO(stub): implement in Task 9.1
     {
         return "LYRICS";
     }
 
-    std::string_view timestamped_tag()
+    std::string_view timestamped_tag() // TODO(stub): implement in Task 9.1
     {
         return "SYNCEDLYRICS";
     }
 
-    bool merge_equivalent_lrc_lines()
+    bool merge_equivalent_lrc_lines() // TODO(stub): implement in Task 9.1
     {
         return false;
     }
 
     namespace raw
     {
-        SaveDirectoryClass directory_class()
+        SaveDirectoryClass directory_class() // TODO(stub): implement in Task 9.1
         {
             return SaveDirectoryClass::TrackFileDirectory;
         }
@@ -165,59 +165,59 @@ namespace saving
 
 namespace display
 {
-    t_ui_font font()
+    t_ui_font font() // TODO(stub): implement in Task 9.1
     {
         return nullptr;
     }
 
-    t_ui_color main_text_colour()
+    t_ui_color main_text_colour() // TODO(stub): implement in Task 9.1
     {
         return 0x00FFFFFF; // white
     }
 
-    t_ui_color highlight_colour()
+    t_ui_color highlight_colour() // TODO(stub): implement in Task 9.1
     {
         return 0x0000BFFF; // deep sky blue
     }
 
-    t_ui_color past_text_colour()
+    t_ui_color past_text_colour() // TODO(stub): implement in Task 9.1
     {
         return 0x00808080; // grey
     }
 
-    LineScrollType scroll_type()
+    LineScrollType scroll_type() // TODO(stub): implement in Task 9.1
     {
         return LineScrollType::Automatic;
     }
 
-    double scroll_time_seconds()
+    double scroll_time_seconds() // TODO(stub): implement in Task 9.1
     {
         return 0.5;
     }
 
-    TextAlignment text_alignment()
+    TextAlignment text_alignment() // TODO(stub): implement in Task 9.1
     {
         return TextAlignment::MidCentre;
     }
 
-    double highlight_fade_seconds()
+    double highlight_fade_seconds() // TODO(stub): implement in Task 9.1
     {
         return 0.25;
     }
 
-    int linegap()
+    int linegap() // TODO(stub): implement in Task 9.1
     {
         return 4;
     }
 
-    bool debug_logs_enabled()
+    bool debug_logs_enabled() // TODO(stub): implement in Task 9.1
     {
         return false;
     }
 
     namespace raw
     {
-        bool font_is_custom()
+        bool font_is_custom() // TODO(stub): implement in Task 9.1
         {
             return false;
         }
@@ -230,62 +230,62 @@ namespace display
 
 namespace background
 {
-    BackgroundFillType fill_type()
+    BackgroundFillType fill_type() // TODO(stub): implement in Task 9.1
     {
         return BackgroundFillType::Default;
     }
 
-    BackgroundImageType image_type()
+    BackgroundImageType image_type() // TODO(stub): implement in Task 9.1
     {
         return BackgroundImageType::None;
     }
 
-    t_ui_color colour()
+    t_ui_color colour() // TODO(stub): implement in Task 9.1
     {
         return 0x00000000;
     }
 
-    t_ui_color gradient_tl()
+    t_ui_color gradient_tl() // TODO(stub): implement in Task 9.1
     {
         return 0x00000000;
     }
 
-    t_ui_color gradient_tr()
+    t_ui_color gradient_tr() // TODO(stub): implement in Task 9.1
     {
         return 0x00000000;
     }
 
-    t_ui_color gradient_bl()
+    t_ui_color gradient_bl() // TODO(stub): implement in Task 9.1
     {
         return 0x00000000;
     }
 
-    t_ui_color gradient_br()
+    t_ui_color gradient_br() // TODO(stub): implement in Task 9.1
     {
         return 0x00000000;
     }
 
-    bool maintain_img_aspect_ratio()
+    bool maintain_img_aspect_ratio() // TODO(stub): implement in Task 9.1
     {
         return true;
     }
 
-    double image_opacity()
+    double image_opacity() // TODO(stub): implement in Task 9.1
     {
         return 1.0;
     }
 
-    int blur_radius()
+    int blur_radius() // TODO(stub): implement in Task 9.1
     {
         return 0;
     }
 
-    std::string custom_image_path()
+    std::string custom_image_path() // TODO(stub): implement in Task 9.1
     {
         return {};
     }
 
-    bool external_window_opaque()
+    bool external_window_opaque() // TODO(stub): implement in Task 9.1
     {
         return true;
     }
@@ -297,7 +297,7 @@ namespace background
 
 namespace upload
 {
-    UploadStrategy lrclib_upload_strategy()
+    UploadStrategy lrclib_upload_strategy() // TODO(stub): implement in Task 9.1
     {
         return UploadStrategy::Never;
     }
@@ -311,27 +311,27 @@ namespace upload
 
 namespace defaultui
 {
-    t_ui_font default_font()
+    t_ui_font default_font() // TODO(stub): implement in Task 9.1
     {
         return nullptr;
     }
 
-    t_ui_font console_font()
+    t_ui_font console_font() // TODO(stub): implement in Task 9.1
     {
         return nullptr;
     }
 
-    t_ui_color background_colour()
+    t_ui_color background_colour() // TODO(stub): implement in Task 9.1
     {
         return 0x00000000;
     }
 
-    t_ui_color text_colour()
+    t_ui_color text_colour() // TODO(stub): implement in Task 9.1
     {
         return 0x00FFFFFF;
     }
 
-    t_ui_color highlight_colour()
+    t_ui_color highlight_colour() // TODO(stub): implement in Task 9.1
     {
         return 0x0000BFFF;
     }
