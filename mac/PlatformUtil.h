@@ -57,6 +57,10 @@ namespace std {
     using tstring_view = string_view;
 }
 
+// Forward declarations so this header is self-contained for the LSP.
+// The full definitions are provided by foobar2000+atl.h via stdafx.h.
+namespace pfc { class stringLite; typedef stringLite string8; }
+
 // String conversions (identity on macOS -- always UTF-8)
 std::tstring to_tstring(std::string_view s);
 std::tstring to_tstring(const std::string& s);

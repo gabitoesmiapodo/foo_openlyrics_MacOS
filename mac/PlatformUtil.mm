@@ -60,6 +60,9 @@ bool hr_success(HRESULT result, const char* filename, int line_number) {
     return result >= 0;
 }
 
+// Stub for pfc::myassert -- called when PFC_DEBUG=1 but prebuilt SDK libs are Release.
+// Defined here (rather than OpenLyricsRegistration.mm) so the test target, which does
+// not link OpenLyricsRegistration.mm, also has it resolved.
 namespace pfc {
     void myassert(const char* what, const char* file, unsigned line) {
         (void)what; (void)file; (void)line;
