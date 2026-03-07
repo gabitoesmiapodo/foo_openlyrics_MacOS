@@ -17,7 +17,7 @@ VALIDATE_COMPONENT_FILENAME("foo_openlyrics.component");
 @implementation OpenLyricsViewController
 
 - (void)loadView {
-    self.view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    self.view = [[[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)] autorelease];
 }
 
 @end
