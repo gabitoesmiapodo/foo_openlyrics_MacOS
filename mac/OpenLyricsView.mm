@@ -3,7 +3,16 @@
 #import "OpenLyricsView.h"
 #import <CoreText/CoreText.h>
 
+#include "../src/lyric_search.h"
+#include "../src/tag_util.h"
 #include "../src/ui_hooks.h"
+
+// ---------------------------------------------------------------------------
+// Forward declarations for macOS-only stubs (defined in MacStubs.mm)
+// ---------------------------------------------------------------------------
+
+void SpawnLyricEditorMac();
+void SpawnManualSearchMac();
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -163,6 +172,101 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 - (void)viewDidMoveToWindow {
     [super viewDidMoveToWindow];
     [self setNeedsDisplay:YES];
+}
+
+// ---------------------------------------------------------------------------
+// Context menu
+// ---------------------------------------------------------------------------
+
+- (NSMenu *)menuForEvent:(NSEvent *)event {
+    NSMenu *menu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+
+    // Edit Lyrics
+    NSMenuItem *editItem = [menu addItemWithTitle:@"Edit Lyrics"
+                                          action:@selector(editLyrics:)
+                                   keyEquivalent:@""];
+    [editItem setTarget:self];
+
+    // Manual Search
+    NSMenuItem *searchItem = [menu addItemWithTitle:@"Manual Search"
+                                            action:@selector(manualSearch:)
+                                     keyEquivalent:@""];
+    [searchItem setTarget:self];
+
+    [menu addItem:[NSMenuItem separatorItem]];
+
+    // Copy Lyrics
+    NSMenuItem *copyItem = [menu addItemWithTitle:@"Copy Lyrics"
+                                          action:@selector(copyLyrics:)
+                                   keyEquivalent:@""];
+    [copyItem setTarget:self];
+    [copyItem setEnabled:[self hasLyrics]];
+
+    // Reload Lyrics
+    BOOL isPlaying = NO;
+    if (core_api::are_services_available()) {
+        auto pc = play_control::get();
+        if (pc.is_valid()) {
+            isPlaying = pc->is_playing() ? YES : NO;
+        }
+    }
+    NSMenuItem *reloadItem = [menu addItemWithTitle:@"Reload Lyrics"
+                                            action:@selector(reloadLyrics:)
+                                     keyEquivalent:@""];
+    [reloadItem setTarget:self];
+    [reloadItem setEnabled:isPlaying];
+
+    [menu addItem:[NSMenuItem separatorItem]];
+
+    // External Window
+    NSMenuItem *extItem = [menu addItemWithTitle:@"External Window"
+                                         action:@selector(openExternalWindow:)
+                                  keyEquivalent:@""];
+    [extItem setTarget:self];
+
+    // Open Preferences
+    NSMenuItem *prefsItem = [menu addItemWithTitle:@"Open Preferences"
+                                           action:@selector(openPreferences:)
+                                    keyEquivalent:@""];
+    [prefsItem setTarget:self];
+
+    return menu;
+}
+
+- (void)editLyrics:(id)sender {
+    SpawnLyricEditorMac();
+}
+
+- (void)manualSearch:(id)sender {
+    SpawnManualSearchMac();
+}
+
+- (void)copyLyrics:(id)sender {
+    if (![self hasLyrics]) return;
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    [pb clearContents];
+    [pb setString:_lyricsText forType:NSPasteboardTypeString];
+}
+
+- (void)reloadLyrics:(id)sender {
+    if (!core_api::are_services_available()) return;
+
+    auto pc = play_control::get();
+    if (!pc.is_valid()) return;
+
+    metadb_handle_ptr track;
+    if (!pc->get_now_playing(track)) return;
+
+    const metadb_v2_rec_t track_info = get_full_metadata(track);
+    initiate_lyrics_autosearch(track, track_info, true);
+}
+
+- (void)openExternalWindow:(id)sender {
+    SpawnExternalLyricWindow();
+}
+
+- (void)openPreferences:(id)sender {
+    // TODO(Task 9.1): open foobar2000 preferences to the OpenLyrics page
 }
 
 // ---------------------------------------------------------------------------

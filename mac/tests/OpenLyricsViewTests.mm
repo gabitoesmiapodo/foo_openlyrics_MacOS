@@ -180,4 +180,35 @@ static LyricData make_synced_lyrics(NSArray<NSString *> *lines) {
     [view release];
 }
 
+// ---------------------------------------------------------------------------
+// Context menu tests
+// ---------------------------------------------------------------------------
+
+- (void)testMenuForEventReturnsNonNilMenu {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    NSMenu *menu = [view menuForEvent:nil];
+    XCTAssertNotNil(menu, @"menuForEvent: should return a non-nil NSMenu");
+    [view release];
+}
+
+- (void)testMenuCopyLyricsDisabledWhenNoLyrics {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    NSMenu *menu = [view menuForEvent:nil];
+    NSMenuItem *copyItem = [menu itemWithTitle:@"Copy Lyrics"];
+    XCTAssertNotNil(copyItem, @"Copy Lyrics item should exist in the menu");
+    XCTAssertFalse(copyItem.isEnabled, @"Copy Lyrics should be disabled when no lyrics are loaded");
+    [view release];
+}
+
+- (void)testMenuCopyLyricsEnabledWhenHasLyrics {
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    LyricData data = make_unsynced_lyrics(@[@"Some lyric line"]);
+    [view updateLyrics:data];
+    NSMenu *menu = [view menuForEvent:nil];
+    NSMenuItem *copyItem = [menu itemWithTitle:@"Copy Lyrics"];
+    XCTAssertNotNil(copyItem, @"Copy Lyrics item should exist in the menu");
+    XCTAssertTrue(copyItem.isEnabled, @"Copy Lyrics should be enabled when lyrics are loaded");
+    [view release];
+}
+
 @end

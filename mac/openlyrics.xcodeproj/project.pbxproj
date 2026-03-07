@@ -11,6 +11,7 @@
 		AA11BB22CC33DD44EE55FF66 /* OpenLyricsView.mm in Sources */ = {isa = PBXBuildFile; fileRef = EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */; };
 		BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */ = {isa = PBXBuildFile; fileRef = EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */; };
 		CC33DD44EE55FF6677AABB11 /* OpenLyricsViewTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */; };
+		A3B4C5D6E7F8A9B0C1D2E3F4 /* ContextMenuTestStubs.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */; };
 		F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */; };
 		C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */; };
@@ -101,6 +102,7 @@
 		DD44EE55FF6677AABB11CC22 /* OpenLyricsView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsView.h; path = OpenLyricsView.h; sourceTree = "<group>"; };
 		EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsView.mm; path = OpenLyricsView.mm; sourceTree = "<group>"; };
 		FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsViewTests.mm; path = tests/OpenLyricsViewTests.mm; sourceTree = "<group>"; };
+		B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ContextMenuTestStubs.mm; path = tests/ContextMenuTestStubs.mm; sourceTree = "<group>"; };
 		31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsTests.mm; path = tests/OpenLyricsTests.mm; sourceTree = "<group>"; };
 		E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PlatformUtil.h; path = PlatformUtil.h; sourceTree = "<group>"; };
 		B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = PlatformUtil.mm; path = PlatformUtil.mm; sourceTree = "<group>"; };
@@ -241,6 +243,7 @@
 				31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */,
 				FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */,
 				D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */,
+				B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -449,6 +452,7 @@
 				C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */,
 				F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */,
 				T033B739C661C548F496E5AE1E /* lyric_data.cpp in Sources (Tests) */,
+				A3B4C5D6E7F8A9B0C1D2E3F4 /* ContextMenuTestStubs.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
