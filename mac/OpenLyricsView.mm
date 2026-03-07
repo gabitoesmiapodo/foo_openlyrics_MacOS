@@ -166,6 +166,23 @@ void repaint_all_lyric_panels() {
     CFRelease(snapshot);
 }
 
+void clear_all_lyric_panels() {
+    // Snapshot panel list outside the main queue to avoid a deadlock if called
+    // from a non-main thread.
+    __block CFArrayRef snapshot = NULL;
+    dispatch_sync(g_panels_queue, ^{
+        snapshot = CFArrayCreateCopy(NULL, g_active_panels_cf);
+    });
+    CFIndex total = CFArrayGetCount(snapshot);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for (CFIndex i = 0; i < total; i++) {
+            OpenLyricsView *v = (__bridge OpenLyricsView *)CFArrayGetValueAtIndex(snapshot, i);
+            [v setLyricsText:nil];
+        }
+        CFRelease(snapshot);
+    });
+}
+
 // ---------------------------------------------------------------------------
 // announce_lyric_update: called from LyricAutosearchManager's background thread
 // when a search result arrives.  Store the lyrics, build plain text, push to

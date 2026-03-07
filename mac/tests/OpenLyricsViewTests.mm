@@ -1,6 +1,11 @@
 #import <XCTest/XCTest.h>
 #import "OpenLyricsView.h"
 
+// C++ function under test (declared in OpenLyricsView.h when __cplusplus is defined)
+#ifdef __cplusplus
+void clear_all_lyric_panels();
+#endif
+
 @interface OpenLyricsViewTests : XCTestCase
 @end
 
@@ -58,6 +63,20 @@
     NSString *expected = @"Line one\nLine two\nLine three";
     [view setLyricsText:expected];
     XCTAssertTrue([view hasLyrics]);
+}
+
+- (void)testClearAllLyricPanelsClearsRegisteredViews {
+    // Create a view so it registers itself in the global panel list.
+    OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+    [view setLyricsText:@"Some lyrics to clear"];
+    XCTAssertTrue([view hasLyrics], @"Precondition: view should have lyrics before clear");
+
+    // clear_all_lyric_panels dispatches to the main queue; drain it inline.
+    clear_all_lyric_panels();
+    // Process the dispatched main-queue block.
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+
+    XCTAssertFalse([view hasLyrics], @"hasLyrics should be NO after clear_all_lyric_panels");
 }
 
 @end

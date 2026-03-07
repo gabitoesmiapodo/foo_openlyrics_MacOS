@@ -49,4 +49,35 @@ public:
 
 FB2K_SERVICE_FACTORY(ui_element_openlyrics_mac);
 
+// MARK: - Play Callback
+
+class OpenLyricsPlayCallback : public play_callback_static {
+public:
+    unsigned get_flags() override {
+        return flag_on_playback_stop | flag_on_playback_new_track;
+    }
+
+    void on_playback_new_track(metadb_handle_ptr /*track*/) override {
+        // LyricAutosearchManager handles the actual search; announce_lyric_update
+        // will push results to panels when ready.  Nothing to do here.
+    }
+
+    void on_playback_stop(play_control::t_stop_reason reason) override {
+        if (reason == play_control::stop_reason_starting_another) return;
+        clear_all_lyric_panels();
+    }
+
+    // Unused callbacks — satisfy the pure-virtual interface.
+    void on_playback_starting(play_control::t_track_command, bool) override {}
+    void on_playback_seek(double) override {}
+    void on_playback_pause(bool) override {}
+    void on_playback_edited(metadb_handle_ptr) override {}
+    void on_playback_dynamic_info(const file_info&) override {}
+    void on_playback_dynamic_info_track(const file_info&) override {}
+    void on_playback_time(double) override {}
+    void on_volume_change(float) override {}
+};
+
+FB2K_SERVICE_FACTORY(OpenLyricsPlayCallback);
+
 } // anonymous namespace

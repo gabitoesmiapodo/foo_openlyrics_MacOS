@@ -19,3 +19,9 @@
 @end
 
 #endif // __OBJC__
+
+#ifdef __cplusplus
+/// Clears lyrics on all active panels. Safe to call from any thread
+/// (dispatches to the main queue internally).
+void clear_all_lyric_panels();
+#endif
