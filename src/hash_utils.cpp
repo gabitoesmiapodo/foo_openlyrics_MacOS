@@ -1,14 +1,59 @@
 #include "stdafx.h"
 
+#ifndef __APPLE__
 #include <bcrypt.h>
 #include <windows.h>
+#endif
 
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef __APPLE__
+#include <CommonCrypto/CommonDigest.h>
+#endif
+
 #include "hash_utils.h"
 #include "mvtf/mvtf.h"
+
+#ifdef __APPLE__
+
+Sha256Context::Sha256Context()
+    : m_algorithm_handle(nullptr)
+    , m_hash_handle(nullptr)
+    , m_internal_storage(nullptr)
+    , m_error(false)
+{
+    CC_SHA256_CTX* ctx = (CC_SHA256_CTX*)malloc(sizeof(CC_SHA256_CTX));
+    assert(ctx != nullptr);
+    m_error = (CC_SHA256_Init(ctx) == 0);
+    m_internal_storage = ctx;
+}
+
+Sha256Context::~Sha256Context()
+{
+    free(m_internal_storage);
+}
+
+void Sha256Context::add_data(const uint8_t* buffer, size_t buffer_len)
+{
+    if(m_error) return;
+    CC_SHA256_CTX* ctx = (CC_SHA256_CTX*)m_internal_storage;
+    m_error = (CC_SHA256_Update(ctx, buffer, (CC_LONG)buffer_len) == 0);
+}
+
+void Sha256Context::finalise(uint8_t (&output)[32])
+{
+    if(m_error)
+    {
+        memset(output, 0x00, sizeof(output));
+        return;
+    }
+    CC_SHA256_CTX* ctx = (CC_SHA256_CTX*)m_internal_storage;
+    m_error = (CC_SHA256_Final(output, ctx) == 0);
+}
+
+#else // Windows BCrypt implementation
 
 Sha256Context::Sha256Context()
     : m_algorithm_handle(nullptr)
@@ -77,6 +122,8 @@ void Sha256Context::finalise(uint8_t (&output)[32])
         m_error = FAILED(BCryptFinishHash(m_hash_handle, output, sizeof(output), 0));
     }
 }
+
+#endif // __APPLE__
 
 // ============
 // Tests

@@ -364,8 +364,12 @@ static uint64_t solve_challenge(const UploadChallenge& challenge, abort_callback
 {
     // Compute the sha-256 of challenge `prefix`, with an integer concatenated at the end (as a utf-8 string).
     // Find one such integer for which the resulting hash value is less than `target` (IE 000000N) for N less than FF
+#ifdef __APPLE__
+    const auto start_time = std::chrono::high_resolution_clock::now();
+#else
     LARGE_INTEGER start_time = {};
     QueryPerformanceCounter(&start_time);
+#endif
 
     uint8_t target_buffer[32] = {};
     uint8_t hash_buffer[32] = {};
@@ -411,11 +415,16 @@ static uint64_t solve_challenge(const UploadChallenge& challenge, abort_callback
         nonce++;
     }
 
+#ifdef __APPLE__
+    const auto end_time = std::chrono::high_resolution_clock::now();
+    const float elapsed_sec = std::chrono::duration<float>(end_time - start_time).count();
+#else
     LARGE_INTEGER end_time = {};
     QueryPerformanceCounter(&end_time);
     LARGE_INTEGER freq = {};
     QueryPerformanceFrequency(&freq);
     const float elapsed_sec = float(end_time.QuadPart - start_time.QuadPart) / float(freq.QuadPart);
+#endif
     LOG_INFO("Solved challenge SHA256(%s) < %s with nonce %llu in %.2fs",
              challenge.prefix.c_str(),
              challenge.target.c_str(),

@@ -2,6 +2,9 @@
 
 #include "stdafx.h"
 
+#include <condition_variable>
+#include <mutex>
+
 #include "lyric_data.h"
 
 struct LyricUpdate
@@ -65,10 +68,13 @@ private:
     const metadb_v2_rec_t m_track_info;
     const LyricUpdate::Type m_type;
 
-    CRITICAL_SECTION m_mutex;
+    std::mutex m_mutex;
+    std::condition_variable m_complete_cv;
+#ifndef __APPLE__
+    HANDLE m_complete;
+#endif
     std::vector<LyricData> m_lyrics;
     abort_callback& m_abort;
-    HANDLE m_complete;
     Status m_status;
     std::string m_progress;
     bool m_searched_remote_sources;

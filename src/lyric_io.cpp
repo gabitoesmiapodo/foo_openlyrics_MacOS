@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <list>
+
 #include "logging.h"
 #include "lyric_auto_edit.h"
 #include "lyric_data.h"
@@ -124,6 +126,11 @@ static void ensure_windows_newlines(std::string& str)
 
 static std::string decode_to_utf8(const std::vector<uint8_t> text_bytes)
 {
+#ifdef __APPLE__
+    // On macOS the SDK and all lyric sources always use UTF-8.
+    LOG_INFO("Treating lyric bytes as UTF-8 (macOS)");
+    return std::string(reinterpret_cast<const char*>(text_bytes.data()), text_bytes.size());
+#else
     const auto GetLastErrorString = []() -> const char*
     {
         DWORD error = GetLastError();
@@ -214,6 +221,7 @@ static std::string decode_to_utf8(const std::vector<uint8_t> text_bytes)
 
     LOG_WARN("Failed to convert lyric bytes to UTF-8 after exhausting all available source encodings");
     return "";
+#endif // __APPLE__
 }
 
 static std::string decode_raw_lyric_bytes_to_text(const LyricDataRaw& raw)
@@ -806,10 +814,11 @@ LyricSearchHandle::LyricSearchHandle(LyricUpdate::Type type,
     : m_track(track)
     , m_track_info(track_info)
     , m_type(type)
-    , m_mutex({})
     , m_lyrics()
     , m_abort(abort)
+#ifndef __APPLE__
     , m_complete(nullptr)
+#endif
     , m_status(Status::Created)
     , m_progress()
     , m_searched_remote_sources(false)
@@ -817,25 +826,26 @@ LyricSearchHandle::LyricSearchHandle(LyricUpdate::Type type,
     assert(type != LyricUpdate::Type::Unknown); // Caller must specify a valid type
     assert(type != LyricUpdate::Type::Edit); // Caller cannot specify a non-search type for a search handle
 
-    InitializeCriticalSection(&m_mutex);
+#ifndef __APPLE__
     m_complete = CreateEvent(nullptr, TRUE, FALSE, nullptr);
     assert(m_complete != nullptr);
+#endif
 }
 
 LyricSearchHandle::LyricSearchHandle(LyricSearchHandle&& other)
     : m_track(other.m_track)
     , m_type(other.m_type)
-    , m_mutex()
     , m_lyrics(std::move(other.m_lyrics))
     , m_abort(other.m_abort)
+#ifndef __APPLE__
     , m_complete(nullptr)
+#endif
     , m_status(other.m_status)
     , m_progress(std::move(other.m_progress))
     , m_searched_remote_sources(other.m_searched_remote_sources)
 {
     other.m_status = Status::Closed;
-    InitializeCriticalSection(&m_mutex);
-
+#ifndef __APPLE__
     BOOL other_complete = other.is_complete();
     m_complete = CreateEvent(nullptr, TRUE, other_complete, nullptr);
     if(!other_complete)
@@ -843,10 +853,18 @@ LyricSearchHandle::LyricSearchHandle(LyricSearchHandle&& other)
         other.set_complete();
     }
     assert(m_complete != nullptr);
+#endif
 }
 
 LyricSearchHandle::~LyricSearchHandle()
 {
+#ifdef __APPLE__
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_complete_cv.wait(lock, [this]
+    {
+        return (m_status == Status::Complete) || (m_status == Status::Closed);
+    });
+#else
     DWORD wait_result = WaitForSingleObject(m_complete, 30'000);
     while(wait_result != WAIT_OBJECT_0)
     {
@@ -856,7 +874,7 @@ LyricSearchHandle::~LyricSearchHandle()
         wait_result = WaitForSingleObject(m_complete, 30'000);
     }
     CloseHandle(m_complete);
-    DeleteCriticalSection(&m_mutex);
+#endif
 }
 
 LyricUpdate::Type LyricSearchHandle::get_type()
@@ -866,45 +884,51 @@ LyricUpdate::Type LyricSearchHandle::get_type()
 
 std::string LyricSearchHandle::get_progress()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::string result = m_progress;
-    LeaveCriticalSection(&m_mutex);
     return result;
 }
 
 bool LyricSearchHandle::is_complete()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     bool complete = ((m_status == Status::Complete) || (m_status == Status::Closed));
-    LeaveCriticalSection(&m_mutex);
     return complete;
 }
 
 bool LyricSearchHandle::wait_for_complete(uint32_t timeout_ms)
 {
+#ifdef __APPLE__
+    std::unique_lock<std::mutex> lock(m_mutex);
+    return m_complete_cv.wait_for(lock,
+                                  std::chrono::milliseconds(timeout_ms),
+                                  [this]
+                                  {
+                                      return (m_status == Status::Complete) || (m_status == Status::Closed);
+                                  });
+#else
     DWORD wait_result = WaitForSingleObject(m_complete, timeout_ms);
     return (wait_result == WAIT_OBJECT_0);
+#endif
 }
 
 bool LyricSearchHandle::has_result()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     bool output = !m_lyrics.empty();
-    LeaveCriticalSection(&m_mutex);
     return output;
 }
 
 bool LyricSearchHandle::has_searched_remote_sources()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     bool output = m_searched_remote_sources;
-    LeaveCriticalSection(&m_mutex);
     return output;
 }
 
 LyricData LyricSearchHandle::get_result()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     assert(!m_lyrics.empty());
     LyricData result = std::move(m_lyrics.front());
     m_lyrics.erase(m_lyrics.begin());
@@ -912,7 +936,6 @@ LyricData LyricSearchHandle::get_result()
     {
         m_status = Status::Closed;
     }
-    LeaveCriticalSection(&m_mutex);
     return result;
 }
 
@@ -934,50 +957,54 @@ const metadb_v2_rec_t& LyricSearchHandle::get_track_info()
 
 void LyricSearchHandle::set_started()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     assert(m_status == Status::Created);
     m_status = Status::Running;
-    LeaveCriticalSection(&m_mutex);
 }
 
 void LyricSearchHandle::set_progress(std::string_view value)
 {
-    EnterCriticalSection(&m_mutex);
-    assert(m_status == Status::Running);
-    m_progress = value;
-    LeaveCriticalSection(&m_mutex);
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        assert(m_status == Status::Running);
+        m_progress = value;
+    }
 
     repaint_all_lyric_panels();
 }
 
 void LyricSearchHandle::set_remote_source_searched()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_searched_remote_sources = true;
-    LeaveCriticalSection(&m_mutex);
 }
 
 void LyricSearchHandle::set_result(LyricData&& data, bool final_result)
 {
-    EnterCriticalSection(&m_mutex);
-    assert(m_status == Status::Running);
-    assert(!data.IsEmpty()); // Not allowed to pass in an empty result
-    m_lyrics.push_back(std::move(data));
-
-    if(final_result)
     {
-        m_status = Status::Complete;
-        BOOL complete_success = SetEvent(m_complete);
-        assert(complete_success);
+        std::lock_guard<std::mutex> lock(m_mutex);
+        assert(m_status == Status::Running);
+        assert(!data.IsEmpty()); // Not allowed to pass in an empty result
+        m_lyrics.push_back(std::move(data));
+
+        if(final_result)
+        {
+            m_status = Status::Complete;
+#ifdef __APPLE__
+            m_complete_cv.notify_all();
+#else
+            BOOL complete_success = SetEvent(m_complete);
+            assert(complete_success);
+#endif
+        }
     }
-    LeaveCriticalSection(&m_mutex);
 
     repaint_all_lyric_panels();
 }
 
 void LyricSearchHandle::set_complete()
 {
-    EnterCriticalSection(&m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     assert(m_status == Status::Running);
 
     if(m_lyrics.empty())
@@ -988,10 +1015,12 @@ void LyricSearchHandle::set_complete()
     {
         m_status = Status::Complete;
     }
+#ifdef __APPLE__
+    m_complete_cv.notify_all();
+#else
     BOOL complete_success = SetEvent(m_complete);
     assert(complete_success);
-
-    LeaveCriticalSection(&m_mutex);
+#endif
 }
 
 // ============

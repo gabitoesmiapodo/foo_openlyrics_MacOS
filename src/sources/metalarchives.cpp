@@ -26,7 +26,7 @@ class MetalArchivesSource : public LyricSourceRemote
 
 private:
     std::string collect_all_text_to_string(pugi::xml_node node) const;
-    pugi::xml_document MetalArchivesSource::load_html(const char* src) const;
+    pugi::xml_document load_html(const char* src) const;
     std::vector<LyricDataRaw> parse_song_ids(cJSON* json) const;
 };
 static const LyricSourceFactory<MetalArchivesSource> src_factory;

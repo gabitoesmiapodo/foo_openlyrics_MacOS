@@ -6,9 +6,11 @@
 #include "lyric_io.h"
 #include "metadb_index_search_avoidance.h"
 
+#ifndef __APPLE__
 HWND SpawnLyricEditor(const LyricData& lyrics, metadb_handle_ptr track, metadb_v2_rec_t track_info);
 HWND SpawnManualLyricSearch(metadb_handle_ptr track, metadb_v2_rec_t track_info);
 HWND SpawnBulkLyricSearch(std::vector<metadb_handle_ptr> tracks_to_search);
+#endif
 void SpawnExternalLyricWindow();
 
 size_t num_visible_lyric_panels();

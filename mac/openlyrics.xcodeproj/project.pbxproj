@@ -23,6 +23,67 @@
 		C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */; };
 		A1FFD025F69746FFB4E44CED /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A568C7C1D2A9410BAAD9E40C /* XCTest.framework */; };
 		B9CBE483268F4A5F99872233 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D002BA792BF34441AC69085D /* Cocoa.framework */; };
+		C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1C23D43CF14E4D87B46A96 /* PCH.cpp */; };
+		2C2ECE56ECD5458C88C6E3D0 /* lyric_metadb_index_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E248C0E0F11947AD953E74B3 /* lyric_metadb_index_client.cpp */; };
+		074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8E3FFEC597CE404D9D0B8017 /* MacStubs.mm */; };
+		/* src/ shared files */
+		F17DB2412162485682C7A2CD /* hash_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 303058D9DB8F4CB4B2FC85F8 /* hash_utils.cpp */; };
+		D93FEAB693F54376A0692802 /* http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 857F583F8D4B4C8C9EB8A7B9 /* http.cpp */; };
+		274AD124C9334EB9971B9B24 /* logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 29FF6283FA554236847D4E11 /* logging.cpp */; };
+		0AB246A515F84A1D82470375 /* lyric_auto_edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D89776C61945239CF3F1CF /* lyric_auto_edit.cpp */; };
+		33B739C661C548F496E5AE1E /* lyric_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA4C6263655E4265B096F20A /* lyric_data.cpp */; };
+		ED7A8AE3E3534B7284F680E6 /* lyric_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3490ADBAAB74E8ABB79BED1 /* lyric_io.cpp */; };
+		E2C7DDAA74FC4EA0B1C6B6F9 /* lyric_metadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F23F80FDE0484F1AB6F3127B /* lyric_metadata.cpp */; };
+		150B50AEAEF8424780D1B73F /* lyric_search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B312A5095948638704369C /* lyric_search.cpp */; };
+		977F385EF2E6477C81A1F171 /* metadb_index_search_avoidance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0114172B6D94C6C9D0E6493 /* metadb_index_search_avoidance.cpp */; };
+		42E60870D2C543F88F60F297 /* metrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A94535311F584C668A6CF96E /* metrics.cpp */; };
+		5F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */; };
+		571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 48A742FAFE944BC59DC864E1 /* lrc.cpp */; };
+		67B5493A860445408F7E636B /* lyric_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2B98C56F46F4BFBA17991AC /* lyric_source.cpp */; };
+		C4680A104D044F52B568ABE2 /* azlyricscom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB81EFE3AD584B4E81DC7756 /* azlyricscom.cpp */; };
+		9233419182D74AE0BE41A8F8 /* bandcamp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50BD1B411C494F1183323258 /* bandcamp.cpp */; };
+		1156F667FE104E428433FF0B /* darklyrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9B972E4C6CCE40A892C52351 /* darklyrics.cpp */; };
+		6226B907E1F64FD09268C5C9 /* geniuscom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8BD5B77C26A4A2B951959E2 /* geniuscom.cpp */; };
+		F2CA6460F8834DD8992BBB89 /* id3tag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB4359CF18DD4099AE3EA961 /* id3tag.cpp */; };
+		16507EDD66134262B220A6AA /* letras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D900AD3ACF0B4BE1BD3950D4 /* letras.cpp */; };
+		AB0C6E78EADE4810B6661999 /* localfiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4BF75D08A94815844B853B /* localfiles.cpp */; };
+		3DBE8938BD80492089962604 /* lrclib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49A81EC9A943447F85C7FEB7 /* lrclib.cpp */; };
+		62EFD9FFDADC4810BFDB6CD3 /* lyricfind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949A336C9064498B9C979B7C /* lyricfind.cpp */; };
+		15179BD170CC434CBA411DC2 /* lyricsify.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007B8BF44DED41F2B3696917 /* lyricsify.cpp */; };
+		B3A8568B136B49EA9DA43A5A /* metalarchives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B48994F403BD4C1FABF2D864 /* metalarchives.cpp */; };
+		6D69786489724397945264CD /* musixmatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7AC4A61D361A45A496F7BC5A /* musixmatch.cpp */; };
+		2073AEC6B3AF4B9B9ED9F1C2 /* netease.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4891D1247343DFADB565F8 /* netease.cpp */; };
+		06A7E464D7744424AC88162E /* qqmusic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99FA7A0CDC51401EAAAA56C9 /* qqmusic.cpp */; };
+		D4BEE8467AEE492AB97F9603 /* songlyrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69439EFED9A043349A002A32 /* songlyrics.cpp */; };
+		/* 3rdparty */
+		F7FB69F028DD475EB3258935 /* pugixml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE7D1FD319AA48FEAEFB4EA6 /* pugixml.cpp */; };
+		04F10303F4694C2AB2422064 /* cJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = 009F89D9108C43A1B4BBD2CD /* cJSON.c */; };
+		9487AC4FCE9A4A71AFC456CC /* access.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D6A8DBB88E441E93029AFE /* access.c */; };
+		644BCACB7B004DEFA7512D8A /* alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 89900E7991A34996847793F5 /* alloc.c */; };
+		B4DEFF34387A4B85803B685F /* attrdict.c in Sources */ = {isa = PBXBuildFile; fileRef = DAF55E046681483198FAC6A1 /* attrdict.c */; };
+		57C57762654C47368B90F11F /* attrs.c in Sources */ = {isa = PBXBuildFile; fileRef = 737EE35B06F64E3A8BCED1A1 /* attrs.c */; };
+		876A887480904F99A38242FC /* buffio.c in Sources */ = {isa = PBXBuildFile; fileRef = F6EFDA286A554CAD9643FDB2 /* buffio.c */; };
+		28FC26AEE3444CD7B975F868 /* charsets.c in Sources */ = {isa = PBXBuildFile; fileRef = A9999F0784AD41D59F91C26F /* charsets.c */; };
+		8CB5C034853F46808399DDCC /* clean.c in Sources */ = {isa = PBXBuildFile; fileRef = BA93F83BE9E54F35994A1D65 /* clean.c */; };
+		F94B4687AFE34596A5CB4FE7 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = 996B438D9F964D998FC033C2 /* config.c */; };
+		18BC95C8441B4342928A6B6B /* entities.c in Sources */ = {isa = PBXBuildFile; fileRef = 3E04F62518884FE2888914D9 /* entities.c */; };
+		67C4087C889348039F90B97B /* fileio.c in Sources */ = {isa = PBXBuildFile; fileRef = 246CB497F88B4439922E19A7 /* fileio.c */; };
+		53245D759F1E4389920F11E0 /* gdoc.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D1845D654D24BB5BF779699 /* gdoc.c */; };
+		6154426681B04A96B5F8A5A9 /* istack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1087978012FF4196A7C042FF /* istack.c */; };
+		CF7704CBB994403BA9429AB1 /* language.c in Sources */ = {isa = PBXBuildFile; fileRef = 0851F0C05B5F4BBE8ACF213D /* language.c */; };
+		1DC23FDD58CC4B0BAA252B8F /* lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB5DEFCC20408B9ED09B33 /* lexer.c */; };
+		F9B9AF305369492FB297FE65 /* mappedio.c in Sources */ = {isa = PBXBuildFile; fileRef = D5DB0787DA6B4EC8A7B8E8A3 /* mappedio.c */; };
+		3CF81F0049DF43C4BD52145E /* message.c in Sources */ = {isa = PBXBuildFile; fileRef = 35235C7B9EF640D7BC0AA427 /* message.c */; };
+		96875E8DCEC543B9B635B69D /* messageobj.c in Sources */ = {isa = PBXBuildFile; fileRef = F4BFFDCE63E14FD5AEDAD683 /* messageobj.c */; };
+		0792D482470944C096850F73 /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 72E1479DA10D4E958E14BFB7 /* parser.c */; };
+		6415C37BF9FD46329E2B5829 /* pprint.c in Sources */ = {isa = PBXBuildFile; fileRef = 1ABE01E97BBD4227A8370921 /* pprint.c */; };
+		1327E7E33FB44E81BCCC2576 /* sprtf.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F6930FC07444384DBB0A1 /* sprtf.c */; };
+		ED1C269E68C64EA5ABCA5364 /* streamio.c in Sources */ = {isa = PBXBuildFile; fileRef = 0BC932FB902F4B8D9CCE125F /* streamio.c */; };
+		F0F7CCDE403D4434B9D287BB /* tagask.c in Sources */ = {isa = PBXBuildFile; fileRef = 8547F54AE2814ACD8E5B3A4B /* tagask.c */; };
+		6A7F9A390CC54B31B6B13AA5 /* tags.c in Sources */ = {isa = PBXBuildFile; fileRef = 5B50D1E926C244A0BB6ED570 /* tags.c */; };
+		ABB0C88AF8C44C0A982D6A37 /* tidylib.c in Sources */ = {isa = PBXBuildFile; fileRef = A804A764EAAB470A9A475F8D /* tidylib.c */; };
+		6C4F31A1158A4B008979D712 /* tmbstr.c in Sources */ = {isa = PBXBuildFile; fileRef = 06E1BAD8DDD84148B09EACC4 /* tmbstr.c */; };
+		51180E0934414236B97F6499 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BCEB70684BD79DF45712 /* utf8.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +104,67 @@
 		A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK_helpers.a; path = "../deps/foobar2000-sdk/foobar2000/helpers/build/Release/libfoobar2000_SDK_helpers.a"; sourceTree = "<group>"; };
 		31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_component_client.a; path = "../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release/libfoobar2000_component_client.a"; sourceTree = "<group>"; };
 		7079C6FA865741CEBE3A5895 /* libshared.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libshared.a; path = "../deps/foobar2000-sdk/foobar2000/shared/build/Release/libshared.a"; sourceTree = "<group>"; };
+		/* src/ shared files */
+		EF1C23D43CF14E4D87B46A96 /* PCH.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PCH.cpp; path = "../src/PCH.cpp"; sourceTree = "<group>"; };
+		E248C0E0F11947AD953E74B3 /* lyric_metadb_index_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_metadb_index_client.cpp; path = "../src/lyric_metadb_index_client.cpp"; sourceTree = "<group>"; };
+		8E3FFEC597CE404D9D0B8017 /* MacStubs.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = MacStubs.mm; path = MacStubs.mm; sourceTree = "<group>"; };
+		303058D9DB8F4CB4B2FC85F8 /* hash_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = hash_utils.cpp; path = "../src/hash_utils.cpp"; sourceTree = "<group>"; };
+		857F583F8D4B4C8C9EB8A7B9 /* http.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = http.cpp; path = "../src/http.cpp"; sourceTree = "<group>"; };
+		29FF6283FA554236847D4E11 /* logging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = logging.cpp; path = "../src/logging.cpp"; sourceTree = "<group>"; };
+		E2D89776C61945239CF3F1CF /* lyric_auto_edit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_auto_edit.cpp; path = "../src/lyric_auto_edit.cpp"; sourceTree = "<group>"; };
+		AA4C6263655E4265B096F20A /* lyric_data.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_data.cpp; path = "../src/lyric_data.cpp"; sourceTree = "<group>"; };
+		D3490ADBAAB74E8ABB79BED1 /* lyric_io.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_io.cpp; path = "../src/lyric_io.cpp"; sourceTree = "<group>"; };
+		F23F80FDE0484F1AB6F3127B /* lyric_metadata.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_metadata.cpp; path = "../src/lyric_metadata.cpp"; sourceTree = "<group>"; };
+		E1B312A5095948638704369C /* lyric_search.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_search.cpp; path = "../src/lyric_search.cpp"; sourceTree = "<group>"; };
+		C0114172B6D94C6C9D0E6493 /* metadb_index_search_avoidance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = metadb_index_search_avoidance.cpp; path = "../src/metadb_index_search_avoidance.cpp"; sourceTree = "<group>"; };
+		A94535311F584C668A6CF96E /* metrics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = metrics.cpp; path = "../src/metrics.cpp"; sourceTree = "<group>"; };
+		BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = tag_util.cpp; path = "../src/tag_util.cpp"; sourceTree = "<group>"; };
+		48A742FAFE944BC59DC864E1 /* lrc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lrc.cpp; path = "../src/parsers/lrc.cpp"; sourceTree = "<group>"; };
+		F2B98C56F46F4BFBA17991AC /* lyric_source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_source.cpp; path = "../src/sources/lyric_source.cpp"; sourceTree = "<group>"; };
+		AB81EFE3AD584B4E81DC7756 /* azlyricscom.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = azlyricscom.cpp; path = "../src/sources/azlyricscom.cpp"; sourceTree = "<group>"; };
+		50BD1B411C494F1183323258 /* bandcamp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bandcamp.cpp; path = "../src/sources/bandcamp.cpp"; sourceTree = "<group>"; };
+		9B972E4C6CCE40A892C52351 /* darklyrics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = darklyrics.cpp; path = "../src/sources/darklyrics.cpp"; sourceTree = "<group>"; };
+		B8BD5B77C26A4A2B951959E2 /* geniuscom.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = geniuscom.cpp; path = "../src/sources/geniuscom.cpp"; sourceTree = "<group>"; };
+		FB4359CF18DD4099AE3EA961 /* id3tag.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = id3tag.cpp; path = "../src/sources/id3tag.cpp"; sourceTree = "<group>"; };
+		D900AD3ACF0B4BE1BD3950D4 /* letras.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = letras.cpp; path = "../src/sources/letras.cpp"; sourceTree = "<group>"; };
+		FA4BF75D08A94815844B853B /* localfiles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = localfiles.cpp; path = "../src/sources/localfiles.cpp"; sourceTree = "<group>"; };
+		49A81EC9A943447F85C7FEB7 /* lrclib.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lrclib.cpp; path = "../src/sources/lrclib.cpp"; sourceTree = "<group>"; };
+		949A336C9064498B9C979B7C /* lyricfind.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyricfind.cpp; path = "../src/sources/lyricfind.cpp"; sourceTree = "<group>"; };
+		007B8BF44DED41F2B3696917 /* lyricsify.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyricsify.cpp; path = "../src/sources/lyricsify.cpp"; sourceTree = "<group>"; };
+		B48994F403BD4C1FABF2D864 /* metalarchives.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = metalarchives.cpp; path = "../src/sources/metalarchives.cpp"; sourceTree = "<group>"; };
+		7AC4A61D361A45A496F7BC5A /* musixmatch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = musixmatch.cpp; path = "../src/sources/musixmatch.cpp"; sourceTree = "<group>"; };
+		3A4891D1247343DFADB565F8 /* netease.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = netease.cpp; path = "../src/sources/netease.cpp"; sourceTree = "<group>"; };
+		99FA7A0CDC51401EAAAA56C9 /* qqmusic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = qqmusic.cpp; path = "../src/sources/qqmusic.cpp"; sourceTree = "<group>"; };
+		69439EFED9A043349A002A32 /* songlyrics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = songlyrics.cpp; path = "../src/sources/songlyrics.cpp"; sourceTree = "<group>"; };
+		/* 3rdparty */
+		AE7D1FD319AA48FEAEFB4EA6 /* pugixml.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = pugixml.cpp; path = "../3rdparty/pugixml-1.12.1/src/pugixml.cpp"; sourceTree = "<group>"; };
+		009F89D9108C43A1B4BBD2CD /* cJSON.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = cJSON.c; path = "../3rdparty/cJSON/cJSON.c"; sourceTree = "<group>"; };
+		D0D6A8DBB88E441E93029AFE /* access.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = access.c; path = "../3rdparty/tidy-html5-5.8.0/src/access.c"; sourceTree = "<group>"; };
+		89900E7991A34996847793F5 /* alloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = alloc.c; path = "../3rdparty/tidy-html5-5.8.0/src/alloc.c"; sourceTree = "<group>"; };
+		DAF55E046681483198FAC6A1 /* attrdict.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = attrdict.c; path = "../3rdparty/tidy-html5-5.8.0/src/attrdict.c"; sourceTree = "<group>"; };
+		737EE35B06F64E3A8BCED1A1 /* attrs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = attrs.c; path = "../3rdparty/tidy-html5-5.8.0/src/attrs.c"; sourceTree = "<group>"; };
+		F6EFDA286A554CAD9643FDB2 /* buffio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = buffio.c; path = "../3rdparty/tidy-html5-5.8.0/src/buffio.c"; sourceTree = "<group>"; };
+		A9999F0784AD41D59F91C26F /* charsets.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = charsets.c; path = "../3rdparty/tidy-html5-5.8.0/src/charsets.c"; sourceTree = "<group>"; };
+		BA93F83BE9E54F35994A1D65 /* clean.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = clean.c; path = "../3rdparty/tidy-html5-5.8.0/src/clean.c"; sourceTree = "<group>"; };
+		996B438D9F964D998FC033C2 /* config.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = config.c; path = "../3rdparty/tidy-html5-5.8.0/src/config.c"; sourceTree = "<group>"; };
+		3E04F62518884FE2888914D9 /* entities.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = entities.c; path = "../3rdparty/tidy-html5-5.8.0/src/entities.c"; sourceTree = "<group>"; };
+		246CB497F88B4439922E19A7 /* fileio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = fileio.c; path = "../3rdparty/tidy-html5-5.8.0/src/fileio.c"; sourceTree = "<group>"; };
+		0D1845D654D24BB5BF779699 /* gdoc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gdoc.c; path = "../3rdparty/tidy-html5-5.8.0/src/gdoc.c"; sourceTree = "<group>"; };
+		1087978012FF4196A7C042FF /* istack.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = istack.c; path = "../3rdparty/tidy-html5-5.8.0/src/istack.c"; sourceTree = "<group>"; };
+		0851F0C05B5F4BBE8ACF213D /* language.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = language.c; path = "../3rdparty/tidy-html5-5.8.0/src/language.c"; sourceTree = "<group>"; };
+		4CCB5DEFCC20408B9ED09B33 /* lexer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = lexer.c; path = "../3rdparty/tidy-html5-5.8.0/src/lexer.c"; sourceTree = "<group>"; };
+		D5DB0787DA6B4EC8A7B8E8A3 /* mappedio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mappedio.c; path = "../3rdparty/tidy-html5-5.8.0/src/mappedio.c"; sourceTree = "<group>"; };
+		35235C7B9EF640D7BC0AA427 /* message.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = message.c; path = "../3rdparty/tidy-html5-5.8.0/src/message.c"; sourceTree = "<group>"; };
+		F4BFFDCE63E14FD5AEDAD683 /* messageobj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = messageobj.c; path = "../3rdparty/tidy-html5-5.8.0/src/messageobj.c"; sourceTree = "<group>"; };
+		72E1479DA10D4E958E14BFB7 /* parser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = parser.c; path = "../3rdparty/tidy-html5-5.8.0/src/parser.c"; sourceTree = "<group>"; };
+		1ABE01E97BBD4227A8370921 /* pprint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pprint.c; path = "../3rdparty/tidy-html5-5.8.0/src/pprint.c"; sourceTree = "<group>"; };
+		1C4F6930FC07444384DBB0A1 /* sprtf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = sprtf.c; path = "../3rdparty/tidy-html5-5.8.0/src/sprtf.c"; sourceTree = "<group>"; };
+		0BC932FB902F4B8D9CCE125F /* streamio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = streamio.c; path = "../3rdparty/tidy-html5-5.8.0/src/streamio.c"; sourceTree = "<group>"; };
+		8547F54AE2814ACD8E5B3A4B /* tagask.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tagask.c; path = "../3rdparty/tidy-html5-5.8.0/src/tagask.c"; sourceTree = "<group>"; };
+		5B50D1E926C244A0BB6ED570 /* tags.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tags.c; path = "../3rdparty/tidy-html5-5.8.0/src/tags.c"; sourceTree = "<group>"; };
+		A804A764EAAB470A9A475F8D /* tidylib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tidylib.c; path = "../3rdparty/tidy-html5-5.8.0/src/tidylib.c"; sourceTree = "<group>"; };
+		06E1BAD8DDD84148B09EACC4 /* tmbstr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tmbstr.c; path = "../3rdparty/tidy-html5-5.8.0/src/tmbstr.c"; sourceTree = "<group>"; };
+		E4D5BCEB70684BD79DF45712 /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = "../3rdparty/tidy-html5-5.8.0/src/utf8.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +354,67 @@
 			files = (
 				4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */,
+				074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */,
+				C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */,
+				2C2ECE56ECD5458C88C6E3D0 /* lyric_metadb_index_client.cpp in Sources */,
+				/* src/ shared files */
+				F17DB2412162485682C7A2CD /* hash_utils.cpp in Sources */,
+				D93FEAB693F54376A0692802 /* http.cpp in Sources */,
+				274AD124C9334EB9971B9B24 /* logging.cpp in Sources */,
+				0AB246A515F84A1D82470375 /* lyric_auto_edit.cpp in Sources */,
+				33B739C661C548F496E5AE1E /* lyric_data.cpp in Sources */,
+				ED7A8AE3E3534B7284F680E6 /* lyric_io.cpp in Sources */,
+				E2C7DDAA74FC4EA0B1C6B6F9 /* lyric_metadata.cpp in Sources */,
+				150B50AEAEF8424780D1B73F /* lyric_search.cpp in Sources */,
+				977F385EF2E6477C81A1F171 /* metadb_index_search_avoidance.cpp in Sources */,
+				42E60870D2C543F88F60F297 /* metrics.cpp in Sources */,
+				5F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources */,
+				571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources */,
+				67B5493A860445408F7E636B /* lyric_source.cpp in Sources */,
+				C4680A104D044F52B568ABE2 /* azlyricscom.cpp in Sources */,
+				9233419182D74AE0BE41A8F8 /* bandcamp.cpp in Sources */,
+				1156F667FE104E428433FF0B /* darklyrics.cpp in Sources */,
+				6226B907E1F64FD09268C5C9 /* geniuscom.cpp in Sources */,
+				F2CA6460F8834DD8992BBB89 /* id3tag.cpp in Sources */,
+				16507EDD66134262B220A6AA /* letras.cpp in Sources */,
+				AB0C6E78EADE4810B6661999 /* localfiles.cpp in Sources */,
+				3DBE8938BD80492089962604 /* lrclib.cpp in Sources */,
+				62EFD9FFDADC4810BFDB6CD3 /* lyricfind.cpp in Sources */,
+				15179BD170CC434CBA411DC2 /* lyricsify.cpp in Sources */,
+				B3A8568B136B49EA9DA43A5A /* metalarchives.cpp in Sources */,
+				6D69786489724397945264CD /* musixmatch.cpp in Sources */,
+				2073AEC6B3AF4B9B9ED9F1C2 /* netease.cpp in Sources */,
+				06A7E464D7744424AC88162E /* qqmusic.cpp in Sources */,
+				D4BEE8467AEE492AB97F9603 /* songlyrics.cpp in Sources */,
+				/* 3rdparty */
+				F7FB69F028DD475EB3258935 /* pugixml.cpp in Sources */,
+				04F10303F4694C2AB2422064 /* cJSON.c in Sources */,
+				9487AC4FCE9A4A71AFC456CC /* access.c in Sources */,
+				644BCACB7B004DEFA7512D8A /* alloc.c in Sources */,
+				B4DEFF34387A4B85803B685F /* attrdict.c in Sources */,
+				57C57762654C47368B90F11F /* attrs.c in Sources */,
+				876A887480904F99A38242FC /* buffio.c in Sources */,
+				28FC26AEE3444CD7B975F868 /* charsets.c in Sources */,
+				8CB5C034853F46808399DDCC /* clean.c in Sources */,
+				F94B4687AFE34596A5CB4FE7 /* config.c in Sources */,
+				18BC95C8441B4342928A6B6B /* entities.c in Sources */,
+				67C4087C889348039F90B97B /* fileio.c in Sources */,
+				53245D759F1E4389920F11E0 /* gdoc.c in Sources */,
+				6154426681B04A96B5F8A5A9 /* istack.c in Sources */,
+				CF7704CBB994403BA9429AB1 /* language.c in Sources */,
+				1DC23FDD58CC4B0BAA252B8F /* lexer.c in Sources */,
+				F9B9AF305369492FB297FE65 /* mappedio.c in Sources */,
+				3CF81F0049DF43C4BD52145E /* message.c in Sources */,
+				96875E8DCEC543B9B635B69D /* messageobj.c in Sources */,
+				0792D482470944C096850F73 /* parser.c in Sources */,
+				6415C37BF9FD46329E2B5829 /* pprint.c in Sources */,
+				1327E7E33FB44E81BCCC2576 /* sprtf.c in Sources */,
+				ED1C269E68C64EA5ABCA5364 /* streamio.c in Sources */,
+				F0F7CCDE403D4434B9D287BB /* tagask.c in Sources */,
+				6A7F9A390CC54B31B6B13AA5 /* tags.c in Sources */,
+				ABB0C88AF8C44C0A982D6A37 /* tidylib.c in Sources */,
+				6C4F31A1158A4B008979D712 /* tmbstr.c in Sources */,
+				51180E0934414236B97F6499 /* utf8.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,7 +482,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -352,7 +535,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -376,6 +559,10 @@
 					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
 					"$(SRCROOT)/../deps/curl/include",
 					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/include",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/src",
+					"$(SRCROOT)/../3rdparty/pugixml-1.12.1/src",
+					"$(SRCROOT)/../3rdparty/cJSON",
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
 				);
@@ -390,7 +577,7 @@
 					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
 					"$(SRCROOT)/../deps/curl/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MARKETING_VERSION = 0.0.1;
 				OTHER_LDFLAGS = (
 					"-lpfc-Mac",
@@ -425,6 +612,10 @@
 					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
 					"$(SRCROOT)/../deps/curl/include",
 					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/include",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/src",
+					"$(SRCROOT)/../3rdparty/pugixml-1.12.1/src",
+					"$(SRCROOT)/../3rdparty/cJSON",
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
 				);
@@ -439,7 +630,7 @@
 					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
 					"$(SRCROOT)/../deps/curl/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MARKETING_VERSION = 0.0.1;
 				OTHER_LDFLAGS = (
 					"-lpfc-Mac",
@@ -476,7 +667,7 @@
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -504,7 +695,7 @@
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

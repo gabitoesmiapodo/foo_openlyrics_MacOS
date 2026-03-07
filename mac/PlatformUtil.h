@@ -57,6 +57,26 @@ namespace std {
     using tstring_view = string_view;
 }
 
+// _T() macro: on Windows expands to wide-string literal, on macOS TCHAR==char so it's a no-op
+#ifndef _T
+#define _T(x) x
+#endif
+
+// TCHAR ctype helpers: on Windows these operate on TCHAR (potentially wide),
+// on macOS TCHAR==char so map to the standard narrow-char functions.
+#ifndef _istlower
+#define _istlower(c) std::islower(static_cast<unsigned char>(c))
+#endif
+#ifndef _istupper
+#define _istupper(c) std::isupper(static_cast<unsigned char>(c))
+#endif
+#ifndef _totupper
+#define _totupper(c) static_cast<char>(std::toupper(static_cast<unsigned char>(c)))
+#endif
+#ifndef _totlower
+#define _totlower(c) static_cast<char>(std::tolower(static_cast<unsigned char>(c)))
+#endif
+
 // Forward declarations so this header is self-contained for the LSP.
 // The full definitions are provided by foobar2000+atl.h via stdafx.h.
 namespace pfc { class stringLite; typedef stringLite string8; }

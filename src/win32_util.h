@@ -1,5 +1,10 @@
 #pragma once
 
+#ifdef __APPLE__
+// On macOS, all win32_util declarations are provided by PlatformUtil.h (included via stdafx.h).
+// Do not re-declare anything here to avoid conflicts.
+#else
+
 #include "stdafx.h"
 
 namespace std
@@ -37,3 +42,5 @@ size_t find_last_nonwhitespace(const std::tstring_view str, size_t pos = std::ts
 
 #define HR_SUCCESS(hr) hr_success(hr, __FILE__, __LINE__)
 bool hr_success(HRESULT result, const char* filename, int line_number);
+
+#endif // __APPLE__

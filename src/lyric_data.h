@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef __APPLE__
 #include <guiddef.h>
+#endif
 #include <string>
 
 #include "preferences.h"

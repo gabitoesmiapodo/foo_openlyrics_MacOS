@@ -1,8 +1,12 @@
 #include "stdafx.h"
 
+#ifndef __APPLE__
 #pragma warning(push, 0)
+#endif
 #include <foobar2000/SDK/metadb_info_container_impl.h>
+#ifndef __APPLE__
 #pragma warning(pop)
+#endif
 
 #include "logging.h"
 #include "lyric_io.h"
@@ -82,7 +86,11 @@ void LyricAutosearchManager::on_init()
             while(!fb2k::mainAborter().is_aborting())
             {
                 check_for_available_updates();
+#ifdef __APPLE__
+                pfc::nixSleep(0.05);
+#else
                 Sleep(50);
+#endif
             }
         });
 }
@@ -150,7 +158,11 @@ void LyricAutosearchManager::initiate_search(metadb_handle_ptr track,
     m_search_handles.push_back({ std::move(handle), avoid_reason });
     m_handle_mutex.unlock();
 
-    if(IsIconic(core_api::get_main_window()) || (avoid_reason == SearchAvoidanceReason::NoVisiblePanels))
+    if(
+#ifndef __APPLE__
+       IsIconic(core_api::get_main_window()) ||
+#endif
+       (avoid_reason == SearchAvoidanceReason::NoVisiblePanels))
     {
         metrics::log_hidden_search();
     }

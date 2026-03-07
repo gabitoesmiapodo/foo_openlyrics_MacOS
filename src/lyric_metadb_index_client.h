@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef __APPLE__
 #include <guiddef.h>
+#endif
 
 #include "foobar2000/SDK/initquit.h"
 #include "foobar2000/SDK/metadb_handle.h"

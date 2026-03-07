@@ -155,7 +155,7 @@ std::string LocalFileSource::save(metadb_handle_ptr track,
     std::string output_path_str = preferences::saving::filename(track, track_info);
     if(output_path_str.empty())
     {
-        throw std::exception("Failed to determine save file path");
+        throw std::runtime_error("Failed to determine save file path");
     }
 
     const char* extension = is_timestamped ? ".lrc" : ".txt";
@@ -165,7 +165,7 @@ std::string LocalFileSource::save(metadb_handle_ptr track,
     pfc::string output_file_name = pfc::io::path::getFileName(output_path);
     if(output_file_name.isEmpty())
     {
-        throw std::exception("Calculated file path does not contain a file leaf node");
+        throw std::runtime_error("Calculated file path does not contain a file leaf node");
     }
     ensure_dir_exists(pfc::io::path::getParent(output_path), abort);
     LOG_INFO("Saving lyrics to %s...", output_path.c_str());
@@ -176,9 +176,13 @@ std::string LocalFileSource::save(metadb_handle_ptr track,
         return output_path_str;
     }
 
+#ifdef __APPLE__
+    std::string tmp_path = std::string(P_tmpdir) + "/";
+#else
     TCHAR temp_path_str[MAX_PATH + 1];
     DWORD temp_path_str_len = GetTempPath(MAX_PATH + 1, temp_path_str);
     std::string tmp_path = from_tstring(std::tstring_view { temp_path_str, temp_path_str_len });
+#endif
     tmp_path += std::string_view(output_file_name.c_str(), output_file_name.length());
 
     {

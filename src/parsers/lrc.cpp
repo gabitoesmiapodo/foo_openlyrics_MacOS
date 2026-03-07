@@ -345,8 +345,9 @@ LyricData parsers::lrc::parse(const LyricDataCommon& metadata, std::string_view 
             //       We don't want to process them so just skip past them. Ordinarily we'd do this
             //       just once at the start of the file but I've seen files with BOMs at the start
             //       of random lines in the file, so just check every line.
-            if((text[line_start_index] == '\u00EF') && (text[line_start_index + 1] == '\u00BB')
-               && (text[line_start_index + 2] == '\u00BF'))
+            if((static_cast<unsigned char>(text[line_start_index]) == 0xEF)
+               && (static_cast<unsigned char>(text[line_start_index + 1]) == 0xBB)
+               && (static_cast<unsigned char>(text[line_start_index + 2]) == 0xBF))
             {
                 line_start_index += 3;
                 line_bytes -= 3;
