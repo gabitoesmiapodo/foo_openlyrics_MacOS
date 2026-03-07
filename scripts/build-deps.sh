@@ -41,14 +41,31 @@ echo ""
 echo "=== Building foobar2000 SDK ==="
 SDK="$DEPS_DIR/foobar2000-sdk"
 
-for proj in \
-    "$SDK/pfc/pfc.xcodeproj" \
-    "$SDK/foobar2000/SDK/foobar2000_SDK.xcodeproj" \
-    "$SDK/foobar2000/helpers/foobar2000_SDK_helpers.xcodeproj" \
-    "$SDK/foobar2000/foobar2000_component_client/foobar2000_component_client.xcodeproj" \
-    "$SDK/foobar2000/shared/shared.xcodeproj"; do
-    echo "  Building $(basename "$proj" .xcodeproj)..."
-    xcodebuild -project "$proj" -configuration Release -arch x86_64 -arch arm64 build -quiet
+SDK_PROJECTS=(
+    "$SDK/pfc/pfc.xcodeproj"
+    "$SDK/foobar2000/SDK/foobar2000_SDK.xcodeproj"
+    "$SDK/foobar2000/helpers/foobar2000_SDK_helpers.xcodeproj"
+    "$SDK/foobar2000/foobar2000_component_client/foobar2000_component_client.xcodeproj"
+    "$SDK/foobar2000/shared/shared.xcodeproj"
+)
+SDK_LIBS=(
+    "$SDK/pfc/build/Release/libpfc.a"
+    "$SDK/foobar2000/SDK/build/Release/libfoobar2000_SDK.a"
+    "$SDK/foobar2000/helpers/build/Release/libfoobar2000_SDK_helpers.a"
+    "$SDK/foobar2000/foobar2000_component_client/build/Release/libfoobar2000_component_client.a"
+    "$SDK/foobar2000/shared/build/Release/libshared.a"
+)
+
+for i in "${!SDK_PROJECTS[@]}"; do
+    proj="${SDK_PROJECTS[$i]}"
+    lib="${SDK_LIBS[$i]}"
+    name="$(basename "$proj" .xcodeproj)"
+    if [ -f "$lib" ] && has_all_arches "$lib"; then
+        echo "  $name already built, skipping."
+    else
+        echo "  Building $name..."
+        xcodebuild -project "$proj" -configuration Release -arch x86_64 -arch arm64 build -quiet
+    fi
 done
 
 echo "SDK libraries built."
