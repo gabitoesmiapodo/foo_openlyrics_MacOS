@@ -279,7 +279,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
-					"NDEBUG=1",
 					"$(inherited)",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -387,6 +386,7 @@
 					"-lfoobar2000_SDK_helpers",
 					"-lfoobar2000_component_client",
 					"-lshared",
+					"-lcurl",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
 				PRODUCT_NAME = foo_openlyrics;
@@ -435,6 +435,7 @@
 					"-lfoobar2000_SDK_helpers",
 					"-lfoobar2000_component_client",
 					"-lshared",
+					"-lcurl",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
 				PRODUCT_NAME = foo_openlyrics;

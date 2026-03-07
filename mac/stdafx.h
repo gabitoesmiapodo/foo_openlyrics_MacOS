@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cwctype>
+#include <format>
 #include <numeric>
 #include <optional>
 #include <string>
