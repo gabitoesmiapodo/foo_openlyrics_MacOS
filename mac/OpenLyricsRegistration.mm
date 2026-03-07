@@ -58,8 +58,11 @@ public:
     }
 
     void on_playback_new_track(metadb_handle_ptr /*track*/) override {
-        // LyricAutosearchManager handles the actual search; announce_lyric_update
-        // will push results to panels when ready.  Nothing to do here.
+        // LyricAutosearchManager (src/lyric_search.cpp) self-registers as a play_callback
+        // via play_callback_manager in on_init() and handles search triggering.
+        // announce_lyric_update() is called when results arrive.
+        // This callback only needs to handle UI-side concerns (clearing, etc.)
+        // which for new-track is handled implicitly when the search result arrives.
     }
 
     void on_playback_stop(play_control::t_stop_reason reason) override {
@@ -78,6 +81,6 @@ public:
     void on_volume_change(float) override {}
 };
 
-FB2K_SERVICE_FACTORY(OpenLyricsPlayCallback);
+static play_callback_static_factory_t<OpenLyricsPlayCallback> g_play_cb_factory;
 
 } // anonymous namespace

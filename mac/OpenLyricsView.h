@@ -12,6 +12,9 @@
 /// Returns YES if lyrics have been loaded (non-empty line count).
 - (BOOL)hasLyrics;
 
+/// Returns the current plain-text lyrics string, or nil if none are loaded.
+- (NSString *)currentLyricsText;
+
 /// Sets plain-text lyrics for display.  Pass nil or empty string to clear.
 /// This method is the bridge between C++ LyricData and the ObjC view layer.
 - (void)setLyricsText:(NSString *)text;

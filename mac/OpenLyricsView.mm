@@ -11,9 +11,8 @@
 // Global lyrics state (written from announce_lyric_update, read on main thread)
 // ---------------------------------------------------------------------------
 
+// g_current_lyrics is read and written exclusively on the main thread.
 static LyricData g_current_lyrics;
-static NSString *g_current_lyrics_text = nil; // cached plain-text rendering
-static dispatch_queue_t g_lyrics_queue;       // serialises writes to g_current_lyrics
 
 // ---------------------------------------------------------------------------
 // Active panel registry (weak references via CF)
@@ -40,7 +39,6 @@ static dispatch_queue_t g_panels_queue;
         weakCallbacks.release = NULL;
         g_active_panels_cf = CFArrayCreateMutable(NULL, 0, &weakCallbacks);
         g_panels_queue = dispatch_queue_create("com.foo_openlyrics.panels", DISPATCH_QUEUE_SERIAL);
-        g_lyrics_queue = dispatch_queue_create("com.foo_openlyrics.lyrics", DISPATCH_QUEUE_SERIAL);
     }
 }
 
@@ -79,6 +77,10 @@ static dispatch_queue_t g_panels_queue;
 
 - (BOOL)hasLyrics {
     return _lyricsText != nil && _lyricsText.length > 0;
+}
+
+- (NSString *)currentLyricsText {
+    return _lyricsText;
 }
 
 - (void)setLyricsText:(NSString *)text {
@@ -151,35 +153,44 @@ size_t num_visible_lyric_panels() {
 }
 
 void repaint_all_lyric_panels() {
-    // Snapshot the array under the lock, then dispatch repaints without holding it.
-    __block CFArrayRef snapshot = NULL;
+    // Build a retaining NSArray snapshot under the lock so the views stay alive
+    // until the async block runs on the main thread.
+    __block NSArray *snapshot = nil;
     dispatch_sync(g_panels_queue, ^{
-        snapshot = CFArrayCreateCopy(NULL, g_active_panels_cf);
+        CFIndex count = CFArrayGetCount(g_active_panels_cf);
+        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
+        for (CFIndex i = 0; i < count; i++) {
+            OpenLyricsView *v = (OpenLyricsView *)CFArrayGetValueAtIndex(g_active_panels_cf, i);
+            [arr addObject:v];  // retains each view
+        }
+        snapshot = [arr retain];
     });
-    CFIndex total = CFArrayGetCount(snapshot);
-    for (CFIndex i = 0; i < total; i++) {
-        OpenLyricsView *v = (__bridge OpenLyricsView *)CFArrayGetValueAtIndex(snapshot, i);
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for (OpenLyricsView *v in snapshot) {
             [v setNeedsDisplay:YES];
-        });
-    }
-    CFRelease(snapshot);
+        }
+        [snapshot release];
+    });
 }
 
 void clear_all_lyric_panels() {
-    // Snapshot panel list outside the main queue to avoid a deadlock if called
-    // from a non-main thread.
-    __block CFArrayRef snapshot = NULL;
+    // Build a retaining NSArray snapshot under the lock so the views stay alive
+    // until the async block runs on the main thread.
+    __block NSArray *snapshot = nil;
     dispatch_sync(g_panels_queue, ^{
-        snapshot = CFArrayCreateCopy(NULL, g_active_panels_cf);
+        CFIndex count = CFArrayGetCount(g_active_panels_cf);
+        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
+        for (CFIndex i = 0; i < count; i++) {
+            OpenLyricsView *v = (OpenLyricsView *)CFArrayGetValueAtIndex(g_active_panels_cf, i);
+            [arr addObject:v];  // retains each view
+        }
+        snapshot = [arr retain];
     });
-    CFIndex total = CFArrayGetCount(snapshot);
     dispatch_async(dispatch_get_main_queue(), ^{
-        for (CFIndex i = 0; i < total; i++) {
-            OpenLyricsView *v = (__bridge OpenLyricsView *)CFArrayGetValueAtIndex(snapshot, i);
+        for (OpenLyricsView *v in snapshot) {
             [v setLyricsText:nil];
         }
-        CFRelease(snapshot);
+        [snapshot release];
     });
 }
 
@@ -190,36 +201,38 @@ void clear_all_lyric_panels() {
 // ---------------------------------------------------------------------------
 
 void announce_lyric_update(LyricUpdate update) {
-    // Build plain text from lyrics lines (works for both synced and unsynced).
-    std::string plain;
-    plain.reserve(update.lyrics.lines.size() * 64);
+    // Build the display string on the calling thread (avoids holding locks while doing work).
+    std::string plaintext;
+    plaintext.reserve(update.lyrics.lines.size() * 64);
     for (const LyricDataLine& line : update.lyrics.lines) {
-        if (!plain.empty()) plain += '\n';
-        plain += line.text;
+        if (!plaintext.empty()) plaintext += '\n';
+        plaintext += line.text;
     }
-    NSString *text = [NSString stringWithUTF8String:plain.c_str()];
+    LyricData lyrics = std::move(update.lyrics);
+    NSString *text = plaintext.empty() ? nil :
+        [[NSString alloc] initWithBytes:plaintext.data()
+                                 length:plaintext.size()
+                               encoding:NSUTF8StringEncoding];
 
-    // Move lyrics into global storage under the serial queue.
-    LyricData captured = std::move(update.lyrics);
-    dispatch_async(g_lyrics_queue, ^{
-        g_current_lyrics = std::move(captured);
-    });
-
-    // Marshal to main thread for UI updates.
+    // All globals (g_current_lyrics, panel views) are touched on the main thread only.
     dispatch_async(dispatch_get_main_queue(), ^{
-        [g_current_lyrics_text release];
-        g_current_lyrics_text = [text retain];
+        g_current_lyrics = std::move(lyrics);
 
-        // Push text to every active panel.
-        __block CFArrayRef snapshot = NULL;
+        // Build a retaining snapshot of panels under the lock.
+        __block NSArray *snapshot = nil;
         dispatch_sync(g_panels_queue, ^{
-            snapshot = CFArrayCreateCopy(NULL, g_active_panels_cf);
+            CFIndex count = CFArrayGetCount(g_active_panels_cf);
+            NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
+            for (CFIndex i = 0; i < count; i++) {
+                OpenLyricsView *v = (OpenLyricsView *)CFArrayGetValueAtIndex(g_active_panels_cf, i);
+                [arr addObject:v];
+            }
+            snapshot = [arr retain];
         });
-        CFIndex total = CFArrayGetCount(snapshot);
-        for (CFIndex i = 0; i < total; i++) {
-            OpenLyricsView *v = (__bridge OpenLyricsView *)CFArrayGetValueAtIndex(snapshot, i);
+        for (OpenLyricsView *v in snapshot) {
             [v setLyricsText:text];
         }
-        CFRelease(snapshot);
+        [snapshot release];
+        [text release];
     });
 }

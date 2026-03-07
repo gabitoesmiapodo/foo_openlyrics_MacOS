@@ -14,32 +14,38 @@ void clear_all_lyric_panels();
 - (void)testViewCreation {
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
     XCTAssertNotNil(view);
+    [view release];
 }
 
 - (void)testViewIsLayerBacked {
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
     XCTAssertTrue(view.wantsLayer);
+    [view release];
 }
 
 - (void)testViewAcceptsFirstResponder {
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
     XCTAssertTrue([view acceptsFirstResponder]);
+    [view release];
 }
 
 - (void)testViewIsFlipped {
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
     XCTAssertTrue([view isFlipped]);
+    [view release];
 }
 
 - (void)testHasLyricsInitiallyFalse {
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
     XCTAssertFalse([view hasLyrics], @"A freshly created view should report no lyrics");
+    [view release];
 }
 
 - (void)testSetLyricsTextMakesHasLyricsTrue {
     OpenLyricsView *view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
     [view setLyricsText:@"Never gonna give you up\nNever gonna let you down"];
     XCTAssertTrue([view hasLyrics], @"hasLyrics should be YES after setting non-empty text");
+    [view release];
 }
 
 - (void)testSetLyricsTextNilClearsLyrics {
@@ -48,6 +54,7 @@ void clear_all_lyric_panels();
     XCTAssertTrue([view hasLyrics]);
     [view setLyricsText:nil];
     XCTAssertFalse([view hasLyrics], @"hasLyrics should be NO after passing nil");
+    [view release];
 }
 
 - (void)testSetLyricsTextEmptyStringClearsLyrics {
@@ -56,6 +63,7 @@ void clear_all_lyric_panels();
     XCTAssertTrue([view hasLyrics]);
     [view setLyricsText:@""];
     XCTAssertFalse([view hasLyrics], @"hasLyrics should be NO after passing empty string");
+    [view release];
 }
 
 - (void)testSetLyricsTextMultilineRetainsContent {
@@ -63,6 +71,10 @@ void clear_all_lyric_panels();
     NSString *expected = @"Line one\nLine two\nLine three";
     [view setLyricsText:expected];
     XCTAssertTrue([view hasLyrics]);
+    XCTAssertTrue([view.currentLyricsText containsString:@"Line 1"] ||
+                  [view.currentLyricsText containsString:@"Line one"],
+                  @"currentLyricsText should contain the set content");
+    [view release];
 }
 
 - (void)testClearAllLyricPanelsClearsRegisteredViews {
@@ -71,12 +83,14 @@ void clear_all_lyric_panels();
     [view setLyricsText:@"Some lyrics to clear"];
     XCTAssertTrue([view hasLyrics], @"Precondition: view should have lyrics before clear");
 
-    // clear_all_lyric_panels dispatches to the main queue; drain it inline.
+    // clear_all_lyric_panels dispatches to the main queue; drain it.
+    // dispatch_async to main queue posts a run-loop source, so run the loop
+    // briefly to let it fire without relying on a wall-clock timer.
     clear_all_lyric_panels();
-    // Process the dispatched main-queue block.
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, false);
 
     XCTAssertFalse([view hasLyrics], @"hasLyrics should be NO after clear_all_lyric_panels");
+    [view release];
 }
 
 @end
