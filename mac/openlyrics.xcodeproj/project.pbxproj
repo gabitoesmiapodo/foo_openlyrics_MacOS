@@ -94,6 +94,13 @@
 		ABB0C88AF8C44C0A982D6A37 /* tidylib.c in Sources */ = {isa = PBXBuildFile; fileRef = A804A764EAAB470A9A475F8D /* tidylib.c */; };
 		6C4F31A1158A4B008979D712 /* tmbstr.c in Sources */ = {isa = PBXBuildFile; fileRef = 06E1BAD8DDD84148B09EACC4 /* tmbstr.c */; };
 		51180E0934414236B97F6499 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BCEB70684BD79DF45712 /* utf8.c */; };
+		E1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */; };
+		E2A3B4C5D6E7F8A9B0C1D2E3 /* OpenLyricsEditor.mm in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */; };
+		E3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = F3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm */; };
+		T0571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 48A742FAFE944BC59DC864E1 /* lrc.cpp */; };
+		T0274AD124C9334EB9971B9B24 /* logging.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 29FF6283FA554236847D4E11 /* logging.cpp */; };
+		T05F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */; };
+		T0C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = EF1C23D43CF14E4D87B46A96 /* PCH.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -179,6 +186,9 @@
 		A804A764EAAB470A9A475F8D /* tidylib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tidylib.c; path = "../3rdparty/tidy-html5-5.8.0/src/tidylib.c"; sourceTree = "<group>"; };
 		06E1BAD8DDD84148B09EACC4 /* tmbstr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tmbstr.c; path = "../3rdparty/tidy-html5-5.8.0/src/tmbstr.c"; sourceTree = "<group>"; };
 		E4D5BCEB70684BD79DF45712 /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = "../3rdparty/tidy-html5-5.8.0/src/utf8.c"; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F6A7B8C9D0E1 /* OpenLyricsEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsEditor.h; path = OpenLyricsEditor.h; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsEditor.mm; path = OpenLyricsEditor.mm; sourceTree = "<group>"; };
+		F3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsEditorTests.mm; path = tests/OpenLyricsEditorTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +240,8 @@
 				34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */,
 				DD44EE55FF6677AABB11CC22 /* OpenLyricsView.h */,
 				EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */,
+				F0A1B2C3D4E5F6A7B8C9D0E1 /* OpenLyricsEditor.h */,
+				F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */,
 				E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */,
 				B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */,
 				8345C604167042049726FE2D /* Tests */,
@@ -242,6 +254,7 @@
 			children = (
 				31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */,
 				FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */,
+				F3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm */,
 				D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */,
 				B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */,
 			);
@@ -377,6 +390,7 @@
 			files = (
 				4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */,
 				AA11BB22CC33DD44EE55FF66 /* OpenLyricsView.mm in Sources */,
+				E1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */,
 				074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */,
 				C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */,
@@ -448,10 +462,15 @@
 			files = (
 				C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */,
 				CC33DD44EE55FF6677AABB11 /* OpenLyricsViewTests.mm in Sources */,
+				E3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm in Sources */,
 				BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */,
+				E2A3B4C5D6E7F8A9B0C1D2E3 /* OpenLyricsEditor.mm in Sources (Tests) */,
 				C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */,
 				F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */,
 				T033B739C661C548F496E5AE1E /* lyric_data.cpp in Sources (Tests) */,
+				T0C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources (Tests) */,
+				T0571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources (Tests) */,
+				T05F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources (Tests) */,
 				A3B4C5D6E7F8A9B0C1D2E3F4 /* ContextMenuTestStubs.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
