@@ -30,16 +30,10 @@ void SpawnExternalLyricWindow() // TODO(stub): implement in Task 11.1
 }
 
 // ---------------------------------------------------------------------------
-// Lyric editor / manual search (macOS no-arg stubs — Task 7.1 / Task 8.1)
+// Lyric editor / manual search (macOS stubs — Task 7.1 / Task 8.1)
 // ---------------------------------------------------------------------------
-
-void SpawnLyricEditorMac() // TODO(stub): implement in Task 7.1
-{
-}
-
-void SpawnManualSearchMac() // TODO(stub): implement in Task 8.1
-{
-}
+// SpawnLyricEditorMac is implemented in OpenLyricsEditor.mm.
+// SpawnManualSearchMac is implemented in OpenLyricsManualSearch.mm.
 
 // ---------------------------------------------------------------------------
 // preferences::searching

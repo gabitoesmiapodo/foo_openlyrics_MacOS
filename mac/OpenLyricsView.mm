@@ -8,10 +8,12 @@
 #include "../src/ui_hooks.h"
 
 // ---------------------------------------------------------------------------
-// Forward declarations for macOS-only stubs (defined in MacStubs.mm)
+// Forward declarations
 // ---------------------------------------------------------------------------
 
+// SpawnLyricEditorMac is defined in OpenLyricsEditor.mm.
 void SpawnLyricEditorMac();
+// SpawnManualSearchMac stub is in MacStubs.mm.
 void SpawnManualSearchMac();
 
 // ---------------------------------------------------------------------------
@@ -322,6 +324,10 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     [self _stopTimer];
     [self _invalidateLineCache];
     [self setNeedsDisplay:YES];
+}
+
+- (LyricData)currentLyricData {
+    return _lyrics;
 }
 
 /// Legacy setter kept so existing tests continue to compile and pass.
@@ -646,6 +652,23 @@ void clear_all_lyric_panels() {
 // announce_lyric_update: called from LyricAutosearchManager's background
 // thread when a search result arrives.
 // ---------------------------------------------------------------------------
+
+LyricData get_active_panel_lyrics(metadb_handle_ptr& out_track, metadb_v2_rec_t& out_info) {
+    // Must be called on main thread.
+    __block LyricData result;
+    dispatch_sync(g_panels_queue, ^{
+        CFIndex count = CFArrayGetCount(g_active_panels_cf);
+        for (CFIndex i = 0; i < count; i++) {
+            OpenLyricsView *v = (__bridge OpenLyricsView *)
+                CFArrayGetValueAtIndex(g_active_panels_cf, i);
+            if ([v hasLyrics]) {
+                result = [v currentLyricData];
+                break;
+            }
+        }
+    });
+    return result;
+}
 
 void announce_lyric_update(LyricUpdate update) {
     // Heap-allocate so we can safely move across the async dispatch boundary.

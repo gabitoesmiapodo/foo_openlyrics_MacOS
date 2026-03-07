@@ -37,6 +37,11 @@
 /// Legacy plain-text setter kept for test compatibility.
 - (void)setLyricsText:(NSString *)text;
 
+#ifdef __cplusplus
+/// Returns a copy of the current LyricData (for the lyric editor).
+- (LyricData)currentLyricData;
+#endif
+
 @end
 
 #endif // __OBJC__
@@ -50,4 +55,9 @@ void clear_all_lyric_panels();
 
 /// Called when a lyric search result arrives (any thread).
 void announce_lyric_update(LyricUpdate update);
+
+/// Returns a copy of the LyricData from the first active panel that has lyrics.
+/// Sets out_track and out_info from the currently-playing track if available.
+/// Must be called on the main thread.
+LyricData get_active_panel_lyrics(metadb_handle_ptr& out_track, metadb_v2_rec_t& out_info);
 #endif
