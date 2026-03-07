@@ -10,20 +10,10 @@
 // UI panel hooks
 // ---------------------------------------------------------------------------
 
-size_t num_visible_lyric_panels() // TODO(stub): implement in Task 3.1
-{
-    return 0;
-}
-
-void repaint_all_lyric_panels() // TODO(stub): implement in Task 3.1
-{
-}
+// num_visible_lyric_panels, repaint_all_lyric_panels, and announce_lyric_update
+// are implemented in OpenLyricsView.mm.
 
 void recompute_lyric_panel_backgrounds() // TODO(stub): implement in Task 10.2
-{
-}
-
-void announce_lyric_update(LyricUpdate /*update*/) // TODO(stub): implement in Task 3.1
 {
 }
 

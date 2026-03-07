@@ -1,4 +1,5 @@
 #import "stdafx.h"
+#import "OpenLyricsView.h"
 
 DECLARE_COMPONENT_VERSION("OpenLyrics", "0.0.1",
     "foo_openlyrics\n\n"
@@ -7,3 +8,45 @@ DECLARE_COMPONENT_VERSION("OpenLyrics", "0.0.1",
 );
 
 VALIDATE_COMPONENT_FILENAME("foo_openlyrics.component");
+
+// MARK: - View Controller
+
+@interface OpenLyricsViewController : NSViewController
+@end
+
+@implementation OpenLyricsViewController
+
+- (void)loadView {
+    self.view = [[OpenLyricsView alloc] initWithFrame:NSMakeRect(0, 0, 400, 300)];
+}
+
+@end
+
+// MARK: - foobar2000 UI Element Registration
+
+namespace {
+
+class ui_element_openlyrics_mac : public ui_element_mac {
+public:
+    service_ptr instantiate(service_ptr arg) override {
+        OpenLyricsViewController *vc = [[OpenLyricsViewController alloc] init];
+        return fb2k::wrapNSObject(vc);
+    }
+
+    bool match_name(const char *name) override {
+        return strcmp(name, "OpenLyrics Panel") == 0;
+    }
+
+    fb2k::stringRef get_name() override {
+        return fb2k::makeString("OpenLyrics Panel");
+    }
+
+    GUID get_guid() override {
+        // Generated GUID for OpenLyrics Panel
+        return { 0x3a7f2e91, 0xb4c5, 0x4d08, { 0xa2, 0x6b, 0x51, 0xe3, 0x9f, 0x0c, 0x7d, 0x84 } };
+    }
+};
+
+FB2K_SERVICE_FACTORY(ui_element_openlyrics_mac);
+
+} // anonymous namespace

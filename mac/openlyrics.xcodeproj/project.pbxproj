@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */; };
+		AA11BB22CC33DD44EE55FF66 /* OpenLyricsView.mm in Sources */ = {isa = PBXBuildFile; fileRef = EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */; };
+		BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */ = {isa = PBXBuildFile; fileRef = EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */; };
+		CC33DD44EE55FF6677AABB11 /* OpenLyricsViewTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */; };
 		F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */; };
 		C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */; };
@@ -89,6 +92,9 @@
 /* Begin PBXFileReference section */
 		6A623AF8125548C8953E5B91 /* foo_openlyrics.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = foo_openlyrics.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsRegistration.mm; path = OpenLyricsRegistration.mm; sourceTree = "<group>"; };
+		DD44EE55FF6677AABB11CC22 /* OpenLyricsView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsView.h; path = OpenLyricsView.h; sourceTree = "<group>"; };
+		EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsView.mm; path = OpenLyricsView.mm; sourceTree = "<group>"; };
+		FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsViewTests.mm; path = tests/OpenLyricsViewTests.mm; sourceTree = "<group>"; };
 		31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsTests.mm; path = tests/OpenLyricsTests.mm; sourceTree = "<group>"; };
 		E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PlatformUtil.h; path = PlatformUtil.h; sourceTree = "<group>"; };
 		B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = PlatformUtil.mm; path = PlatformUtil.mm; sourceTree = "<group>"; };
@@ -209,6 +215,8 @@
 			isa = PBXGroup;
 			children = (
 				34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */,
+				DD44EE55FF6677AABB11CC22 /* OpenLyricsView.h */,
+				EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */,
 				E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */,
 				B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */,
 				8345C604167042049726FE2D /* Tests */,
@@ -220,6 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */,
+				FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */,
 				D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */,
 			);
 			name = Tests;
@@ -353,6 +362,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* OpenLyricsView.mm in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */,
 				074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */,
 				C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */,
@@ -423,6 +433,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */,
+				CC33DD44EE55FF6677AABB11 /* OpenLyricsViewTests.mm in Sources */,
+				BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */,
 				C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */,
 				F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */,
 			);
