@@ -29,14 +29,6 @@ static inline uint32_t rgba_to_colorref(uint8_t r, uint8_t g, uint8_t b)
     return uint32_t(r) | (uint32_t(g) << 8) | (uint32_t(b) << 16);
 }
 
-static inline RGBAColour lerp_colour_local(RGBAColour a, RGBAColour b, uint8_t f)
-{
-    auto l = [](uint8_t x, uint8_t y, uint8_t t) -> uint8_t {
-        return uint8_t((int(x) * (255 - t) + int(y) * t) / 255);
-    };
-    return { l(a.r, b.r, f), l(a.g, b.g, f), l(a.b, b.b, f), 255 };
-}
-
 // Platform-compatible RGB macro (COLORREF: R | G<<8 | B<<16)
 #ifndef RGB
 #define RGB(r, g, b) (uint32_t(r) | (uint32_t(g) << 8) | (uint32_t(b) << 16))
@@ -489,12 +481,12 @@ t_ui_color preferences::display::past_text_colour()
                 {
                     RGBAColour tl = colorref_to_rgba((uint32_t)cfg_background_gradient_tl.get_value());
                     RGBAColour tr = colorref_to_rgba((uint32_t)cfg_background_gradient_tr.get_value());
-                    bg = lerp_colour_local(tl, tr, 127);
+                    bg = lerp_colour(tl, tr, 127);
                 }
                 break;
             }
             RGBAColour fg = colorref_to_rgba(main_text_colour());
-            RGBAColour blended = lerp_colour_local(fg, bg, 190);
+            RGBAColour blended = lerp_colour(fg, bg, 190);
             return rgba_to_colorref(blended.r, blended.g, blended.b);
         }
         case PastTextColourType::SameAsMainText:  return main_text_colour();

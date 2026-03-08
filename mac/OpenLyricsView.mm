@@ -107,9 +107,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     CGFloat   _dragStartManualDelta;  // _manualScrollDelta at drag start
 
     // CTLine cache — rebuilt when lyrics or usable width changes
-    NSArray      *_cachedLines;       // flat array of visual rows (CTLineRef via NSValue)
-    NSArray      *_lyricLineIndices;  // NSNumber: maps visual row index → _lyrics.lines index
-    CGColorSpaceRef _colorSpace;      // device RGB, created once in initWithFrame:
+    NSArray      *_cachedLines;           // flat array of visual rows (CTLineRef via NSValue)
+    NSArray      *_lyricLineIndices;      // NSNumber: maps visual row index → _lyrics.lines index
+    NSArray      *_firstRowForLyricLine;  // NSNumber: first visual row index for each lyric line
     CGFloat       _cachedLineHeight;  // line height at cache build time
     CGFloat       _cachedLineWidth;   // usable pixel width at cache build time
 
@@ -163,9 +163,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         _font = [[NSFont systemFontOfSize:kFontSize] retain];
         [self _recomputeLineHeight];
 
-        _colorSpace = CGColorSpaceCreateDeviceRGB();
         _cachedLines = nil;
         _lyricLineIndices = nil;
+        _firstRowForLyricLine = nil;
         _cachedLineHeight = _lineHeight;
         _cachedLineWidth  = 0.0;
 
@@ -234,7 +234,6 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     });
 
     [self _invalidateLineCache];
-    if (_colorSpace) { CGColorSpaceRelease(_colorSpace); _colorSpace = NULL; }
 
     [_lyricsText release];
     [_font release];
@@ -442,7 +441,6 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
                                            action:@selector(openPreferences:)
                                     keyEquivalent:@""];
     [prefsItem setTarget:self];
-    (void)prefsItem;
 
     return menu;
 }
@@ -493,8 +491,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (_lyrics.IsEmpty() || !_lyrics.IsTimestamped()) return;
     CGFloat delta = event.scrollingDeltaY;
     if (!event.hasPreciseScrollingDeltas) delta *= _lineHeight;
-    NSInteger rowCount = (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : (NSInteger)_lyrics.lines.size();
-    CGFloat maxScroll = MAX(0.0, (CGFloat)rowCount * _lineHeight - self.bounds.size.height);
+    CGFloat maxScroll = MAX(0.0, (CGFloat)[self _visualRowCount] * _lineHeight - self.bounds.size.height);
     // Accumulate into the manual offset (mirrors Windows m_manual_scroll_distance).
     // Also update _scrollOffset immediately for instant visual feedback.
     _manualScrollDelta -= delta;
@@ -515,8 +512,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (!_isDragging) return;
     NSPoint loc = [self convertPoint:event.locationInWindow fromView:nil];
     CGFloat delta = _dragStartY - loc.y; // positive delta = dragged up = scroll down
-    NSInteger rowCount = (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : (NSInteger)_lyrics.lines.size();
-    CGFloat maxScroll = MAX(0.0, (CGFloat)rowCount * _lineHeight - self.bounds.size.height);
+    CGFloat maxScroll = MAX(0.0, (CGFloat)[self _visualRowCount] * _lineHeight - self.bounds.size.height);
     _manualScrollDelta = _dragStartManualDelta + delta;
     _scrollOffset = MAX(0.0, MIN(maxScroll, _dragStartOffset + delta));
     [self setNeedsDisplay:YES];
@@ -664,7 +660,13 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _cachedLines = nil;
     [_lyricLineIndices release];
     _lyricLineIndices = nil;
+    [_firstRowForLyricLine release];
+    _firstRowForLyricLine = nil;
     _cachedLineWidth = 0.0;
+}
+
+- (NSInteger)_visualRowCount {
+    return (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : (NSInteger)_lyrics.lines.size();
 }
 
 // Build the CTLine cache, wrapping long lines to fit within usableWidth.
@@ -675,8 +677,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (_lyrics.IsEmpty()) return;
 
     NSUInteger lyricCount = _lyrics.lines.size();
-    NSMutableArray *rows    = [[NSMutableArray alloc] initWithCapacity:lyricCount];
-    NSMutableArray *indices = [[NSMutableArray alloc] initWithCapacity:lyricCount];
+    NSMutableArray *rows      = [[NSMutableArray alloc] initWithCapacity:lyricCount];
+    NSMutableArray *indices   = [[NSMutableArray alloc] initWithCapacity:lyricCount];
+    NSMutableArray *firstRows = [[NSMutableArray alloc] initWithCapacity:lyricCount];
 
     NSDictionary *attrs = @{
         NSFontAttributeName: _font,
@@ -697,6 +700,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
         CFIndex strLen = (CFIndex)[nsLine length]; // UTF-16 length
 
+        [firstRows addObject:@([rows count])]; // first visual row for this lyric line
         if (strLen == 0) {
             // Empty line: one blank visual row to preserve vertical spacing.
             CTLineRef ctLine = CTTypesetterCreateLine(typesetter, CFRangeMake(0, 0));
@@ -719,12 +723,14 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         CFRelease(typesetter);
     }
 
-    _cachedLines      = [rows copy];
-    _lyricLineIndices = [indices copy];
+    _cachedLines          = [rows copy];
+    _lyricLineIndices     = [indices copy];
+    _firstRowForLyricLine = [firstRows copy];
     _cachedLineWidth  = usableWidth;
     _cachedLineHeight = _lineHeight;
-    [rows    release];
-    [indices release];
+    [rows      release];
+    [indices   release];
+    [firstRows release];
 }
 
 - (void)_timerFired:(NSTimer *)timer {
@@ -762,14 +768,8 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         // With word wrap, find the first visual row for _currentLineIndex.
         if (newLine >= 0) {
             NSInteger visualRow = newLine; // 1:1 fallback if cache unavailable
-            if (_lyricLineIndices) {
-                NSInteger rowCount = (NSInteger)[_lyricLineIndices count];
-                for (NSInteger r = 0; r < rowCount; r++) {
-                    if ([[_lyricLineIndices objectAtIndex:(NSUInteger)r] integerValue] == newLine) {
-                        visualRow = r;
-                        break;
-                    }
-                }
+            if (_firstRowForLyricLine && newLine < (NSInteger)[_firstRowForLyricLine count]) {
+                visualRow = [[_firstRowForLyricLine objectAtIndex:(NSUInteger)newLine] integerValue];
             }
             CGFloat lineCenter = visualRow * _lineHeight + _lineHeight / 2.0;
             _targetScrollOffset = lineCenter - self.bounds.size.height / 2.0;
@@ -778,7 +778,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         }
 
         // Combine auto-scroll target with the user's manual offset, then clamp.
-        NSInteger visualRowCount = (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : lineCount;
+        NSInteger visualRowCount = [self _visualRowCount];
         CGFloat totalHeight = visualRowCount * _lineHeight;
         CGFloat maxScroll = totalHeight - self.bounds.size.height;
         if (maxScroll < 0.0) maxScroll = 0.0;
@@ -841,23 +841,33 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (_cachedLines == nil || _cachedLineWidth != usableWidth || _cachedLineHeight != _lineHeight) {
         [self _buildLineCache:usableWidth];
     }
-    NSInteger visualRowCount = (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : 0;
+    NSInteger visualRowCount = [self _visualRowCount];
 
     CGContextSaveGState(ctx);
     // Flip: translate to bottom-left, scale Y by -1 (now top = viewHeight, bottom = 0)
     CGContextTranslateCTM(ctx, 0.0, viewHeight);
     CGContextScaleCTM(ctx, 1.0, -1.0);
 
+    // Read display preferences once per draw (only when services are available).
+    CGFloat colorNormal[4], colorHighlight[4], colorPast[4];
+    TextAlignment alignment = TextAlignment::MidCentre;
+    if (core_api::are_services_available()) {
+        alignment = preferences::display::text_alignment();
+        colorref_to_cgfloat(preferences::display::main_text_colour(),  colorNormal);
+        colorref_to_cgfloat(preferences::display::highlight_colour(),   colorHighlight);
+        colorref_to_cgfloat(preferences::display::past_text_colour(),   colorPast);
+    } else {
+        memcpy(colorNormal,    kColorNormal,    sizeof(colorNormal));
+        memcpy(colorHighlight, kColorHighlight, sizeof(colorHighlight));
+        memcpy(colorPast,      kColorPast,      sizeof(colorPast));
+    }
+
     // Vertical start position.
     // For unsynced lyrics: center vertically for Mid* alignment, top-align for Top*.
     // For synced lyrics: driven by scrollOffset.
-    TextAlignment alignForStart = TextAlignment::MidCentre;
-    if (core_api::are_services_available()) {
-        alignForStart = preferences::display::text_alignment();
-    }
-    bool isTopAligned = (alignForStart == TextAlignment::TopCentre ||
-                         alignForStart == TextAlignment::TopLeft   ||
-                         alignForStart == TextAlignment::TopRight);
+    bool isTopAligned = (alignment == TextAlignment::TopCentre ||
+                         alignment == TextAlignment::TopLeft   ||
+                         alignment == TextAlignment::TopRight);
 
     CGFloat startY; // Y in top-origin space (distance from top of view)
     if (isUnsynced) {
@@ -872,20 +882,6 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     } else {
         // plain-text fallback (legacy setLyricsText: path)
         startY = kTopPadding;
-    }
-
-    // Read display preferences once per draw (only when services are available).
-    CGFloat colorNormal[4], colorHighlight[4], colorPast[4];
-    TextAlignment alignment = TextAlignment::MidCentre;
-    if (core_api::are_services_available()) {
-        colorref_to_cgfloat(preferences::display::main_text_colour(),  colorNormal);
-        colorref_to_cgfloat(preferences::display::highlight_colour(),   colorHighlight);
-        colorref_to_cgfloat(preferences::display::past_text_colour(),   colorPast);
-        alignment = preferences::display::text_alignment();
-    } else {
-        memcpy(colorNormal,    kColorNormal,    sizeof(colorNormal));
-        memcpy(colorHighlight, kColorHighlight, sizeof(colorHighlight));
-        memcpy(colorPast,      kColorPast,      sizeof(colorPast));
     }
 
     CGFloat ascent = [_font ascender];
@@ -916,9 +912,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
             color = colorNormal;
         }
 
-        CGColorRef cgColor = CGColorCreate(_colorSpace, color);
-        CGContextSetFillColorWithColor(ctx, cgColor);
-        CGColorRelease(cgColor);
+        CGContextSetRGBFillColor(ctx, color[0], color[1], color[2], color[3]);
 
         // Retrieve cached CTLine (no allocation per frame).
         CTLineRef ctLine = (CTLineRef)[[_cachedLines objectAtIndex:(NSUInteger)i] pointerValue];
