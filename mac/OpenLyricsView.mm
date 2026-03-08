@@ -4,6 +4,7 @@
 #import <CoreText/CoreText.h>
 
 #include "../src/img_processing.h"
+#include "../src/lyric_io.h"
 #include "../src/lyric_search.h"
 #include "../src/metadb_index_search_avoidance.h"
 #include "../src/preferences.h"
@@ -1122,12 +1123,25 @@ LyricData get_active_panel_lyrics(metadb_handle_ptr& out_track, metadb_v2_rec_t&
 }
 
 void announce_lyric_update(LyricUpdate update) {
-    // Heap-allocate so we can safely move across the async dispatch boundary.
-    LyricData *lyricsPtr = new LyricData(std::move(update.lyrics));
-    metadb_handle_ptr track = update.track;
-    metadb_v2_rec_t  *infoPtr = new metadb_v2_rec_t(update.track_info);
+    // Heap-allocate the update so it can be safely moved across the async boundary.
+    metadb_handle_ptr track    = update.track;
+    metadb_v2_rec_t  *infoPtr  = new metadb_v2_rec_t(update.track_info);
+    LyricUpdate      *updatePtr = new LyricUpdate(std::move(update));
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        // process_available_lyric_update applies automated auto-edits (e.g. HTML entity
+        // decoding) and saves the lyrics — matching the Windows announce_lyric_update flow.
+        std::optional<LyricData> maybe_lyrics =
+            io::process_available_lyric_update(std::move(*updatePtr));
+        delete updatePtr;
+
+        if (!maybe_lyrics.has_value()) {
+            delete infoPtr;
+            return;
+        }
+
+        LyricData *lyricsPtr = new LyricData(std::move(maybe_lyrics.value()));
+
         __block NSArray *snapshot = nil;
         dispatch_sync(g_panels_queue, ^{
             CFIndex count = CFArrayGetCount(g_active_panels_cf);
@@ -1139,7 +1153,7 @@ void announce_lyric_update(LyricUpdate update) {
             }
             snapshot = [arr retain];
         });
-            for (OpenLyricsView *v in snapshot) {
+        for (OpenLyricsView *v in snapshot) {
             [v setNowPlayingTrack:track info:*infoPtr];
             [v updateLyrics:*lyricsPtr];
         }
