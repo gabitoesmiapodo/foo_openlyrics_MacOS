@@ -680,19 +680,14 @@ static NSView* make_row(NSString* labelText, NSView* control)
 
 static NSStackView* make_form(NSArray<NSView*>* rows)
 {
-    // Append a zero-height spacer so content is pinned to the top when the
-    // host stretches this view to fill the preferences panel.
-    NSView* spacer = [[NSView alloc] init];
-    [spacer setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationVertical];
-    NSMutableArray* allRows = [NSMutableArray arrayWithArray:rows];
-    [allRows addObject:spacer];
-
-    NSStackView* stack = [NSStackView stackViewWithViews:allRows];
+    NSStackView* stack = [[NSStackView alloc] init];
     stack.orientation  = NSUserInterfaceLayoutOrientationVertical;
     stack.alignment    = NSLayoutAttributeLeading;
-    stack.distribution = NSStackViewDistributionFill;
     stack.spacing      = 8;
     stack.edgeInsets   = NSEdgeInsetsMake(12, 12, 12, 12);
+    // NSStackViewGravityTop pins rows to the visual top regardless of whether
+    // the host view is flipped, so content stays at the top of the pane.
+    [stack setViews:rows inGravity:NSStackViewGravityTop];
     return stack;
 }
 
