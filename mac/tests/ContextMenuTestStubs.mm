@@ -30,7 +30,7 @@ namespace openlyrics_logging {
 // SpawnLyricEditorMac is implemented in OpenLyricsEditor.mm (linked by test target directly).
 // SpawnManualSearchMac is implemented in OpenLyricsManualSearch.mm (linked by test target directly).
 void SpawnExternalLyricWindow() {}
-void recompute_lyric_panel_backgrounds() {}
+// recompute_lyric_panel_backgrounds() is implemented in OpenLyricsView.mm (linked into test target).
 void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceReason /*reason*/) {}
 
 // ---------------------------------------------------------------------------
@@ -75,6 +75,21 @@ namespace saving
 namespace searching
 {
     bool exclude_trailing_brackets() { return false; }
+}
+namespace background
+{
+    BackgroundFillType  fill_type()               { return BackgroundFillType::Default; }
+    BackgroundImageType image_type()              { return BackgroundImageType::None; }
+    t_ui_color          colour()                  { return 0x001A1A1A; }
+    t_ui_color          gradient_tl()             { return 0x001A1A1A; }
+    t_ui_color          gradient_tr()             { return 0x001A1A1A; }
+    t_ui_color          gradient_bl()             { return 0x001A1A1A; }
+    t_ui_color          gradient_br()             { return 0x001A1A1A; }
+    bool                maintain_img_aspect_ratio() { return false; }
+    double              image_opacity()           { return 1.0; }
+    int                 blur_radius()             { return 0; }
+    std::string         custom_image_path()       { return ""; }
+    bool                external_window_opaque()  { return false; }
 }
 }
 

@@ -3,6 +3,7 @@
 #import "OpenLyricsView.h"
 #import <CoreText/CoreText.h>
 
+#include "../src/img_processing.h"
 #include "../src/lyric_search.h"
 #include "../src/preferences.h"
 #include "../src/tag_util.h"
@@ -87,6 +88,13 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     NSArray      *_cachedLines;      // array of CTLine (bridged as id via NSValue+pointerValue)
     CGColorSpaceRef _colorSpace;     // device RGB, created once in initWithFrame:
     CGFloat       _cachedLineHeight; // pre-computed line height stored alongside cache
+
+    // Background image (computed on resize / prefs change / album art change)
+    Image            _albumartOriginal;
+    Image            _customImgOriginal;
+    Image            _backgroundImg;
+    CGImageRef       _backgroundCGImage;
+    now_playing_album_art_notify *_artNotifyHandle;
 }
 @end
 
@@ -131,9 +139,33 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         _cachedLines = nil;
         _cachedLineHeight = _lineHeight;
 
+        _backgroundCGImage = nullptr;
+        _artNotifyHandle = nullptr;
+
         dispatch_sync(g_panels_queue, ^{
             CFArrayAppendValue(g_active_panels_cf, (__bridge void *)self);
         });
+
+        if (core_api::are_services_available()) {
+            // Register for album art changes.
+            now_playing_album_art_notify_manager::ptr art_manager =
+                now_playing_album_art_notify_manager::get();
+            if (art_manager.is_valid()) {
+                OpenLyricsView * __weak weakSelf = self;
+                _artNotifyHandle = art_manager->add([weakSelf](album_art_data::ptr art_data) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakSelf onAlbumArtRetrieved:art_data.get_ptr()];
+                    });
+                });
+                // Fetch current album art (if already playing).
+                album_art_data::ptr current = art_manager->current();
+                if (current.is_valid()) {
+                    [self onAlbumArtRetrieved:current.get_ptr()];
+                }
+            }
+            // Load custom background image if configured.
+            [self loadCustomBackgroundImage];
+        }
     }
     return self;
 }
@@ -142,6 +174,17 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     [_scrollTimer invalidate];
     [_scrollTimer release];
     _scrollTimer = nil;
+
+    if (_artNotifyHandle != nullptr && core_api::are_services_available()) {
+        now_playing_album_art_notify_manager::ptr art_manager =
+            now_playing_album_art_notify_manager::get();
+        if (art_manager.is_valid()) {
+            art_manager->remove(_artNotifyHandle);
+        }
+        _artNotifyHandle = nullptr;
+    }
+
+    if (_backgroundCGImage) { CGImageRelease(_backgroundCGImage); _backgroundCGImage = nullptr; }
 
     // Safe: g_active_panels_cf holds weak refs (null callbacks), so it cannot
     // be the last retainer of self. dealloc is only called when the last strong
@@ -174,7 +217,136 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
 - (void)viewDidMoveToWindow {
     [super viewDidMoveToWindow];
+    [self computeBackgroundImage];
     [self setNeedsDisplay:YES];
+}
+
+- (void)viewDidEndLiveResize {
+    [super viewDidEndLiveResize];
+    [self computeBackgroundImage];
+    [self setNeedsDisplay:YES];
+}
+
+// ---------------------------------------------------------------------------
+// Background rendering
+// ---------------------------------------------------------------------------
+
+- (void)loadCustomBackgroundImage {
+    const std::string path = preferences::background::custom_image_path();
+    if (path.empty()) { _customImgOriginal = {}; return; }
+    std::optional<Image> maybe_img = load_image(path.c_str());
+    if (maybe_img.has_value()) {
+        _customImgOriginal = std::move(maybe_img.value());
+    } else {
+        _customImgOriginal = {};
+    }
+}
+
+- (void)onAlbumArtRetrieved:(album_art_data *)art_data {
+    // Must be called on main thread.
+    if (!art_data) return;
+    if (preferences::background::image_type() != BackgroundImageType::AlbumArt) return;
+
+    std::optional<Image> maybe_img = decode_image(art_data->data(), art_data->size());
+    if (!maybe_img.has_value()) return;
+    _albumartOriginal = std::move(maybe_img.value());
+    [self computeBackgroundImage];
+    [self setNeedsDisplay:YES];
+}
+
+- (void)computeBackgroundImage {
+    const int view_w = (int)self.bounds.size.width;
+    const int view_h = (int)self.bounds.size.height;
+    if (view_w <= 0 || view_h <= 0) return;
+
+    // 1. Generate the colour/gradient background layer.
+    Image bg_colour = {};
+    switch (preferences::background::fill_type()) {
+        case BackgroundFillType::Default: {
+            const t_ui_color c = preferences::background::colour();
+            const RGBAColour rgba = { GetRValue(c), GetGValue(c), GetBValue(c), 255 };
+            bg_colour = generate_background_colour(view_w, view_h, rgba);
+        } break;
+        case BackgroundFillType::SolidColour: {
+            const t_ui_color c = preferences::background::colour();
+            const RGBAColour rgba = { GetRValue(c), GetGValue(c), GetBValue(c), 255 };
+            bg_colour = generate_background_colour(view_w, view_h, rgba);
+        } break;
+        case BackgroundFillType::Gradient: {
+            t_ui_color ctl = preferences::background::gradient_tl();
+            t_ui_color ctr = preferences::background::gradient_tr();
+            t_ui_color cbl = preferences::background::gradient_bl();
+            t_ui_color cbr = preferences::background::gradient_br();
+            RGBAColour tl = { GetRValue(ctl), GetGValue(ctl), GetBValue(ctl), 255 };
+            RGBAColour tr = { GetRValue(ctr), GetGValue(ctr), GetBValue(ctr), 255 };
+            RGBAColour bl = { GetRValue(cbl), GetGValue(cbl), GetBValue(cbl), 255 };
+            RGBAColour br = { GetRValue(cbr), GetGValue(cbr), GetBValue(cbr), 255 };
+            bg_colour = generate_background_colour(view_w, view_h, tl, tr, bl, br);
+        } break;
+    }
+
+    // 2. Overlay image (album art or custom).
+    const BackgroundImageType img_type = preferences::background::image_type();
+    if (img_type == BackgroundImageType::None || !bg_colour.valid()) {
+        _backgroundImg = std::move(bg_colour);
+    } else {
+        // Compute placement rect (aspect-ratio-aware, centred).
+        const Image& orig = (img_type == BackgroundImageType::AlbumArt)
+                            ? _albumartOriginal : _customImgOriginal;
+
+        int img_w = view_w, img_h = view_h;
+        int img_x = 0,      img_y = 0;
+        if (orig.valid() && preferences::background::maintain_img_aspect_ratio()) {
+            const double aspect = double(orig.width) / double(orig.height);
+            const int fit_by_y_w = int(view_h * aspect);
+            const int fit_by_x_h = int(view_w / aspect);
+            if (fit_by_y_w > view_w) {
+                img_w = view_w; img_h = fit_by_x_h;
+            } else {
+                img_w = fit_by_y_w; img_h = view_h;
+            }
+            img_x = (view_w - img_w) / 2;
+            img_y = (view_h - img_h) / 2;
+        }
+
+        Image resized = {};
+        if (orig.valid()) {
+            resized = resize_image(orig, img_w, img_h);
+        }
+
+        if (resized.valid()) {
+            const double opacity   = preferences::background::image_opacity();
+            const int blur_radius  = preferences::background::blur_radius();
+            CPoint offset          = { img_x, img_y };
+            Image combined = lerp_offset_image(bg_colour, resized, offset, opacity);
+            _backgroundImg = blur_image(combined, blur_radius);
+        } else {
+            _backgroundImg = std::move(bg_colour);
+        }
+    }
+
+    // 3. Convert to CGImage for drawing.
+    if (_backgroundCGImage) { CGImageRelease(_backgroundCGImage); _backgroundCGImage = nullptr; }
+
+    if (_backgroundImg.valid()) {
+        const size_t w = (size_t)_backgroundImg.width;
+        const size_t h = (size_t)_backgroundImg.height;
+        const size_t bytes = w * h * 4;
+        CFDataRef data = CFDataCreate(kCFAllocatorDefault, _backgroundImg.pixels, (CFIndex)bytes);
+        if (data) {
+            CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);
+            CFRelease(data);
+            if (provider) {
+                CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB();
+                _backgroundCGImage = CGImageCreate(w, h, 8, 32, w * 4, cs,
+                                                   kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Big,
+                                                   provider, nullptr, false,
+                                                   kCGRenderingIntentDefault);
+                CGColorSpaceRelease(cs);
+                CGDataProviderRelease(provider);
+            }
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -468,9 +640,13 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     CGContextRef ctx = [[NSGraphicsContext currentContext] CGContext];
 
     // 1. Fill background
-    CGContextSetRGBFillColor(ctx, kColorBackground[0], kColorBackground[1],
-                             kColorBackground[2], kColorBackground[3]);
-    CGContextFillRect(ctx, NSRectToCGRect(self.bounds));
+    if (_backgroundCGImage) {
+        CGContextDrawImage(ctx, NSRectToCGRect(self.bounds), _backgroundCGImage);
+    } else {
+        CGContextSetRGBFillColor(ctx, kColorBackground[0], kColorBackground[1],
+                                 kColorBackground[2], kColorBackground[3]);
+        CGContextFillRect(ctx, NSRectToCGRect(self.bounds));
+    }
 
     BOOL hasContent = (_lyricsText != nil && _lyricsText.length > 0);
     BOOL isSynced   = !_lyrics.IsEmpty() && _lyrics.IsTimestamped();
@@ -608,6 +784,28 @@ size_t num_visible_lyric_panels() {
         }
     });
     return count;
+}
+
+void recompute_lyric_panel_backgrounds() {
+    __block NSArray *snapshot = nil;
+    dispatch_sync(g_panels_queue, ^{
+        CFIndex count = CFArrayGetCount(g_active_panels_cf);
+        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
+        for (CFIndex i = 0; i < count; i++) {
+            OpenLyricsView *v = (OpenLyricsView *)
+                CFArrayGetValueAtIndex(g_active_panels_cf, i);
+            [arr addObject:v];
+        }
+        snapshot = [arr retain];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for (OpenLyricsView *v in snapshot) {
+            [v loadCustomBackgroundImage];
+            [v computeBackgroundImage];
+            [v setNeedsDisplay:YES];
+        }
+        [snapshot release];
+    });
 }
 
 void repaint_all_lyric_panels() {

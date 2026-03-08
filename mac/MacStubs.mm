@@ -12,9 +12,7 @@
 // num_visible_lyric_panels, repaint_all_lyric_panels, and announce_lyric_update
 // are implemented in OpenLyricsView.mm.
 
-void recompute_lyric_panel_backgrounds() // TODO(stub): implement in Task 10.2
-{
-}
+// recompute_lyric_panel_backgrounds() is implemented in OpenLyricsView.mm.
 
 void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceReason /*reason*/) // TODO(stub): implement in Task 4.1
 {
