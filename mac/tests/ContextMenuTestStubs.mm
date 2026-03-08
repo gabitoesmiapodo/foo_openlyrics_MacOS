@@ -74,6 +74,7 @@ namespace display
     int        linegap()               { return 8; }
     TextAlignment text_alignment()     { return TextAlignment::MidCentre; }
     double scroll_time_seconds()       { return 0.5; }
+    LineScrollType scroll_type()       { return LineScrollType::Automatic; }
 }
 namespace saving
 {

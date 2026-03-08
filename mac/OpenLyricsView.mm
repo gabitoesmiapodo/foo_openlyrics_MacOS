@@ -96,6 +96,11 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     CGFloat   _targetScrollOffset;
     NSInteger _currentLineIndex;
 
+    // Manual scroll state
+    BOOL   _isDragging;
+    CGFloat _dragStartY;
+    CGFloat _dragStartOffset;
+
     // CTLine cache — rebuilt when lyrics change, not per frame
     NSArray      *_cachedLines;      // array of CTLine (bridged as id via NSValue+pointerValue)
     CGColorSpaceRef _colorSpace;     // device RGB, created once in initWithFrame:
@@ -465,6 +470,45 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Scroll event handling (wheel + drag)
+// ---------------------------------------------------------------------------
+
+- (void)scrollWheel:(NSEvent *)event {
+    if (_lyrics.IsEmpty() || !_lyrics.IsTimestamped()) return;
+    CGFloat delta = event.scrollingDeltaY;
+    if (!event.hasPreciseScrollingDeltas) delta *= _lineHeight;
+    CGFloat totalH = (CGFloat)_lyrics.lines.size() * _lineHeight;
+    CGFloat maxScroll = MAX(0.0, totalH - self.bounds.size.height);
+    _scrollOffset = MAX(0.0, MIN(maxScroll, _scrollOffset - delta));
+    _targetScrollOffset = _scrollOffset;
+    [self setNeedsDisplay:YES];
+}
+
+- (void)mouseDown:(NSEvent *)event {
+    if (_lyrics.IsEmpty() || !_lyrics.IsTimestamped()) { [super mouseDown:event]; return; }
+    NSPoint loc = [self convertPoint:event.locationInWindow fromView:nil];
+    _isDragging = YES;
+    _dragStartY = loc.y;
+    _dragStartOffset = _scrollOffset;
+}
+
+- (void)mouseDragged:(NSEvent *)event {
+    if (!_isDragging) return;
+    NSPoint loc = [self convertPoint:event.locationInWindow fromView:nil];
+    CGFloat delta = _dragStartY - loc.y; // positive delta = dragged up = scroll down
+    CGFloat totalH = (CGFloat)_lyrics.lines.size() * _lineHeight;
+    CGFloat maxScroll = MAX(0.0, totalH - self.bounds.size.height);
+    _scrollOffset = MAX(0.0, MIN(maxScroll, _dragStartOffset + delta));
+    _targetScrollOffset = _scrollOffset;
+    [self setNeedsDisplay:YES];
+}
+
+- (void)mouseUp:(NSEvent *)event {
+    _isDragging = NO;
+    [super mouseUp:event];
+}
+
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -645,6 +689,11 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 // Determines which line is current and updates the target scroll offset.
 - (void)_updateScrollPosition {
     if (_lyrics.IsEmpty() || !_lyrics.IsTimestamped()) return;
+    // In manual-scroll mode, don't auto-scroll — only update the current line index.
+    BOOL autoScroll = YES;
+    if (core_api::are_services_available()) {
+        autoScroll = (preferences::display::scroll_type() == LineScrollType::Automatic);
+    }
 
     double now = get_playback_time();
     NSInteger lineCount = (NSInteger)_lyrics.lines.size();
@@ -662,33 +711,35 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     }
     _currentLineIndex = newLine;
 
-    // Target: center the current line vertically
-    if (newLine >= 0) {
-        CGFloat lineCenter = newLine * _lineHeight + _lineHeight / 2.0;
-        _targetScrollOffset = lineCenter - self.bounds.size.height / 2.0;
-    } else {
-        _targetScrollOffset = 0.0;
-    }
-
-    // Clamp target to valid range
-    CGFloat totalHeight = lineCount * _lineHeight;
-    CGFloat maxScroll = totalHeight - self.bounds.size.height;
-    if (maxScroll < 0.0) maxScroll = 0.0;
-    if (_targetScrollOffset < 0.0) _targetScrollOffset = 0.0;
-    if (_targetScrollOffset > maxScroll) _targetScrollOffset = maxScroll;
-
-    // Lerp toward target. Use scroll_time_seconds pref to derive factor.
-    CGFloat lerpFactor = kScrollLerp;
-    if (core_api::are_services_available()) {
-        double scrollSecs = preferences::display::scroll_time_seconds();
-        if (scrollSecs <= 0.0 || scrollSecs > 60.0) {
-            lerpFactor = 1.0; // instant
+    if (autoScroll) {
+        // Target: center the current line vertically
+        if (newLine >= 0) {
+            CGFloat lineCenter = newLine * _lineHeight + _lineHeight / 2.0;
+            _targetScrollOffset = lineCenter - self.bounds.size.height / 2.0;
         } else {
-            // k such that 95% completion in scrollSecs at 60 Hz
-            lerpFactor = (CGFloat)(1.0 - std::exp(std::log(0.05) / (scrollSecs * 60.0)));
+            _targetScrollOffset = 0.0;
         }
+
+        // Clamp target to valid range
+        CGFloat totalHeight = lineCount * _lineHeight;
+        CGFloat maxScroll = totalHeight - self.bounds.size.height;
+        if (maxScroll < 0.0) maxScroll = 0.0;
+        if (_targetScrollOffset < 0.0) _targetScrollOffset = 0.0;
+        if (_targetScrollOffset > maxScroll) _targetScrollOffset = maxScroll;
+
+        // Lerp toward target. Use scroll_time_seconds pref to derive factor.
+        CGFloat lerpFactor = kScrollLerp;
+        if (core_api::are_services_available()) {
+            double scrollSecs = preferences::display::scroll_time_seconds();
+            if (scrollSecs <= 0.0 || scrollSecs > 60.0) {
+                lerpFactor = 1.0; // instant
+            } else {
+                // k such that 95% completion in scrollSecs at 60 Hz
+                lerpFactor = (CGFloat)(1.0 - std::exp(std::log(0.05) / (scrollSecs * 60.0)));
+            }
+        }
+        _scrollOffset += (_targetScrollOffset - _scrollOffset) * lerpFactor;
     }
-    _scrollOffset += (_targetScrollOffset - _scrollOffset) * lerpFactor;
 }
 
 // ---------------------------------------------------------------------------
