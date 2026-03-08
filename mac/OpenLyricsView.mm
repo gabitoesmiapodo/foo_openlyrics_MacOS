@@ -103,10 +103,12 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     CGFloat _dragStartY;
     CGFloat _dragStartOffset;
 
-    // CTLine cache — rebuilt when lyrics change, not per frame
-    NSArray      *_cachedLines;      // array of CTLine (bridged as id via NSValue+pointerValue)
-    CGColorSpaceRef _colorSpace;     // device RGB, created once in initWithFrame:
-    CGFloat       _cachedLineHeight; // pre-computed line height stored alongside cache
+    // CTLine cache — rebuilt when lyrics or usable width changes
+    NSArray      *_cachedLines;       // flat array of visual rows (CTLineRef via NSValue)
+    NSArray      *_lyricLineIndices;  // NSNumber: maps visual row index → _lyrics.lines index
+    CGColorSpaceRef _colorSpace;      // device RGB, created once in initWithFrame:
+    CGFloat       _cachedLineHeight;  // line height at cache build time
+    CGFloat       _cachedLineWidth;   // usable pixel width at cache build time
 
     // Background image (computed on resize / prefs change / album art change)
     Image            _albumartOriginal;
@@ -159,7 +161,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
         _colorSpace = CGColorSpaceCreateDeviceRGB();
         _cachedLines = nil;
+        _lyricLineIndices = nil;
         _cachedLineHeight = _lineHeight;
+        _cachedLineWidth  = 0.0;
 
         _backgroundCGImage = nullptr;
         _artNotifyHandle = nullptr;
@@ -504,7 +508,8 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (!_isDragging) return;
     NSPoint loc = [self convertPoint:event.locationInWindow fromView:nil];
     CGFloat delta = _dragStartY - loc.y; // positive delta = dragged up = scroll down
-    CGFloat totalH = (CGFloat)_lyrics.lines.size() * _lineHeight;
+    NSInteger rowCount = (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : (NSInteger)_lyrics.lines.size();
+    CGFloat totalH = (CGFloat)rowCount * _lineHeight;
     CGFloat maxScroll = MAX(0.0, totalH - self.bounds.size.height);
     _scrollOffset = MAX(0.0, MIN(maxScroll, _dragStartOffset + delta));
     _targetScrollOffset = _scrollOffset;
@@ -544,7 +549,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _currentLineIndex   = -1;
 
     [self _stopTimer];
-    [self _buildLineCache];
+    [self _invalidateLineCache]; // rebuilt lazily in drawRect: with correct width
 
     if (lyrics.IsTimestamped()) {
         [self _startTimer];
@@ -649,45 +654,69 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     }
     [_cachedLines release];
     _cachedLines = nil;
+    [_lyricLineIndices release];
+    _lyricLineIndices = nil;
+    _cachedLineWidth = 0.0;
 }
 
-- (void)_buildLineCache {
+// Build the CTLine cache, wrapping long lines to fit within usableWidth.
+// Each lyric line may produce multiple visual rows; _lyricLineIndices maps
+// each visual row back to its original lyric line index (for synced color).
+- (void)_buildLineCache:(CGFloat)usableWidth {
     [self _invalidateLineCache];
     if (_lyrics.IsEmpty()) return;
 
-    NSUInteger count = _lyrics.lines.size();
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:count];
+    NSUInteger lyricCount = _lyrics.lines.size();
+    NSMutableArray *rows    = [[NSMutableArray alloc] initWithCapacity:lyricCount];
+    NSMutableArray *indices = [[NSMutableArray alloc] initWithCapacity:lyricCount];
 
-    NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
-    paraStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *attrs = @{
+        NSFontAttributeName: _font,
+        // Use the CGContext fill color (set per-line in drawRect) instead of a baked-in color.
+        (NSString *)kCTForegroundColorFromContextAttributeName: (id)kCFBooleanTrue
+    };
 
-    for (NSUInteger i = 0; i < count; i++) {
-        const std::string& lineText = _lyrics.lines[i].text;
+    for (NSUInteger lyricIdx = 0; lyricIdx < lyricCount; lyricIdx++) {
+        const std::string& lineText = _lyrics.lines[lyricIdx].text;
         NSString *nsLine = [NSString stringWithUTF8String:lineText.c_str()];
         if (!nsLine) nsLine = @"";
 
-        NSDictionary *attrs = @{
-            NSFontAttributeName: _font,
-            NSParagraphStyleAttributeName: paraStyle,
-            // Use the CGContext fill color (set per-line in drawRect) instead of a baked-in color.
-            (NSString *)kCTForegroundColorFromContextAttributeName: (id)kCFBooleanTrue
-        };
         NSAttributedString *attrStr = [[NSAttributedString alloc]
                                        initWithString:nsLine attributes:attrs];
-
-        CTLineRef ctLine = CTLineCreateWithAttributedString(
+        CTTypesetterRef typesetter = CTTypesetterCreateWithAttributedString(
             (__bridge CFAttributedStringRef)attrStr);
         [attrStr release];
 
-        // CFRetain was done implicitly by CTLineCreateWithAttributedString.
-        // Wrap raw pointer — NSValue does NOT retain CF objects.
-        [arr addObject:[NSValue valueWithPointer:(const void *)ctLine]];
+        CFIndex strLen = (CFIndex)[nsLine length]; // UTF-16 length
+
+        if (strLen == 0) {
+            // Empty line: one blank visual row to preserve vertical spacing.
+            CTLineRef ctLine = CTTypesetterCreateLine(typesetter, CFRangeMake(0, 0));
+            [rows    addObject:[NSValue valueWithPointer:(const void *)ctLine]];
+            [indices addObject:@(lyricIdx)];
+        } else {
+            CFIndex pos = 0;
+            while (pos < strLen) {
+                CFIndex breakLen = (usableWidth > 0.0)
+                    ? CTTypesetterSuggestLineBreak(typesetter, pos, (double)usableWidth)
+                    : (strLen - pos);
+                if (breakLen <= 0) breakLen = strLen - pos; // safeguard: never infinite-loop
+                CTLineRef ctLine = CTTypesetterCreateLine(typesetter,
+                                                         CFRangeMake(pos, breakLen));
+                [rows    addObject:[NSValue valueWithPointer:(const void *)ctLine]];
+                [indices addObject:@(lyricIdx)];
+                pos += breakLen;
+            }
+        }
+        CFRelease(typesetter);
     }
 
-    [paraStyle release];
-    _cachedLines = [arr copy];
-    [arr release];
+    _cachedLines      = [rows copy];
+    _lyricLineIndices = [indices copy];
+    _cachedLineWidth  = usableWidth;
     _cachedLineHeight = _lineHeight;
+    [rows    release];
+    [indices release];
 }
 
 - (void)_timerFired:(NSTimer *)timer {
@@ -721,16 +750,28 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _currentLineIndex = newLine;
 
     if (autoScroll) {
-        // Target: center the current line vertically
+        // Target: center the current line vertically.
+        // With word wrap, find the first visual row for _currentLineIndex.
         if (newLine >= 0) {
-            CGFloat lineCenter = newLine * _lineHeight + _lineHeight / 2.0;
+            NSInteger visualRow = newLine; // 1:1 fallback if cache unavailable
+            if (_lyricLineIndices) {
+                NSInteger rowCount = (NSInteger)[_lyricLineIndices count];
+                for (NSInteger r = 0; r < rowCount; r++) {
+                    if ([[_lyricLineIndices objectAtIndex:(NSUInteger)r] integerValue] == newLine) {
+                        visualRow = r;
+                        break;
+                    }
+                }
+            }
+            CGFloat lineCenter = visualRow * _lineHeight + _lineHeight / 2.0;
             _targetScrollOffset = lineCenter - self.bounds.size.height / 2.0;
         } else {
             _targetScrollOffset = 0.0;
         }
 
-        // Clamp target to valid range
-        CGFloat totalHeight = lineCount * _lineHeight;
+        // Clamp target to valid range (use visual row count for correct total height)
+        NSInteger visualRowCount = (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : lineCount;
+        CGFloat totalHeight = visualRowCount * _lineHeight;
         CGFloat maxScroll = totalHeight - self.bounds.size.height;
         if (maxScroll < 0.0) maxScroll = 0.0;
         if (_targetScrollOffset < 0.0) _targetScrollOffset = 0.0;
@@ -785,13 +826,18 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     // (bottom-origin) coordinates while we address lines from top.
     CGFloat viewHeight = self.bounds.size.height;
     CGFloat viewWidth  = self.bounds.size.width;
+    const CGFloat usableWidth = viewWidth - 2.0 * kSidePadding;
+
+    // Rebuild CTLine cache if stale (new lyrics, resize, font change).
+    if (_cachedLines == nil || _cachedLineWidth != usableWidth || _cachedLineHeight != _lineHeight) {
+        [self _buildLineCache:usableWidth];
+    }
+    NSInteger visualRowCount = (_cachedLines != nil) ? (NSInteger)[_cachedLines count] : 0;
 
     CGContextSaveGState(ctx);
     // Flip: translate to bottom-left, scale Y by -1 (now top = viewHeight, bottom = 0)
     CGContextTranslateCTM(ctx, 0.0, viewHeight);
     CGContextScaleCTM(ctx, 1.0, -1.0);
-
-    NSInteger lineCount = (NSInteger)_lyrics.lines.size();
 
     // Vertical start position.
     // For unsynced lyrics: center vertically for Mid* alignment, top-align for Top*.
@@ -806,7 +852,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
     CGFloat startY; // Y in top-origin space (distance from top of view)
     if (isUnsynced) {
-        CGFloat totalHeight = lineCount * _lineHeight;
+        CGFloat totalHeight = visualRowCount * _lineHeight;
         if (!isTopAligned && totalHeight < viewHeight) {
             startY = (viewHeight - totalHeight) / 2.0;
         } else {
@@ -835,19 +881,24 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
     CGFloat ascent = [_font ascender];
 
-    for (NSInteger i = 0; i < lineCount; i++) {
-        // Top edge of this line in top-origin space
+    for (NSInteger i = 0; i < visualRowCount; i++) {
+        // Top edge of this visual row in top-origin space
         CGFloat lineTop = startY + i * _lineHeight;
-        // Skip lines fully outside the view
+        // Skip rows fully outside the view
         if (lineTop + _lineHeight < 0) continue;
         if (lineTop > viewHeight) break;
+
+        // Map visual row → lyric line index for synced color selection.
+        NSInteger lyricIdx = (_lyricLineIndices && i < (NSInteger)[_lyricLineIndices count])
+            ? [[_lyricLineIndices objectAtIndex:(NSUInteger)i] integerValue]
+            : i;
 
         // Determine color
         const CGFloat *color;
         if (isSynced) {
-            if (i == _currentLineIndex) {
+            if (lyricIdx == _currentLineIndex) {
                 color = colorHighlight;
-            } else if (i < _currentLineIndex) {
+            } else if (lyricIdx < _currentLineIndex) {
                 color = colorPast;
             } else {
                 color = colorNormal;
@@ -861,17 +912,13 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         CGColorRelease(cgColor);
 
         // Retrieve cached CTLine (no allocation per frame).
-        CTLineRef ctLine = NULL;
-        if (_cachedLines && i < (NSInteger)[_cachedLines count]) {
-            ctLine = (CTLineRef)[[_cachedLines objectAtIndex:(NSUInteger)i] pointerValue];
-        }
+        CTLineRef ctLine = (CTLineRef)[[_cachedLines objectAtIndex:(NSUInteger)i] pointerValue];
         if (!ctLine) continue;
 
         CGFloat lineBaselineCT = viewHeight - lineTop - ascent;
 
         // Horizontal position based on alignment preference.
         CGFloat lineWidth = (CGFloat)CTLineGetTypographicBounds(ctLine, NULL, NULL, NULL);
-        const CGFloat usableWidth = viewWidth - 2.0 * kSidePadding;
         CGFloat xPos;
         switch (alignment) {
             case TextAlignment::TopLeft:
