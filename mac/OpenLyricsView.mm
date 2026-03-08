@@ -170,9 +170,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         });
 
         if (core_api::are_services_available()) {
-            // Register for album art changes.
+            // Register for album art changes (service may be absent on macOS).
             now_playing_album_art_notify_manager::ptr art_manager =
-                now_playing_album_art_notify_manager::get();
+                now_playing_album_art_notify_manager::tryGet();
             if (art_manager.is_valid()) {
                 OpenLyricsView * __weak weakSelf = self;
                 _artNotifyHandle = art_manager->add([weakSelf](album_art_data::ptr art_data) {
@@ -200,7 +200,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
     if (_artNotifyHandle != nullptr && core_api::are_services_available()) {
         now_playing_album_art_notify_manager::ptr art_manager =
-            now_playing_album_art_notify_manager::get();
+            now_playing_album_art_notify_manager::tryGet();
         if (art_manager.is_valid()) {
             art_manager->remove(_artNotifyHandle);
         }
