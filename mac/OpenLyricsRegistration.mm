@@ -35,11 +35,11 @@ public:
     }
 
     bool match_name(const char *name) override {
-        return strcmp(name, "OpenLyrics Panel") == 0;
+        return strcmp(name, "openlyrics") == 0;
     }
 
     fb2k::stringRef get_name() override {
-        return fb2k::makeString("OpenLyrics Panel");
+        return fb2k::makeString("openlyrics");
     }
 
     GUID get_guid() override {

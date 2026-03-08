@@ -25,6 +25,7 @@ void SpawnManualSearchMac();
 
 static const CGFloat kFontSize      = 18.0;
 static const CGFloat kScrollLerp    = 0.12; // fraction toward target per tick (~60 Hz)
+static const CGFloat kTopPadding    = 8.0;
 
 // Fallback colors used when services aren't available (tests / pre-init)
 static const CGFloat kColorNormal[4]    = { 1.0, 1.0, 1.0, 1.0 };
@@ -286,8 +287,13 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     Image bg_colour = {};
     switch (preferences::background::fill_type()) {
         case BackgroundFillType::Default: {
-            const t_ui_color c = preferences::background::colour();
-            const RGBAColour rgba = { GetRValue(c), GetGValue(c), GetBValue(c), 255 };
+            // Use the same dark constant as the drawRect fallback.
+            const RGBAColour rgba = {
+                (uint8_t)std::round(kColorBackground[0] * 255),
+                (uint8_t)std::round(kColorBackground[1] * 255),
+                (uint8_t)std::round(kColorBackground[2] * 255),
+                255
+            };
             bg_colour = generate_background_colour(view_w, view_h, rgba);
         } break;
         case BackgroundFillType::SolidColour: {
@@ -661,7 +667,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
         NSDictionary *attrs = @{
             NSFontAttributeName: _font,
-            NSParagraphStyleAttributeName: paraStyle
+            NSParagraphStyleAttributeName: paraStyle,
+            // Use the CGContext fill color (set per-line in drawRect) instead of a baked-in color.
+            (NSString *)kCTForegroundColorFromContextAttributeName: (id)kCFBooleanTrue
         };
         NSAttributedString *attrStr = [[NSAttributedString alloc]
                                        initWithString:nsLine attributes:attrs];
@@ -801,7 +809,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         if (!isTopAligned && totalHeight < viewHeight) {
             startY = (viewHeight - totalHeight) / 2.0;
         } else {
-            startY = 0.0;
+            startY = kTopPadding;
         }
     } else if (isSynced) {
         startY = -_scrollOffset; // scrollOffset pushes content up

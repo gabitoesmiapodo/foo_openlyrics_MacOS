@@ -15,3 +15,7 @@ metrics/metrics_data/
 metrics/.venv
 
 .worktrees/
+
+# macOS build artifacts
+mac/build/
+deps/
