@@ -680,9 +680,17 @@ static NSView* make_row(NSString* labelText, NSView* control)
 
 static NSStackView* make_form(NSArray<NSView*>* rows)
 {
-    NSStackView* stack = [NSStackView stackViewWithViews:rows];
+    // Append a zero-height spacer so content is pinned to the top when the
+    // host stretches this view to fill the preferences panel.
+    NSView* spacer = [[NSView alloc] init];
+    [spacer setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationVertical];
+    NSMutableArray* allRows = [NSMutableArray arrayWithArray:rows];
+    [allRows addObject:spacer];
+
+    NSStackView* stack = [NSStackView stackViewWithViews:allRows];
     stack.orientation  = NSUserInterfaceLayoutOrientationVertical;
     stack.alignment    = NSLayoutAttributeLeading;
+    stack.distribution = NSStackViewDistributionFill;
     stack.spacing      = 8;
     stack.edgeInsets   = NSEdgeInsetsMake(12, 12, 12, 12);
     return stack;
