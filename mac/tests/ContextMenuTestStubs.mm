@@ -241,4 +241,5 @@ void lyric_metadata_log_retrieved(const metadb_v2_rec_t& /*track_info*/,
 namespace metrics
 {
     void log_used_bulk_search() {}
+    void log_used_external_window() {}
 }

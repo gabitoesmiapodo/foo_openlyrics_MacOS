@@ -111,6 +111,7 @@
 		IP03A2B3C4D5E6F7A8B9C0D1 /* ImageProcessingTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = IP12A2B3C4D5E6F7A8B9C0D1E /* ImageProcessingTests.mm */; };
 		AC01A2B3C4D5E6F7A8B9C0D1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC11A2B3C4D5E6F7A8B9C0D1E /* Accelerate.framework */; };
 		AC02A2B3C4D5E6F7A8B9C0D1 /* Accelerate.framework in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = AC11A2B3C4D5E6F7A8B9C0D1E /* Accelerate.framework */; };
+		EW01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsExternalWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = EW11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsExternalWindow.mm */; };
 		T0571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 48A742FAFE944BC59DC864E1 /* lrc.cpp */; };
 		T0274AD124C9334EB9971B9B24 /* logging.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 29FF6283FA554236847D4E11 /* logging.cpp */; };
 		T05F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */; };
@@ -215,6 +216,7 @@
 		IP11A2B3C4D5E6F7A8B9C0D1E /* ImageProcessing.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ImageProcessing.mm; path = ImageProcessing.mm; sourceTree = "<group>"; };
 		IP12A2B3C4D5E6F7A8B9C0D1E /* ImageProcessingTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ImageProcessingTests.mm; path = tests/ImageProcessingTests.mm; sourceTree = "<group>"; };
 		AC11A2B3C4D5E6F7A8B9C0D1E /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		EW11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsExternalWindow.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsExternalWindow.mm; path = OpenLyricsExternalWindow.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +280,7 @@
 				UU11A2B3C4D5E6F7A8B9C0D1E /* ui_util.cpp */,
 				PR11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsPreferences.mm */,
 				IP11A2B3C4D5E6F7A8B9C0D1E /* ImageProcessing.mm */,
+				EW11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsExternalWindow.mm */,
 				E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */,
 				B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */,
 				8345C604167042049726FE2D /* Tests */,
@@ -437,6 +440,7 @@
 				UU01A2B3C4D5E6F7A8B9C0D1 /* ui_util.cpp in Sources */,
 				PR01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsPreferences.mm in Sources */,
 				IP01A2B3C4D5E6F7A8B9C0D1 /* ImageProcessing.mm in Sources */,
+				EW01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsExternalWindow.mm in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */,
 				074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */,
 				C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */,

@@ -22,9 +22,7 @@ void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceR
 // External window
 // ---------------------------------------------------------------------------
 
-void SpawnExternalLyricWindow() // TODO(stub): implement in Task 11.1
-{
-}
+// SpawnExternalLyricWindow() is implemented in OpenLyricsExternalWindow.mm.
 
 // ---------------------------------------------------------------------------
 // Lyric editor / manual search (macOS stubs — Task 7.1 / Task 8.1)
