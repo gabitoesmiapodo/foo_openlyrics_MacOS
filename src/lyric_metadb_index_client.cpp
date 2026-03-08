@@ -6,7 +6,12 @@
 
 void lyric_metadb_index_client::setup_metadb_index(const char* index_title, GUID index_guid)
 {
-    auto mim = metadb_index_manager::get();
+    metadb_index_manager::ptr mim = metadb_index_manager::tryGet();
+    if(!mim.is_valid())
+    {
+        LOG_INFO("metadb_index_manager not available, skipping %s index setup", index_title);
+        return;
+    }
     try
     {
         mim->add(fb2k::service_new<lyric_metadb_index_client>(), index_guid, system_time_periods::week);
