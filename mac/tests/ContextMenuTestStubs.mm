@@ -30,8 +30,11 @@ namespace openlyrics_logging {
 // SpawnLyricEditorMac is implemented in OpenLyricsEditor.mm (linked by test target directly).
 // SpawnManualSearchMac is implemented in OpenLyricsManualSearch.mm (linked by test target directly).
 void SpawnExternalLyricWindow() {}
-// recompute_lyric_panel_backgrounds() is implemented in OpenLyricsView.mm (linked into test target).
-void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceReason /*reason*/) {}
+// recompute_lyric_panel_backgrounds(), announce_lyric_search_avoided(), and
+// set_now_playing_track() are implemented in OpenLyricsView.mm (linked into test target).
+
+// get_autosearch_progress_message lives in lyric_search.cpp (not in test target).
+std::optional<std::string> get_autosearch_progress_message() { return std::nullopt; }
 
 // ---------------------------------------------------------------------------
 // Preference page GUIDs (defined in OpenLyricsPreferences.mm in main target)

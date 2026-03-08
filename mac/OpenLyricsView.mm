@@ -5,6 +5,7 @@
 
 #include "../src/img_processing.h"
 #include "../src/lyric_search.h"
+#include "../src/metadb_index_search_avoidance.h"
 #include "../src/preferences.h"
 #include "../src/tag_util.h"
 #include "../src/ui_hooks.h"
@@ -95,6 +96,14 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     Image            _backgroundImg;
     CGImageRef       _backgroundCGImage;
     now_playing_album_art_notify *_artNotifyHandle;
+
+    // Now-playing track (set on new track, cleared on stop)
+    metadb_handle_ptr _nowPlayingTrack;
+    metadb_v2_rec_t   _nowPlayingInfo;
+
+    // Search avoidance state (cleared on new track / clearLyrics)
+    SearchAvoidanceReason _autoSearchAvoidedReason;
+    uint64_t              _autoSearchAvoidedTimestamp;
 }
 @end
 
@@ -141,6 +150,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
         _backgroundCGImage = nullptr;
         _artNotifyHandle = nullptr;
+        _nowPlayingTrack = nullptr;
+        _autoSearchAvoidedReason = SearchAvoidanceReason::Allowed;
+        _autoSearchAvoidedTimestamp = 0;
 
         dispatch_sync(g_panels_queue, ^{
             CFArrayAppendValue(g_active_panels_cf, (__bridge void *)self);
@@ -495,14 +507,36 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _targetScrollOffset = 0.0;
     _currentLineIndex   = -1;
 
+    _nowPlayingTrack = nullptr;
+    _nowPlayingInfo  = {};
+    _autoSearchAvoidedReason = SearchAvoidanceReason::Allowed;
+
     [self _stopTimer];
     [self _invalidateLineCache];
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setNowPlayingTrack:(metadb_handle_ptr)track info:(const metadb_v2_rec_t&)info {
+    // Must be called on the main thread.
+    _nowPlayingTrack = track;
+    _nowPlayingInfo  = info;
+    _autoSearchAvoidedReason = SearchAvoidanceReason::Allowed;
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setSearchAvoidedReason:(SearchAvoidanceReason)reason timestamp:(uint64_t)ts {
+    // Must be called on the main thread.
+    _autoSearchAvoidedReason    = reason;
+    _autoSearchAvoidedTimestamp = ts;
     [self setNeedsDisplay:YES];
 }
 
 - (LyricData)currentLyricData {
     return _lyrics;
 }
+
+- (metadb_handle_ptr)nowPlayingTrack { return _nowPlayingTrack; }
+- (metadb_v2_rec_t)nowPlayingInfo    { return _nowPlayingInfo; }
 
 /// Legacy setter kept so existing tests continue to compile and pass.
 - (void)setLyricsText:(NSString *)text {
@@ -750,8 +784,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 // No-lyrics placeholder
 // ---------------------------------------------------------------------------
 
-- (void)_drawNoLyricsInContext:(CGContextRef)ctx {
-    NSString *placeholder = @"No lyrics loaded";
+- (void)_drawNoLyricsInContext:(CGContextRef __unused)ctx {
+    if (_nowPlayingTrack == nullptr) return;
+
     NSDictionary *attrs = @{
         NSFontAttributeName: [NSFont systemFontOfSize:14.0],
         NSForegroundColorAttributeName: [NSColor colorWithRed:kColorDim[0]
@@ -759,12 +794,58 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
                                                          blue:kColorDim[2]
                                                         alpha:kColorDim[3]]
     };
-    NSSize textSize = [placeholder sizeWithAttributes:attrs];
-    NSPoint origin = NSMakePoint(
-        NSMidX(self.bounds) - textSize.width  / 2.0,
-        NSMidY(self.bounds) - textSize.height / 2.0
-    );
-    [placeholder drawAtPoint:origin withAttributes:attrs];
+
+    // Build lines: Artist / Album / Title, then progress or avoidance message.
+    NSMutableArray<NSString *> *lines = [NSMutableArray array];
+    {
+        std::string artist = track_metadata(_nowPlayingInfo, "artist");
+        std::string album  = track_metadata(_nowPlayingInfo, "album");
+        std::string title  = track_metadata(_nowPlayingInfo, "title");
+        if (!artist.empty())
+            [lines addObject:[NSString stringWithFormat:@"Artist: %s", artist.c_str()]];
+        if (!album.empty())
+            [lines addObject:[NSString stringWithFormat:@"Album: %s",  album.c_str()]];
+        if (!title.empty())
+            [lines addObject:[NSString stringWithFormat:@"Title: %s",  title.c_str()]];
+    }
+
+    std::optional<std::string> progress = get_autosearch_progress_message();
+    if (progress.has_value()) {
+        [lines addObject:[NSString stringWithUTF8String:progress->c_str()]];
+    } else if (_autoSearchAvoidedReason != SearchAvoidanceReason::Allowed) {
+        const double kMsgSeconds = 15.0;
+        uint64_t elapsed = filetimestamp_from_system_timer() - _autoSearchAvoidedTimestamp;
+        if (elapsed < static_cast<uint64_t>(kMsgSeconds * 10'000'000)) {
+            [lines addObject:@""];
+            switch (_autoSearchAvoidedReason) {
+                case SearchAvoidanceReason::RepeatedFailures:
+                    [lines addObject:@"Auto-search skipped: search failed too many times."];
+                    [lines addObject:@"Manually request a lyrics search to try again."];
+                    break;
+                case SearchAvoidanceReason::MarkedInstrumental:
+                    [lines addObject:@"Auto-search skipped: track was explicitly marked 'instrumental'"];
+                    [lines addObject:@"Manually request a lyrics search to clear that status."];
+                    break;
+                case SearchAvoidanceReason::MatchesSkipFilter:
+                    [lines addObject:@"Auto-search skipped: track matched the skip filter."];
+                    break;
+                default: break;
+            }
+        }
+    }
+
+    if (lines.count == 0) return;
+
+    CGFloat lineH = [@"A" sizeWithAttributes:attrs].height + 4.0;
+    CGFloat totalH = lineH * lines.count;
+    CGFloat y = NSMidY(self.bounds) + totalH / 2.0 - lineH;
+
+    for (NSString *line in lines) {
+        NSSize sz = [line sizeWithAttributes:attrs];
+        NSPoint pt = NSMakePoint(NSMidX(self.bounds) - sz.width / 2.0, y);
+        [line drawAtPoint:pt withAttributes:attrs];
+        y -= lineH;
+    }
 }
 
 @end
@@ -856,6 +937,8 @@ void clear_all_lyric_panels() {
 LyricData get_active_panel_lyrics(metadb_handle_ptr& out_track, metadb_v2_rec_t& out_info) {
     // Must be called on main thread.
     __block LyricData result;
+    __block metadb_handle_ptr track;
+    __block metadb_v2_rec_t info;
     dispatch_sync(g_panels_queue, ^{
         CFIndex count = CFArrayGetCount(g_active_panels_cf);
         for (CFIndex i = 0; i < count; i++) {
@@ -863,16 +946,22 @@ LyricData get_active_panel_lyrics(metadb_handle_ptr& out_track, metadb_v2_rec_t&
                 CFArrayGetValueAtIndex(g_active_panels_cf, i);
             if ([v hasLyrics]) {
                 result = [v currentLyricData];
+                track  = [v nowPlayingTrack];
+                info   = [v nowPlayingInfo];
                 break;
             }
         }
     });
+    out_track = track;
+    out_info  = info;
     return result;
 }
 
 void announce_lyric_update(LyricUpdate update) {
     // Heap-allocate so we can safely move across the async dispatch boundary.
     LyricData *lyricsPtr = new LyricData(std::move(update.lyrics));
+    metadb_handle_ptr track = update.track;
+    metadb_v2_rec_t  *infoPtr = new metadb_v2_rec_t(update.track_info);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         __block NSArray *snapshot = nil;
@@ -886,10 +975,57 @@ void announce_lyric_update(LyricUpdate update) {
             }
             snapshot = [arr retain];
         });
-        for (OpenLyricsView *v in snapshot) {
+            for (OpenLyricsView *v in snapshot) {
+            [v setNowPlayingTrack:track info:*infoPtr];
             [v updateLyrics:*lyricsPtr];
         }
         [snapshot release];
         delete lyricsPtr;
+        delete infoPtr;
+    });
+}
+
+void set_now_playing_track(metadb_handle_ptr track, metadb_v2_rec_t info) {
+    metadb_v2_rec_t *infoPtr = new metadb_v2_rec_t(std::move(info));
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __block NSArray *snapshot = nil;
+        dispatch_sync(g_panels_queue, ^{
+            CFIndex count = CFArrayGetCount(g_active_panels_cf);
+            NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
+            for (CFIndex i = 0; i < count; i++) {
+                OpenLyricsView *v = (OpenLyricsView *)
+                    CFArrayGetValueAtIndex(g_active_panels_cf, i);
+                [arr addObject:v];
+            }
+            snapshot = [arr retain];
+        });
+        for (OpenLyricsView *v in snapshot) {
+            [v setNowPlayingTrack:track info:*infoPtr];
+        }
+        [snapshot release];
+        delete infoPtr;
+    });
+}
+
+void announce_lyric_search_avoided(metadb_handle_ptr track, SearchAvoidanceReason avoid_reason) {
+    uint64_t ts = filetimestamp_from_system_timer();
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __block NSArray *snapshot = nil;
+        dispatch_sync(g_panels_queue, ^{
+            CFIndex count = CFArrayGetCount(g_active_panels_cf);
+            NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
+            for (CFIndex i = 0; i < count; i++) {
+                OpenLyricsView *v = (OpenLyricsView *)
+                    CFArrayGetValueAtIndex(g_active_panels_cf, i);
+                [arr addObject:v];
+            }
+            snapshot = [arr retain];
+        });
+        for (OpenLyricsView *v in snapshot) {
+            if ([v nowPlayingTrack] == track) {
+                [v setSearchAvoidedReason:avoid_reason timestamp:ts];
+            }
+        }
+        [snapshot release];
     });
 }

@@ -9,14 +9,11 @@
 // UI panel hooks
 // ---------------------------------------------------------------------------
 
-// num_visible_lyric_panels, repaint_all_lyric_panels, and announce_lyric_update
-// are implemented in OpenLyricsView.mm.
+// num_visible_lyric_panels, repaint_all_lyric_panels, announce_lyric_update,
+// announce_lyric_search_avoided, and set_now_playing_track are implemented
+// in OpenLyricsView.mm.
 
 // recompute_lyric_panel_backgrounds() is implemented in OpenLyricsView.mm.
-
-void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceReason /*reason*/) // TODO(stub): implement in Task 4.1
-{
-}
 
 // ---------------------------------------------------------------------------
 // External window

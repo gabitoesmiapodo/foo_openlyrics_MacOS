@@ -1,5 +1,6 @@
 #import "stdafx.h"
 #import "OpenLyricsView.h"
+#include "../src/tag_util.h"
 
 DECLARE_COMPONENT_VERSION("OpenLyrics", "0.0.1",
     "foo_openlyrics\n\n"
@@ -57,12 +58,12 @@ public:
         return flag_on_playback_stop | flag_on_playback_new_track;
     }
 
-    void on_playback_new_track(metadb_handle_ptr /*track*/) override {
+    void on_playback_new_track(metadb_handle_ptr track) override {
         // LyricAutosearchManager (src/lyric_search.cpp) self-registers as a play_callback
-        // via play_callback_manager in on_init() and handles search triggering.
-        // announce_lyric_update() is called when results arrive.
-        // This callback only needs to handle UI-side concerns (clearing, etc.)
-        // which for new-track is handled implicitly when the search result arrives.
+        // and handles search triggering. announce_lyric_update() is called when results
+        // arrive. Here we set the now-playing track on all panels so the no-lyrics state
+        // can show track info and so announce_lyric_search_avoided() can match panels.
+        set_now_playing_track(track, get_full_metadata(track));
     }
 
     void on_playback_stop(play_control::t_stop_reason reason) override {
