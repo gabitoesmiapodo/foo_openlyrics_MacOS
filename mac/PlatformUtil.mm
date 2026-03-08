@@ -14,7 +14,12 @@ std::tstring normalise_utf8(std::tstring_view input) {
                                             length:input.size()
                                           encoding:NSUTF8StringEncoding];
     if (!ns) return std::tstring(input);
-    NSString *normalised = [ns precomposedStringWithCanonicalMapping];
+    // Use NFKD (compatibility decomposition) to match the Windows NormalizationKD behaviour.
+    // This is important for URL slug building in web-scraping sources: NFKD decomposes "ó"
+    // into ASCII 'o' + combining accent, so the ASCII filter in the slug loop keeps the 'o'.
+    // NFC would leave "ó" as a 2-byte non-ASCII sequence and the slug loop drops it entirely,
+    // producing wrong slugs (e.g. "reaccin" instead of "reaccion") and fetching wrong lyrics.
+    NSString *normalised = [ns decomposedStringWithCompatibilityMapping];
     const char *utf8 = [normalised UTF8String];
     if (!utf8) return std::tstring(input);
     return std::tstring(utf8, [normalised lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
