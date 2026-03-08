@@ -1377,7 +1377,14 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
         @"Same directory as the track",
         @"Custom directory",
     ]);
-    [dirPopup selectItemAtIndex:cfg_save_dir_class.get_value()];
+    {
+        int dirVal = (int)cfg_save_dir_class.get_value();
+        int dirIdx = 0;
+        if(dirVal == static_cast<int>(SaveDirectoryClass::ConfigDirectory))         dirIdx = 0;
+        else if(dirVal == static_cast<int>(SaveDirectoryClass::TrackFileDirectory)) dirIdx = 1;
+        else if(dirVal == static_cast<int>(SaveDirectoryClass::Custom))             dirIdx = 2;
+        [dirPopup selectItemAtIndex:dirIdx];
+    }
     [dirPopup setTarget:self];
     [dirPopup setAction:@selector(onDirClass:)];
 
@@ -1402,7 +1409,14 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
 
 - (void)onDirClass:(NSPopUpButton*)sender
 {
-    cfg_save_dir_class = (int)sender.indexOfSelectedItem;
+    static const SaveDirectoryClass classes[] = {
+        SaveDirectoryClass::ConfigDirectory,
+        SaveDirectoryClass::TrackFileDirectory,
+        SaveDirectoryClass::Custom,
+    };
+    NSInteger idx = sender.indexOfSelectedItem;
+    if(idx >= 0 && idx < 3)
+        cfg_save_dir_class = static_cast<int>(classes[idx]);
 }
 
 - (void)onFilenameFormat:(NSTextField*)sender
@@ -1649,10 +1663,10 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
 
     // Past text colour type
     NSPopUpButton* pastTypePopup = make_popup(@[
-        @"Blend with background",
-        @"Same as text",
-        @"Same as highlight",
-        @"Custom",
+        @"Blend with background",  // BlendBackground = 0
+        @"Same as text",           // SameAsMainText  = 1
+        @"Custom",                 // Custom          = 2
+        @"Same as highlight",      // SameAsHighlight = 3
     ]);
     [pastTypePopup selectItemAtIndex:cfg_display_pasttext_colour_type.get_value()];
     [pastTypePopup setTarget:self];
