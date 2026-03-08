@@ -677,8 +677,18 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (_targetScrollOffset < 0.0) _targetScrollOffset = 0.0;
     if (_targetScrollOffset > maxScroll) _targetScrollOffset = maxScroll;
 
-    // Linear interpolation toward target
-    _scrollOffset += (_targetScrollOffset - _scrollOffset) * kScrollLerp;
+    // Lerp toward target. Use scroll_time_seconds pref to derive factor.
+    CGFloat lerpFactor = kScrollLerp;
+    if (core_api::are_services_available()) {
+        double scrollSecs = preferences::display::scroll_time_seconds();
+        if (scrollSecs <= 0.0 || scrollSecs > 60.0) {
+            lerpFactor = 1.0; // instant
+        } else {
+            // k such that 95% completion in scrollSecs at 60 Hz
+            lerpFactor = (CGFloat)(1.0 - std::exp(std::log(0.05) / (scrollSecs * 60.0)));
+        }
+    }
+    _scrollOffset += (_targetScrollOffset - _scrollOffset) * lerpFactor;
 }
 
 // ---------------------------------------------------------------------------

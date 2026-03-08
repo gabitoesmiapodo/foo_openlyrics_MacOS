@@ -73,6 +73,7 @@ namespace display
     t_ui_color past_text_colour()      { return 0x00808080; } // RGB(128,128,128)
     int        linegap()               { return 8; }
     TextAlignment text_alignment()     { return TextAlignment::MidCentre; }
+    double scroll_time_seconds()       { return 0.5; }
 }
 namespace saving
 {
