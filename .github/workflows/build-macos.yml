@@ -1,0 +1,58 @@
+name: Build & test - macOS
+on:
+  push:
+    branches: [main, macos-port]
+  pull_request:
+
+jobs:
+  build-and-test-macos:
+    name: Build & test - macOS (universal)
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Restore built deps cache
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps/foobar2000-sdk
+            deps/curl
+          key: macos-deps-${{ runner.os }}-${{ hashFiles('scripts/build-deps.sh') }}
+
+      # NOTE: deps/foobar2000-sdk must be seeded into the cache manually before
+      # this workflow can succeed. To seed it:
+      #   1. Build locally: bash scripts/build-deps.sh
+      #   2. Push deps/foobar2000-sdk/ and deps/curl/ as a cache entry via the
+      #      GitHub Actions cache API, or run the workflow once from a branch
+      #      that includes the built artifacts.
+      - name: Verify deps are present
+        run: |
+          if [ ! -d "deps/foobar2000-sdk" ]; then
+            echo "::error::deps/foobar2000-sdk not found. See the NOTE in build-macos.yml."
+            exit 1
+          fi
+
+      - name: Build libcurl if not cached
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: |
+          SKIP_SDK_BUILD=1 bash scripts/build-deps.sh || true
+
+      - name: Build deps (SDK only, if not cached)
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: bash scripts/build-deps.sh
+
+      - name: Build component and run tests
+        run: SKIP_DEPS_BUILD=1 bash scripts/deploy-component.sh --build --no-deploy
+
+      - name: Upload component artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: foo_openlyrics.component
+          path: mac/build/Release/foo_openlyrics.component
+          retention-days: 14

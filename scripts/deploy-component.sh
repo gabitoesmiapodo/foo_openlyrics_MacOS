@@ -48,7 +48,16 @@ if pgrep -x "foobar2000" >/dev/null 2>&1; then
     echo "foobar2000 closed. Continuing deploy."
 fi
 
-if [ "${1:-}" = "--build" ]; then
+NO_DEPLOY=0
+BUILD=0
+for arg in "$@"; do
+    case "$arg" in
+        --build)     BUILD=1 ;;
+        --no-deploy) NO_DEPLOY=1 ;;
+    esac
+done
+
+if [ "$BUILD" = "1" ]; then
     if [ "${SKIP_DEPS_BUILD:-0}" != "1" ]; then
         "$SCRIPT_DIR/build-deps.sh"
     fi
@@ -58,6 +67,11 @@ fi
 # Always run tests before deploying, even on deploy-only runs (no --build).
 # This guards against deploying a previously-built but now-broken component.
 "$SCRIPT_DIR/run-tests.sh"
+
+if [ "$NO_DEPLOY" = "1" ]; then
+    echo "Skipping deploy (--no-deploy)."
+    exit 0
+fi
 
 if [ ! -d "$SRC_COMPONENT" ]; then
     echo "Built component not found: $SRC_COMPONENT"
