@@ -4,6 +4,7 @@
 #import <CoreText/CoreText.h>
 
 #include "../src/lyric_search.h"
+#include "../src/preferences.h"
 #include "../src/tag_util.h"
 #include "../src/ui_hooks.h"
 
@@ -231,7 +232,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
                                            action:@selector(openPreferences:)
                                     keyEquivalent:@""];
     [prefsItem setTarget:self];
-    [prefsItem setEnabled:NO]; // TODO(Task 9.1): enable when preferences page is implemented
+    (void)prefsItem;
 
     return menu;
 }
@@ -269,7 +270,8 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 }
 
 - (void)openPreferences:(id)sender {
-    // TODO(Task 9.1): open foobar2000 preferences to the OpenLyrics page
+    if(!core_api::are_services_available()) return;
+    ui_control::get()->show_preferences(GUID_PREFERENCES_PAGE_ROOT);
 }
 
 // ---------------------------------------------------------------------------

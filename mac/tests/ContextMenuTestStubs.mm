@@ -34,6 +34,19 @@ void recompute_lyric_panel_backgrounds() {}
 void announce_lyric_search_avoided(metadb_handle_ptr /*track*/, SearchAvoidanceReason /*reason*/) {}
 
 // ---------------------------------------------------------------------------
+// Preference page GUIDs (defined in OpenLyricsPreferences.mm in main target)
+// ---------------------------------------------------------------------------
+
+#include "../src/preferences.h"
+
+extern const GUID GUID_PREFERENCES_PAGE_ROOT = {
+    0x29e96cfa, 0xab67, 0x4793, { 0xa1, 0xc3, 0xef, 0xc3, 0x0a, 0xbc, 0x8b, 0x74 }
+};
+extern const GUID GUID_PREFERENCES_PAGE_SEARCH_SOURCES = {
+    0x73e2261d, 0x4a71, 0x427a, { 0x92, 0x57, 0xec, 0xaa, 0x17, 0xb9, 0xa8, 0xc8 }
+};
+
+// ---------------------------------------------------------------------------
 // lyric_search.h
 // ---------------------------------------------------------------------------
 
