@@ -16,7 +16,7 @@
 
 // SpawnLyricEditorMac is defined in OpenLyricsEditor.mm.
 void SpawnLyricEditorMac();
-// SpawnManualSearchMac stub is in MacStubs.mm.
+// SpawnManualSearchMac is defined in OpenLyricsManualSearch.mm.
 void SpawnManualSearchMac();
 
 // ---------------------------------------------------------------------------
