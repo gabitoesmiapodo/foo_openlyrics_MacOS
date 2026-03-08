@@ -692,6 +692,36 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
 }
 
 // ---------------------------------------------------------------------------
+// Shared color-conversion helpers
+// ---------------------------------------------------------------------------
+
+static NSColor* nscolor_from_colorref(uint32_t c)
+{
+    return [NSColor colorWithRed:(c & 0xFF) / 255.0
+                           green:((c >> 8) & 0xFF) / 255.0
+                            blue:((c >> 16) & 0xFF) / 255.0
+                           alpha:1.0];
+}
+
+static uint32_t colorref_from_nscolor(NSColor* color)
+{
+    NSColor* rgb = [color colorUsingColorSpace:NSColorSpace.sRGBColorSpace];
+    if (!rgb) rgb = color;
+    return rgba_to_colorref((uint8_t)(rgb.redComponent * 255),
+                            (uint8_t)(rgb.greenComponent * 255),
+                            (uint8_t)(rgb.blueComponent * 255));
+}
+
+static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
+{
+    NSColorWell* w = [[NSColorWell alloc] initWithFrame:NSMakeRect(0, 0, 44, 24)];
+    w.color = nscolor_from_colorref(colorref);
+    w.target = target;
+    w.action = action;
+    return w;
+}
+
+// ---------------------------------------------------------------------------
 // Root page: general / debug
 // ---------------------------------------------------------------------------
 
@@ -949,27 +979,22 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
     [fillPopup setAction:@selector(onFillType:)];
 
     // Solid colour well
-    NSColorWell* colourWell = [[NSColorWell alloc] initWithFrame:NSMakeRect(0, 0, 44, 24)];
-    colourWell.color = [self nsColorFromRef:(uint32_t)cfg_background_colour.get_value()];
-    colourWell.target = self;
-    colourWell.action = @selector(onSolidColour:);
+    NSColorWell* colourWell = make_colorwell((uint32_t)cfg_background_colour.get_value(),
+                                             self, @selector(onSolidColour:));
 
     // Gradient colour wells
-    NSColorWell* gradTL = [[NSColorWell alloc] initWithFrame:NSMakeRect(0, 0, 44, 24)];
-    gradTL.color = [self nsColorFromRef:(uint32_t)cfg_background_gradient_tl.get_value()];
-    gradTL.tag = 0; gradTL.target = self; gradTL.action = @selector(onGradient:);
-
-    NSColorWell* gradTR = [[NSColorWell alloc] initWithFrame:NSMakeRect(0, 0, 44, 24)];
-    gradTR.color = [self nsColorFromRef:(uint32_t)cfg_background_gradient_tr.get_value()];
-    gradTR.tag = 1; gradTR.target = self; gradTR.action = @selector(onGradient:);
-
-    NSColorWell* gradBL = [[NSColorWell alloc] initWithFrame:NSMakeRect(0, 0, 44, 24)];
-    gradBL.color = [self nsColorFromRef:(uint32_t)cfg_background_gradient_bl.get_value()];
-    gradBL.tag = 2; gradBL.target = self; gradBL.action = @selector(onGradient:);
-
-    NSColorWell* gradBR = [[NSColorWell alloc] initWithFrame:NSMakeRect(0, 0, 44, 24)];
-    gradBR.color = [self nsColorFromRef:(uint32_t)cfg_background_gradient_br.get_value()];
-    gradBR.tag = 3; gradBR.target = self; gradBR.action = @selector(onGradient:);
+    NSColorWell* gradTL = make_colorwell((uint32_t)cfg_background_gradient_tl.get_value(),
+                                         self, @selector(onGradient:));
+    gradTL.tag = 0;
+    NSColorWell* gradTR = make_colorwell((uint32_t)cfg_background_gradient_tr.get_value(),
+                                         self, @selector(onGradient:));
+    gradTR.tag = 1;
+    NSColorWell* gradBL = make_colorwell((uint32_t)cfg_background_gradient_bl.get_value(),
+                                         self, @selector(onGradient:));
+    gradBL.tag = 2;
+    NSColorWell* gradBR = make_colorwell((uint32_t)cfg_background_gradient_br.get_value(),
+                                         self, @selector(onGradient:));
+    gradBR.tag = 3;
 
     // Image type
     NSPopUpButton* imgPopup = make_popup(@[@"None", @"Album art", @"Custom image"]);
@@ -1033,24 +1058,6 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
     self.view = stack;
 }
 
-- (NSColor*)nsColorFromRef:(uint32_t)c
-{
-    return [NSColor colorWithRed:(c & 0xFF) / 255.0
-                           green:((c >> 8) & 0xFF) / 255.0
-                            blue:((c >> 16) & 0xFF) / 255.0
-                           alpha:1.0];
-}
-
-- (uint32_t)colorRefFromNSColor:(NSColor*)color
-{
-    NSColor* rgb = [color colorUsingColorSpace:NSColorSpace.sRGBColorSpace];
-    if (!rgb) rgb = color;
-    uint8_t r = (uint8_t)(rgb.redComponent * 255);
-    uint8_t g = (uint8_t)(rgb.greenComponent * 255);
-    uint8_t b = (uint8_t)(rgb.blueComponent * 255);
-    return rgba_to_colorref(r, g, b);
-}
-
 - (void)onFillType:(NSPopUpButton*)sender
 {
     cfg_background_fill_type = (int)sender.indexOfSelectedItem;
@@ -1059,13 +1066,13 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
 
 - (void)onSolidColour:(NSColorWell*)sender
 {
-    cfg_background_colour = (int)[self colorRefFromNSColor:sender.color];
+    cfg_background_colour = (int)colorref_from_nscolor(sender.color);
     repaint_all_lyric_panels();
 }
 
 - (void)onGradient:(NSColorWell*)sender
 {
-    uint32_t c = [self colorRefFromNSColor:sender.color];
+    uint32_t c = colorref_from_nscolor(sender.color);
     switch (sender.tag) {
         case 0: cfg_background_gradient_tl = (int)c; break;
         case 1: cfg_background_gradient_tr = (int)c; break;
@@ -1584,6 +1591,13 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
     [scrollPopup setTarget:self];
     [scrollPopup setAction:@selector(onScrollType:)];
 
+    // Continuous scrolling
+    NSButton* continuousCheck = make_checkbox(@"Continuous scrolling (ignores scroll time)");
+    continuousCheck.state = cfg_display_scroll_continuous.get_value()
+                                ? NSControlStateValueOn : NSControlStateValueOff;
+    [continuousCheck setTarget:self];
+    [continuousCheck setAction:@selector(onContinuous:)];
+
     // Scroll time (ms)
     NSTextField* scrollTimeField = make_field(@"milliseconds");
     scrollTimeField.stringValue = [NSString stringWithFormat:@"%d",
@@ -1596,7 +1610,7 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
     fadeTimeField.stringValue = [NSString stringWithFormat:@"%d",
                                  (int)cfg_display_highlight_fade_time.get_value()];
     fadeTimeField.target = self;
-    fadeTimeField.action = @selector(onFadeTime:);;
+    fadeTimeField.action = @selector(onFadeTime:);
 
     // Line gap
     NSTextField* linegapField = make_field(@"pixels");
@@ -1605,41 +1619,87 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
     linegapField.target = self;
     linegapField.action = @selector(onLinegap:);
 
-    // Custom foreground colour toggle
-    NSButton* customFgCheck = make_checkbox(@"Use custom text colour");
+    // Custom foreground: toggle + colour well on same row
+    NSButton* customFgCheck = make_checkbox(@"Custom text colour:");
     customFgCheck.state = cfg_display_custom_fg_colour.get_value()
                               ? NSControlStateValueOn : NSControlStateValueOff;
     [customFgCheck setTarget:self];
     [customFgCheck setAction:@selector(onCustomFg:)];
 
-    // Custom highlight colour toggle
-    NSButton* customHlCheck = make_checkbox(@"Use custom highlight colour");
+    NSColorWell* fgWell = make_colorwell((uint32_t)cfg_display_fg_colour.get_value(),
+                                         self, @selector(onFgColour:));
+
+    NSStackView* fgRow = [NSStackView stackViewWithViews:@[customFgCheck, fgWell]];
+    fgRow.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+    fgRow.spacing = 8;
+
+    // Custom highlight: toggle + colour well
+    NSButton* customHlCheck = make_checkbox(@"Custom highlight colour:");
     customHlCheck.state = cfg_display_custom_hl_colour.get_value()
                               ? NSControlStateValueOn : NSControlStateValueOff;
     [customHlCheck setTarget:self];
     [customHlCheck setAction:@selector(onCustomHl:)];
 
+    NSColorWell* hlWell = make_colorwell((uint32_t)cfg_display_hl_colour.get_value(),
+                                         self, @selector(onHlColour:));
+
+    NSStackView* hlRow = [NSStackView stackViewWithViews:@[customHlCheck, hlWell]];
+    hlRow.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+    hlRow.spacing = 8;
+
+    // Past text colour type
+    NSPopUpButton* pastTypePopup = make_popup(@[
+        @"Blend with background",
+        @"Same as text",
+        @"Same as highlight",
+        @"Custom",
+    ]);
+    [pastTypePopup selectItemAtIndex:cfg_display_pasttext_colour_type.get_value()];
+    [pastTypePopup setTarget:self];
+    [pastTypePopup setAction:@selector(onPastType:)];
+
+    // Past text custom colour well
+    NSColorWell* pastWell = make_colorwell((uint32_t)cfg_display_pasttext_colour.get_value(),
+                                            self, @selector(onPastColour:));
+
+    // Custom font toggle
+    NSButton* customFontCheck = make_checkbox(@"Use custom font (not yet configurable on macOS)");
+    customFontCheck.state = cfg_display_custom_font.get_value()
+                                ? NSControlStateValueOn : NSControlStateValueOff;
+    [customFontCheck setTarget:self];
+    [customFontCheck setAction:@selector(onCustomFont:)];
+
     NSStackView* stack = make_form(@[
         make_row(@"Text alignment:", alignPopup),
         make_row(@"Scroll type:", scrollPopup),
+        continuousCheck,
         make_row(@"Scroll time (ms):", scrollTimeField),
         make_row(@"Highlight fade (ms):", fadeTimeField),
         make_row(@"Line gap (px):", linegapField),
-        customFgCheck,
-        customHlCheck,
+        fgRow,
+        hlRow,
+        make_row(@"Past text colour:", pastTypePopup),
+        make_row(@"Past text (custom):", pastWell),
+        customFontCheck,
     ]);
-    stack.frame = NSMakeRect(0, 0, 540, 300);
+    stack.frame = NSMakeRect(0, 0, 540, 420);
     self.view = stack;
 }
 
 - (void)onAlignment:(NSPopUpButton*)sender
 {
     cfg_display_text_alignment = (int)sender.indexOfSelectedItem;
+    repaint_all_lyric_panels();
 }
 
 - (void)onScrollType:(NSPopUpButton*)sender
 {
     cfg_display_scroll_type = (int)sender.indexOfSelectedItem;
+}
+
+- (void)onContinuous:(NSButton*)sender
+{
+    cfg_display_scroll_continuous = (sender.state == NSControlStateValueOn) ? 1 : 0;
 }
 
 - (void)onScrollTime:(NSTextField*)sender
@@ -1666,10 +1726,39 @@ static NSStackView* make_form(NSArray<NSView*>* rows)
     repaint_all_lyric_panels();
 }
 
+- (void)onFgColour:(NSColorWell*)sender
+{
+    cfg_display_fg_colour = (int)colorref_from_nscolor(sender.color);
+    repaint_all_lyric_panels();
+}
+
 - (void)onCustomHl:(NSButton*)sender
 {
     cfg_display_custom_hl_colour = (sender.state == NSControlStateValueOn) ? 1 : 0;
     repaint_all_lyric_panels();
+}
+
+- (void)onHlColour:(NSColorWell*)sender
+{
+    cfg_display_hl_colour = (int)colorref_from_nscolor(sender.color);
+    repaint_all_lyric_panels();
+}
+
+- (void)onPastType:(NSPopUpButton*)sender
+{
+    cfg_display_pasttext_colour_type = (int)sender.indexOfSelectedItem;
+    repaint_all_lyric_panels();
+}
+
+- (void)onPastColour:(NSColorWell*)sender
+{
+    cfg_display_pasttext_colour = (int)colorref_from_nscolor(sender.color);
+    repaint_all_lyric_panels();
+}
+
+- (void)onCustomFont:(NSButton*)sender
+{
+    cfg_display_custom_font = (sender.state == NSControlStateValueOn) ? 1 : 0;
 }
 
 @end
