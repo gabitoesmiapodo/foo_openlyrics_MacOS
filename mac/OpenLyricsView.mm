@@ -25,7 +25,8 @@ void SpawnManualSearchMac();
 
 static const CGFloat kFontSize      = 18.0;
 static const CGFloat kScrollLerp    = 0.12; // fraction toward target per tick (~60 Hz)
-static const CGFloat kTopPadding    = 8.0;
+static const CGFloat kTopPadding    = 20.0;
+static const CGFloat kSidePadding   = 20.0;
 
 // Fallback colors used when services aren't available (tests / pre-init)
 static const CGFloat kColorNormal[4]    = { 1.0, 1.0, 1.0, 1.0 };
@@ -815,7 +816,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         startY = -_scrollOffset; // scrollOffset pushes content up
     } else {
         // plain-text fallback (legacy setLyricsText: path)
-        startY = 8.0;
+        startY = kTopPadding;
     }
 
     // Read display preferences once per draw (only when services are available).
@@ -831,8 +832,6 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         memcpy(colorHighlight, kColorHighlight, sizeof(colorHighlight));
         memcpy(colorPast,      kColorPast,      sizeof(colorPast));
     }
-
-    static const CGFloat kLeftPadding = 8.0;
 
     CGFloat ascent = [_font ascender];
 
@@ -872,21 +871,22 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
         // Horizontal position based on alignment preference.
         CGFloat lineWidth = (CGFloat)CTLineGetTypographicBounds(ctLine, NULL, NULL, NULL);
+        const CGFloat usableWidth = viewWidth - 2.0 * kSidePadding;
         CGFloat xPos;
         switch (alignment) {
             case TextAlignment::TopLeft:
             case TextAlignment::MidLeft:
-                xPos = kLeftPadding;
+                xPos = kSidePadding;
                 break;
             case TextAlignment::TopRight:
             case TextAlignment::MidRight:
-                xPos = viewWidth - lineWidth - kLeftPadding;
+                xPos = viewWidth - lineWidth - kSidePadding;
                 break;
             default: // TopCentre / MidCentre
-                xPos = (viewWidth - lineWidth) / 2.0;
+                xPos = kSidePadding + (usableWidth - lineWidth) / 2.0;
                 break;
         }
-        if (xPos < 0.0) xPos = 0.0;
+        if (xPos < kSidePadding) xPos = kSidePadding;
 
         CGContextSetTextPosition(ctx, xPos, lineBaselineCT);
         CTLineDraw(ctLine, ctx);
