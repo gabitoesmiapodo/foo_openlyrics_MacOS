@@ -24,15 +24,26 @@ void SpawnManualSearchMac();
 // ---------------------------------------------------------------------------
 
 static const CGFloat kFontSize      = 18.0;
-static const CGFloat kLineGap       = 8.0;
 static const CGFloat kScrollLerp    = 0.12; // fraction toward target per tick (~60 Hz)
 
-// Colors (RGBA)
+// Fallback colors used when services aren't available (tests / pre-init)
 static const CGFloat kColorNormal[4]    = { 1.0, 1.0, 1.0, 1.0 };
 static const CGFloat kColorHighlight[4] = { 1.0, 0.85, 0.0, 1.0 };
 static const CGFloat kColorPast[4]      = { 0.5, 0.5, 0.5, 1.0 };
 static const CGFloat kColorDim[4]       = { 0.55, 0.55, 0.55, 1.0 };
 static const CGFloat kColorBackground[4]= { 0.102, 0.102, 0.102, 1.0 }; // #1A1A1A
+
+// ---------------------------------------------------------------------------
+// Color helpers
+// ---------------------------------------------------------------------------
+
+// COLORREF on macOS is 0x00BBGGRR (same as Windows GetRValue/GetGValue/GetBValue).
+static inline void colorref_to_cgfloat(t_ui_color c, CGFloat out[4]) {
+    out[0] = GetRValue(c) / 255.0;
+    out[1] = GetGValue(c) / 255.0;
+    out[2] = GetBValue(c) / 255.0;
+    out[3] = 1.0;
+}
 
 // ---------------------------------------------------------------------------
 // Active panel registry (weak references via CF)
@@ -137,12 +148,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         _currentLineIndex = -1;
 
         _font = [[NSFont systemFontOfSize:kFontSize] retain];
-
-        // Measure line height using font metrics
-        CGFloat ascent  = [_font ascender];
-        CGFloat descent = -[_font descender]; // descender is negative
-        CGFloat leading = [_font leading];
-        _lineHeight = ascent + descent + leading + kLineGap;
+        [self _recomputeLineHeight];
 
         _colorSpace = CGColorSpaceCreateDeviceRGB();
         _cachedLines = nil;
@@ -554,6 +560,17 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 // Timer management
 // ---------------------------------------------------------------------------
 
+- (void)_recomputeLineHeight {
+    CGFloat lineGap = 8.0;
+    if (core_api::are_services_available()) {
+        lineGap = (CGFloat)preferences::display::linegap();
+    }
+    CGFloat ascent  = [_font ascender];
+    CGFloat descent = -[_font descender];
+    CGFloat leading = [_font leading];
+    _lineHeight = ascent + descent + leading + lineGap;
+}
+
 - (void)_startTimer {
     if (_scrollTimer) return;
     _scrollTimer = [[NSTimer scheduledTimerWithTimeInterval:(1.0 / 60.0)
@@ -706,11 +723,21 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
     NSInteger lineCount = (NSInteger)_lyrics.lines.size();
 
-    // For unsynced lyrics, center the block vertically if it fits, else top-align
-    CGFloat startY; // Y in flipped-back "top-origin" space (distance from top)
+    // Vertical start position.
+    // For unsynced lyrics: center vertically for Mid* alignment, top-align for Top*.
+    // For synced lyrics: driven by scrollOffset.
+    TextAlignment alignForStart = TextAlignment::MidCentre;
+    if (core_api::are_services_available()) {
+        alignForStart = preferences::display::text_alignment();
+    }
+    bool isTopAligned = (alignForStart == TextAlignment::TopCentre ||
+                         alignForStart == TextAlignment::TopLeft   ||
+                         alignForStart == TextAlignment::TopRight);
+
+    CGFloat startY; // Y in top-origin space (distance from top of view)
     if (isUnsynced) {
         CGFloat totalHeight = lineCount * _lineHeight;
-        if (totalHeight < viewHeight) {
+        if (!isTopAligned && totalHeight < viewHeight) {
             startY = (viewHeight - totalHeight) / 2.0;
         } else {
             startY = 0.0;
@@ -721,6 +748,22 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         // plain-text fallback (legacy setLyricsText: path)
         startY = 8.0;
     }
+
+    // Read display preferences once per draw (only when services are available).
+    CGFloat colorNormal[4], colorHighlight[4], colorPast[4];
+    TextAlignment alignment = TextAlignment::MidCentre;
+    if (core_api::are_services_available()) {
+        colorref_to_cgfloat(preferences::display::main_text_colour(),  colorNormal);
+        colorref_to_cgfloat(preferences::display::highlight_colour(),   colorHighlight);
+        colorref_to_cgfloat(preferences::display::past_text_colour(),   colorPast);
+        alignment = preferences::display::text_alignment();
+    } else {
+        memcpy(colorNormal,    kColorNormal,    sizeof(colorNormal));
+        memcpy(colorHighlight, kColorHighlight, sizeof(colorHighlight));
+        memcpy(colorPast,      kColorPast,      sizeof(colorPast));
+    }
+
+    static const CGFloat kLeftPadding = 8.0;
 
     CGFloat ascent = [_font ascender];
 
@@ -735,21 +778,16 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         const CGFloat *color;
         if (isSynced) {
             if (i == _currentLineIndex) {
-                color = kColorHighlight;
+                color = colorHighlight;
             } else if (i < _currentLineIndex) {
-                color = kColorPast;
+                color = colorPast;
             } else {
-                color = kColorNormal;
+                color = colorNormal;
             }
         } else {
-            color = kColorNormal;
+            color = colorNormal;
         }
 
-        // Apply color to a temporary copy of the cached CTLine.
-        // CTLineCreateWithAttributedString was done once in _buildLineCache;
-        // here we only re-apply the per-frame color via a new attributed string
-        // built from the cached line's runs, or we draw and set the fill color
-        // via CGContextSetFillColorSpace before drawing.
         CGColorRef cgColor = CGColorCreate(_colorSpace, color);
         CGContextSetFillColorWithColor(ctx, cgColor);
         CGColorRelease(cgColor);
@@ -761,16 +799,24 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         }
         if (!ctLine) continue;
 
-        // CTLineDraw draws at the current text position (baseline).
-        // In flipped Core Text space: Y increases upward.
-        // lineTop is distance from the *top* of the view.
-        // Convert to Core Text Y (distance from bottom) and place baseline at
-        // (viewHeight - lineTop - ascent).
         CGFloat lineBaselineCT = viewHeight - lineTop - ascent;
 
-        // Compute line width for centering
+        // Horizontal position based on alignment preference.
         CGFloat lineWidth = (CGFloat)CTLineGetTypographicBounds(ctLine, NULL, NULL, NULL);
-        CGFloat xPos = (viewWidth - lineWidth) / 2.0;
+        CGFloat xPos;
+        switch (alignment) {
+            case TextAlignment::TopLeft:
+            case TextAlignment::MidLeft:
+                xPos = kLeftPadding;
+                break;
+            case TextAlignment::TopRight:
+            case TextAlignment::MidRight:
+                xPos = viewWidth - lineWidth - kLeftPadding;
+                break;
+            default: // TopCentre / MidCentre
+                xPos = (viewWidth - lineWidth) / 2.0;
+                break;
+        }
         if (xPos < 0.0) xPos = 0.0;
 
         CGContextSetTextPosition(ctx, xPos, lineBaselineCT);
@@ -881,6 +927,8 @@ void recompute_lyric_panel_backgrounds() {
     });
     dispatch_async(dispatch_get_main_queue(), ^{
         for (OpenLyricsView *v in snapshot) {
+            [v _recomputeLineHeight];
+            [v _invalidateLineCache];
             [v loadCustomBackgroundImage];
             [v computeBackgroundImage];
             [v setNeedsDisplay:YES];

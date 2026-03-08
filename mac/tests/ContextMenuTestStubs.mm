@@ -67,7 +67,12 @@ namespace preferences
 {
 namespace display
 {
-    bool debug_logs_enabled() { return false; }
+    bool debug_logs_enabled()          { return false; }
+    t_ui_color main_text_colour()      { return 0x00DCDCDC; } // RGB(220,220,220)
+    t_ui_color highlight_colour()      { return 0x00FFBF00; } // RGB(0,191,255)
+    t_ui_color past_text_colour()      { return 0x00808080; } // RGB(128,128,128)
+    int        linegap()               { return 8; }
+    TextAlignment text_alignment()     { return TextAlignment::MidCentre; }
 }
 namespace saving
 {
