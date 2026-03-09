@@ -170,20 +170,28 @@ std::string LocalFileSource::save(metadb_handle_ptr track,
     ensure_dir_exists(pfc::io::path::getParent(output_path), abort);
     LOG_INFO("Saving lyrics to %s...", output_path.c_str());
 
-    if(!allow_overwrite && filesystem::g_exists(output_path.c_str(), abort))
+    // On macOS, exception_io_not_found thrown across the foobar2000.app/component binary boundary
+    // is not caught by filesystem::g_exists's internal catch clause (typeinfo mismatch).
+    // Wrap in an explicit catch-all so a missing output file is treated as "does not exist".
+    bool output_already_exists = false;
+    try { output_already_exists = filesystem::g_exists(output_path.c_str(), abort); }
+    catch(const std::exception&) {}
+    if(!allow_overwrite && output_already_exists)
     {
         LOG_INFO("Save file already exists and overwriting is disallowed. The file will not be modified");
         return output_path_str;
     }
 
 #ifdef __APPLE__
-    std::string tmp_path = std::string("file://") + P_tmpdir + "/";
+    // Place the temp file next to the output file so that move_overwrite is an intra-filesystem
+    // rename.  Using P_tmpdir (system volume) causes EXDEV when saving to external volumes.
+    std::string tmp_path = output_path_str + ".tmp";
 #else
     TCHAR temp_path_str[MAX_PATH + 1];
     DWORD temp_path_str_len = GetTempPath(MAX_PATH + 1, temp_path_str);
     std::string tmp_path = from_tstring(std::tstring_view { temp_path_str, temp_path_str_len });
-#endif
     tmp_path += std::string_view(output_file_name.c_str(), output_file_name.length());
+#endif
 
     {
         // NOTE: Scoping to close the file and flush writes to disk (hopefully preventing "file in use" errors)
