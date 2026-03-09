@@ -910,6 +910,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     }
 
     CGFloat ascent = [_font ascender];
+    const CGFloat *lastColor = NULL; // track last color to skip redundant CGContext state changes
 
     for (NSInteger i = 0; i < visualRowCount; i++) {
         // Top edge of this visual row in top-origin space
@@ -937,7 +938,10 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
             color = colorNormal;
         }
 
-        CGContextSetRGBFillColor(ctx, color[0], color[1], color[2], color[3]);
+        if (color != lastColor) {
+            CGContextSetRGBFillColor(ctx, color[0], color[1], color[2], color[3]);
+            lastColor = color;
+        }
 
         // Retrieve cached CTLine (no allocation per frame).
         CTLineRef ctLine = (CTLineRef)[[_cachedLines objectAtIndex:(NSUInteger)i] pointerValue];

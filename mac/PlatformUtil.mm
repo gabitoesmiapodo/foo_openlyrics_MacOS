@@ -10,9 +10,9 @@ std::string from_tstring(std::tstring_view s) { return std::string(s); }
 std::string from_tstring(const std::tstring& s) { return s; }
 
 std::tstring normalise_utf8(std::tstring_view input) {
-    NSString *ns = [[NSString alloc] initWithBytes:input.data()
-                                            length:input.size()
-                                          encoding:NSUTF8StringEncoding];
+    NSString *ns = [[[NSString alloc] initWithBytes:input.data()
+                                             length:input.size()
+                                           encoding:NSUTF8StringEncoding] autorelease];
     if (!ns) return std::tstring(input);
     // Use NFKD (compatibility decomposition) to match the Windows NormalizationKD behaviour.
     // This is important for URL slug building in web-scraping sources: NFKD decomposes "ó"
