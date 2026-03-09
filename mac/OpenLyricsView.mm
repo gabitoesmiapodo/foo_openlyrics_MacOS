@@ -831,7 +831,13 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
     // 1. Fill background
     if (_backgroundCGImage) {
+        // CGContextDrawImage uses standard CG coordinates (Y=0 at bottom), but
+        // isFlipped=YES makes the CTM Y-flipped. Counter-flip for this draw only.
+        CGContextSaveGState(ctx);
+        CGContextTranslateCTM(ctx, 0.0, self.bounds.size.height);
+        CGContextScaleCTM(ctx, 1.0, -1.0);
         CGContextDrawImage(ctx, NSRectToCGRect(self.bounds), _backgroundCGImage);
+        CGContextRestoreGState(ctx);
     } else {
         CGContextSetRGBFillColor(ctx, kColorBackground[0], kColorBackground[1],
                                  kColorBackground[2], kColorBackground[3]);
