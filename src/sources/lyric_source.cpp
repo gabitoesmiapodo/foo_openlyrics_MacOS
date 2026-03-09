@@ -122,7 +122,7 @@ bool LyricSourceRemote::fetch_url(const std::string& url,
     const http::Result result = http::get_request(url, curl_headers, abort);
     if(!result.is_success())
     {
-        LOG_WARN("HTTP GET to %s failed (status %ld): %s",
+        LOG_INFO("HTTP GET to %s failed (status %ld): %s",
                  url.c_str(), result.response_status, result.error_message.c_str());
         return false;
     }
@@ -144,7 +144,7 @@ bool LyricSourceRemote::post_url(const std::string& url,
     const http::Result result = http::post_request(url, curl_headers, body, content_type, abort);
     if(!result.is_success())
     {
-        LOG_WARN("HTTP POST to %s failed (status %ld): %s",
+        LOG_INFO("HTTP POST to %s failed (status %ld): %s",
                  url.c_str(), result.response_status, result.error_message.c_str());
         return false;
     }
