@@ -177,7 +177,7 @@ std::string LocalFileSource::save(metadb_handle_ptr track,
     }
 
 #ifdef __APPLE__
-    std::string tmp_path = std::string(P_tmpdir) + "/";
+    std::string tmp_path = std::string("file://") + P_tmpdir + "/";
 #else
     TCHAR temp_path_str[MAX_PATH + 1];
     DWORD temp_path_str_len = GetTempPath(MAX_PATH + 1, temp_path_str);

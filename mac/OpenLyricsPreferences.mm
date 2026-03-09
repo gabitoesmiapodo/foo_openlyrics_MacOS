@@ -422,6 +422,18 @@ std::string preferences::saving::filename(metadb_handle_ptr track, const metadb_
         return {};
     }
 
+#ifdef __APPLE__
+    // g_get_native_path strips the "file://" prefix, but SDK filesystem APIs on macOS
+    // require file:// URIs (bare POSIX paths are not handled by the local filesystem service).
+    // Re-wrap bare POSIX paths so all downstream SDK calls receive a valid URI.
+    if(native_path.get_ptr()[0] == '/')
+    {
+        pfc::string8 file_uri = "file://";
+        file_uri += native_path.get_ptr();
+        return std::string(file_uri.c_str(), file_uri.length());
+    }
+#endif
+
     return std::string(native_path.c_str(), native_path.length());
 }
 
