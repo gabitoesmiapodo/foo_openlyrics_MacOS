@@ -1185,7 +1185,7 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
     };
 
     std::vector<int32_t> enabledVec = cfg_edit_auto_auto_edits.get();
-    std::set<int> enabled(enabledVec.begin(), enabledVec.end());
+    std::set<NSInteger> enabled(enabledVec.begin(), enabledVec.end());
 
     NSMutableArray* rows = [NSMutableArray array];
     [rows addObject:make_label(@"Automatic edits applied when lyrics are retrieved:")];
