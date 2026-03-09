@@ -50,6 +50,9 @@
 /// Repaints all active panels (dispatches to main queue).
 void repaint_all_lyric_panels();
 
+/// Recomputes background images then repaints all active panels (dispatches to main queue).
+void recompute_lyric_panel_backgrounds();
+
 /// Clears lyrics on all active panels. Safe to call from any thread.
 void clear_all_lyric_panels();
 

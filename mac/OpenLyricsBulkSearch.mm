@@ -40,7 +40,7 @@ static NSString* const kBulkColStatus = @"Status";
     NSTextField*             _statusLabel;
     NSProgressIndicator*     _progressIndicator;
     NSButton*                _closeButton;
-    NSTimer* __unsafe_unretained _pollTimer;
+    NSTimer* __weak _pollTimer;
 }
 @end
 
@@ -205,9 +205,11 @@ static OpenLyricsBulkSearchPanel* g_bulkSearchPanel = nil;
         _rows.push_back(std::move(row));
     }
 
+    [_tableView beginUpdates];
     [_tableView insertRowsAtIndexes:
         [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(prevCount, _rows.size() - prevCount)]
                       withAnimation:NSTableViewAnimationEffectNone];
+    [_tableView endUpdates];
     [_progressIndicator setMaxValue:(double)_rows.size()];
 
     if (wasDone) {
