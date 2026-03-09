@@ -6,16 +6,16 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 XCODE_PROJECT="$PROJECT_DIR/mac/openlyrics.xcodeproj"
 BUILD_DIR="$PROJECT_DIR/mac/build/Release"
-COMPONENT_NAME="foo_openlyrics.component"
+COMPONENT_NAME="foo_openlyrics_MacOS.component"
 
 SRC_COMPONENT="$BUILD_DIR/$COMPONENT_NAME"
-SRC_BINARY="$SRC_COMPONENT/Contents/MacOS/foo_openlyrics"
+SRC_BINARY="$SRC_COMPONENT/Contents/MacOS/foo_openlyrics_MacOS"
 
 FOOBAR_DIR="$HOME/Library/foobar2000-v2"
 USER_COMPONENTS_DIR="$FOOBAR_DIR/user-components"
-DEST_DIR="$USER_COMPONENTS_DIR/foo_openlyrics"
+DEST_DIR="$USER_COMPONENTS_DIR/foo_openlyrics_MacOS"
 DEST_COMPONENT="$DEST_DIR/$COMPONENT_NAME"
-DEST_BINARY="$DEST_COMPONENT/Contents/MacOS/foo_openlyrics"
+DEST_BINARY="$DEST_COMPONENT/Contents/MacOS/foo_openlyrics_MacOS"
 
 if pgrep -x "foobar2000" >/dev/null 2>&1; then
     echo "foobar2000 is running. Closing it before deploy..."

@@ -119,7 +119,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6A623AF8125548C8953E5B91 /* foo_openlyrics.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = foo_openlyrics.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A623AF8125548C8953E5B91 /* foo_openlyrics_MacOS.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = foo_openlyrics_MacOS.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsRegistration.mm; path = OpenLyricsRegistration.mm; sourceTree = "<group>"; };
 		DD44EE55FF6677AABB11CC22 /* OpenLyricsView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsView.h; path = OpenLyricsView.h; sourceTree = "<group>"; };
 		EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsView.mm; path = OpenLyricsView.mm; sourceTree = "<group>"; };
@@ -306,7 +306,7 @@
 		9310B529F2A3406CAEB1652A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6A623AF8125548C8953E5B91 /* foo_openlyrics.component */,
+				6A623AF8125548C8953E5B91 /* foo_openlyrics_MacOS.component */,
 				ED800983836547708F5ED86F /* openlyricsTests.xctest */,
 			);
 			name = Products;
@@ -349,7 +349,7 @@
 			packageProductDependencies = (
 			);
 			productName = openlyrics;
-			productReference = 6A623AF8125548C8953E5B91 /* foo_openlyrics.component */;
+			productReference = 6A623AF8125548C8953E5B91 /* foo_openlyrics_MacOS.component */;
 			productType = "com.apple.product-type.bundle";
 		};
 		D8052217FE294CE78A92416C /* openlyricsTests */ = {
@@ -693,7 +693,7 @@
 					"-lcurl",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
-				PRODUCT_NAME = foo_openlyrics;
+				PRODUCT_NAME = foo_openlyrics_MacOS;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				WRAPPER_EXTENSION = component;
@@ -746,7 +746,7 @@
 					"-lcurl",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
-				PRODUCT_NAME = foo_openlyrics;
+				PRODUCT_NAME = foo_openlyrics_MacOS;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				WRAPPER_EXTENSION = component;
