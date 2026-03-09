@@ -135,6 +135,8 @@ static NSString * const kColTimestamped = @"timestamped";
             [_titleField  setStringValue:[NSString stringWithUTF8String:title.c_str()]];
 
         self.window.delegate = self;
+
+        [self startSearch];
     }
     return self;
 }
@@ -453,14 +455,15 @@ static NSString * const kColTimestamped = @"timestamped";
     LyricSearchHandle& handle = _childSearch.value();
 
     // Drain any pending results
+    bool hadNew = false;
+    bool firstResult = _allLyrics.empty();
     while (handle.has_result()) {
         _allLyrics.push_back(handle.get_result());
-        NSUInteger newRow = _allLyrics.size() - 1;
-        [_tableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:newRow]
-                          withAnimation:NSTableViewAnimationEffectNone];
-
-        // Auto-select the first result
-        if (_allLyrics.size() == 1) {
+        hadNew = true;
+    }
+    if (hadNew) {
+        [_tableView reloadData];
+        if (firstResult) {
             [_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0]
                     byExtendingSelection:NO];
         }
