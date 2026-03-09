@@ -277,13 +277,32 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 - (void)onAlbumArtRetrieved:(album_art_data *)art_data {
     // Must be called on main thread.
     if (!art_data) return;
-    if (preferences::background::image_type() != BackgroundImageType::AlbumArt) return;
 
+    // Always decode and cache — the preference might change after this fires.
     std::optional<Image> maybe_img = decode_image(art_data->data(), art_data->size());
     if (!maybe_img.has_value()) return;
     _albumartOriginal = std::move(maybe_img.value());
-    [self computeBackgroundImage];
-    [self setNeedsDisplay:YES];
+
+    if (preferences::background::image_type() == BackgroundImageType::AlbumArt) {
+        [self computeBackgroundImage];
+        [self setNeedsDisplay:YES];
+    }
+}
+
+// Fetch the current album art from the notification manager if _albumartOriginal is empty.
+// Called when the user switches to AlbumArt mode (art may already have been delivered).
+- (void)_refreshAlbumArtFromCurrentIfNeeded {
+    if (_albumartOriginal.valid()) return;
+    if (!core_api::are_services_available()) return;
+    now_playing_album_art_notify_manager::ptr art_manager =
+        now_playing_album_art_notify_manager::tryGet();
+    if (!art_manager.is_valid()) return;
+    album_art_data::ptr current = art_manager->current();
+    if (!current.is_valid()) return;
+    std::optional<Image> maybe_img = decode_image(current->data(), current->size());
+    if (maybe_img.has_value()) {
+        _albumartOriginal = std::move(maybe_img.value());
+    }
 }
 
 - (void)computeBackgroundImage {
@@ -1049,6 +1068,7 @@ void recompute_lyric_panel_backgrounds() {
             [v _recomputeLineHeight];
             [v _invalidateLineCache];
             [v loadCustomBackgroundImage];
+            [v _refreshAlbumArtFromCurrentIfNeeded];
             [v computeBackgroundImage];
             [v setNeedsDisplay:YES];
         }

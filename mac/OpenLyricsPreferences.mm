@@ -968,6 +968,9 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
 // ---------------------------------------------------------------------------
 
 @interface OpenLyricsPrefsBackgroundVC : NSViewController
+{
+    NSTextField* _imgPathField;
+}
 @end
 
 @implementation OpenLyricsPrefsBackgroundVC
@@ -1024,16 +1027,16 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
     [aspectCheck setAction:@selector(onAspectRatio:)];
 
     // Custom image path + browse
-    NSTextField* imgPathField = make_field(@"path to image");
-    imgPathField.stringValue = [NSString stringWithUTF8String:
+    _imgPathField = make_field(@"path to image");
+    _imgPathField.stringValue = [NSString stringWithUTF8String:
         cfg_background_custom_img_path.get().c_str()];
-    imgPathField.target = self;
-    imgPathField.action = @selector(onCustomPath:);
+    _imgPathField.target = self;
+    _imgPathField.action = @selector(onCustomPath:);
 
     NSButton* browseBtn = [NSButton buttonWithTitle:@"Browse..."
                                              target:self action:@selector(onBrowseImage:)];
 
-    NSStackView* pathRow = [NSStackView stackViewWithViews:@[imgPathField, browseBtn]];
+    NSStackView* pathRow = [NSStackView stackViewWithViews:@[_imgPathField, browseBtn]];
     pathRow.orientation = NSUserInterfaceLayoutOrientationHorizontal;
     pathRow.spacing = 4;
 
@@ -1065,13 +1068,13 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
 - (void)onFillType:(NSPopUpButton*)sender
 {
     cfg_background_fill_type = (int)sender.indexOfSelectedItem;
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onSolidColour:(NSColorWell*)sender
 {
     cfg_background_colour = (int)colorref_from_nscolor(sender.color);
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onGradient:(NSColorWell*)sender
@@ -1083,38 +1086,38 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
         case 2: cfg_background_gradient_bl = (int)c; break;
         case 3: cfg_background_gradient_br = (int)c; break;
     }
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onImageType:(NSPopUpButton*)sender
 {
     cfg_background_image_type = (int)sender.indexOfSelectedItem;
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onOpacity:(NSSlider*)sender
 {
     cfg_background_image_opacity = (int)sender.intValue;
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onBlur:(NSSlider*)sender
 {
     cfg_background_blur_radius = (int)sender.intValue;
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onAspectRatio:(NSButton*)sender
 {
     cfg_background_maintain_img_aspect_ratio = (sender.state == NSControlStateValueOn) ? 1 : 0;
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onCustomPath:(NSTextField*)sender
 {
     const char* s = sender.stringValue.UTF8String;
     cfg_background_custom_img_path.set(s ? s : "");
-    repaint_all_lyric_panels();
+    recompute_lyric_panel_backgrounds();
 }
 
 - (void)onBrowseImage:(NSButton*)__unused sender
@@ -1127,7 +1130,8 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
     panel.allowsMultipleSelection = NO;
     if ([panel runModal] == NSModalResponseOK && panel.URL) {
         cfg_background_custom_img_path.set(panel.URL.path.UTF8String);
-        repaint_all_lyric_panels();
+        _imgPathField.stringValue = panel.URL.path;
+        recompute_lyric_panel_backgrounds();
     }
 }
 
