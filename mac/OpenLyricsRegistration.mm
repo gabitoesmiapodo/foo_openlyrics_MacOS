@@ -2,10 +2,10 @@
 #import "OpenLyricsView.h"
 #include "../src/tag_util.h"
 
-DECLARE_COMPONENT_VERSION("OpenLyrics", "0.0.1",
-    "foo_openlyrics\n\n"
-    "Open-source lyrics retrieval and display for foobar2000 on macOS.\n"
-    "Source: https://github.com/jacquesh/foo_openlyrics\n"
+DECLARE_COMPONENT_VERSION("foo_openlyrics_MacOS", "0.9.0",
+    "foo_openlyrics_MacOS\n\n"
+    "MacOS port of OpenLyrics (https://github.com/jacquesh/foo_openlyrics) and open-source lyrics retrieval and display component for foobar2000.\n\n"
+    "Repository: https://github.com/gabitoesmiapodo/projectMacOS\n"
 );
 
 VALIDATE_COMPONENT_FILENAME("foo_openlyrics.component");
