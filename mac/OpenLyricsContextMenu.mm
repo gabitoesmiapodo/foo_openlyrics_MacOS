@@ -238,14 +238,13 @@ public:
                            "search for it.\n\nAre you sure you want to proceed?";
                 }
 
-                popup_message_v3::query_t query = {};
-                query.title     = "Confirm delete & mark as instrumental";
-                query.msg       = msg.c_str();
-                query.buttons   = popup_message_v3::buttonYes | popup_message_v3::buttonNo;
-                query.defButton = popup_message_v3::buttonNo;
-                query.icon      = popup_message_v3::iconWarning;
-                uint32_t popup_result = popup_message_v3::get()->show_query_modal(query);
-                if(popup_result != popup_message_v3::buttonYes)
+                NSAlert* alert = [[NSAlert alloc] init];
+                [alert setMessageText:@"Confirm delete & mark as instrumental"];
+                [alert setInformativeText:[NSString stringWithUTF8String:msg.c_str()]];
+                [alert addButtonWithTitle:@"No"];
+                [alert addButtonWithTitle:@"Yes"];
+                alert.alertStyle = NSAlertStyleWarning;
+                if([alert runModal] != NSAlertSecondButtonReturn)
                 {
                     break;
                 }
@@ -322,14 +321,10 @@ public:
                                 result_msg += ") tracks as instrumental! See the log for details.";
                             }
 
-                            popup_message_v3::query_t result_query = {};
-                            result_query.title     = "Mark as Instrumental";
-                            result_query.msg       = result_msg.c_str();
-                            result_query.buttons   = popup_message_v3::buttonOK;
-                            result_query.icon      = (failure_count == 0)
-                                                         ? popup_message_v3::iconInformation
-                                                         : popup_message_v3::iconWarning;
-                            popup_message_v3::get()->show_query_modal(result_query);
+                            popup_message::g_show(result_msg.c_str(), "Mark as Instrumental",
+                                                  (failure_count == 0)
+                                                      ? popup_message::icon_information
+                                                      : popup_message::icon_error);
                         });
                 };
 
