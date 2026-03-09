@@ -5,7 +5,7 @@
 DECLARE_COMPONENT_VERSION("OpenLyrics MacOS", "0.9.0",
     "foo_openlyrics_MacOS\n\n"
     "MacOS port of OpenLyrics (https://github.com/jacquesh/foo_openlyrics) an open-source lyrics retrieval and display component for foobar2000.\n\n"
-    "Repository: https://github.com/gabitoesmiapodo/projectMacOS\n"
+    "Repository: https://github.com/gabitoesmiapodo/foo_openlyrics_MacOS\n"
 );
 
 VALIDATE_COMPONENT_FILENAME("foo_openlyrics_MacOS.component");
