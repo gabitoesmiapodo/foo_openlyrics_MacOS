@@ -510,7 +510,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (_lyrics.IsEmpty() || !_lyrics.IsTimestamped()) return;
     CGFloat delta = event.scrollingDeltaY;
     if (!event.hasPreciseScrollingDeltas) delta *= _lineHeight;
-    CGFloat maxScroll = MAX(0.0, (CGFloat)[self _visualRowCount] * _lineHeight - self.bounds.size.height);
+    CGFloat maxScroll = MAX(0.0, kTopPadding + (CGFloat)[self _visualRowCount] * _lineHeight - self.bounds.size.height);
     // Accumulate into the manual offset (mirrors Windows m_manual_scroll_distance).
     // Also update _scrollOffset immediately for instant visual feedback.
     _manualScrollDelta -= delta;
@@ -531,7 +531,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     if (!_isDragging) return;
     NSPoint loc = [self convertPoint:event.locationInWindow fromView:nil];
     CGFloat delta = _dragStartY - loc.y; // positive delta = dragged up = scroll down
-    CGFloat maxScroll = MAX(0.0, (CGFloat)[self _visualRowCount] * _lineHeight - self.bounds.size.height);
+    CGFloat maxScroll = MAX(0.0, kTopPadding + (CGFloat)[self _visualRowCount] * _lineHeight - self.bounds.size.height);
     _manualScrollDelta = _dragStartManualDelta + delta;
     _scrollOffset = MAX(0.0, MIN(maxScroll, _dragStartOffset + delta));
     [self setNeedsDisplay:YES];
@@ -791,7 +791,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
                 visualRow = [[_firstRowForLyricLine objectAtIndex:(NSUInteger)newLine] integerValue];
             }
             CGFloat lineCenter = visualRow * _lineHeight + _lineHeight / 2.0;
-            _targetScrollOffset = lineCenter - self.bounds.size.height / 2.0;
+            _targetScrollOffset = kTopPadding + lineCenter - self.bounds.size.height / 2.0;
         } else {
             _targetScrollOffset = 0.0;
         }
@@ -799,7 +799,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
         // Combine auto-scroll target with the user's manual offset, then clamp.
         NSInteger visualRowCount = [self _visualRowCount];
         CGFloat totalHeight = visualRowCount * _lineHeight;
-        CGFloat maxScroll = totalHeight - self.bounds.size.height;
+        CGFloat maxScroll = kTopPadding + totalHeight - self.bounds.size.height;
         if (maxScroll < 0.0) maxScroll = 0.0;
         CGFloat combinedTarget = _targetScrollOffset + _manualScrollDelta;
         if (combinedTarget < 0.0) combinedTarget = 0.0;
@@ -903,7 +903,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
             startY = kTopPadding;
         }
     } else if (isSynced) {
-        startY = -_scrollOffset; // scrollOffset pushes content up
+        startY = kTopPadding - _scrollOffset; // scrollOffset pushes content up
     } else {
         // plain-text fallback (legacy setLyricsText: path)
         startY = kTopPadding;
