@@ -255,7 +255,6 @@ static OpenLyricsEditorPanel* g_editorPanel = nil;
 - (void)windowWillClose:(NSNotification *)notification
 {
     [_tickTimer invalidate];
-    [_tickTimer release];
     _tickTimer = nil;
 
     if (g_editorPanel == self) {

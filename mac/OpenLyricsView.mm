@@ -1057,69 +1057,48 @@ size_t num_visible_lyric_panels() {
     return count;
 }
 
-void recompute_lyric_panel_backgrounds() {
+// Capture a retained NSArray snapshot of all active panels (must be safe to call from any thread).
+// Caller takes ownership of the retain; call [snapshot release] when done.
+static NSArray *capture_panels_snapshot() {
     __block NSArray *snapshot = nil;
     dispatch_sync(g_panels_queue, ^{
         CFIndex count = CFArrayGetCount(g_active_panels_cf);
         NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
         for (CFIndex i = 0; i < count; i++) {
-            OpenLyricsView *v = (OpenLyricsView *)
-                CFArrayGetValueAtIndex(g_active_panels_cf, i);
+            OpenLyricsView *v = (OpenLyricsView *)CFArrayGetValueAtIndex(g_active_panels_cf, i);
             [arr addObject:v];
         }
         snapshot = [arr retain];
     });
+    return snapshot;
+}
+
+// Dispatch a block to the main queue that iterates all active panels.
+static void for_each_panel_on_main(void (^block)(OpenLyricsView *)) {
+    NSArray *snapshot = capture_panels_snapshot();
     dispatch_async(dispatch_get_main_queue(), ^{
-        for (OpenLyricsView *v in snapshot) {
-            [v _recomputeLineHeight];
-            [v _invalidateLineCache];
-            [v loadCustomBackgroundImage];
-            [v _refreshAlbumArtFromCurrentIfNeeded];
-            [v computeBackgroundImage];
-            [v setNeedsDisplay:YES];
-        }
+        for (OpenLyricsView *v in snapshot) block(v);
         [snapshot release];
+    });
+}
+
+void recompute_lyric_panel_backgrounds() {
+    for_each_panel_on_main(^(OpenLyricsView *v) {
+        [v _recomputeLineHeight];
+        [v _invalidateLineCache];
+        [v loadCustomBackgroundImage];
+        [v _refreshAlbumArtFromCurrentIfNeeded];
+        [v computeBackgroundImage];
+        [v setNeedsDisplay:YES];
     });
 }
 
 void repaint_all_lyric_panels() {
-    __block NSArray *snapshot = nil;
-    dispatch_sync(g_panels_queue, ^{
-        CFIndex count = CFArrayGetCount(g_active_panels_cf);
-        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
-        for (CFIndex i = 0; i < count; i++) {
-            OpenLyricsView *v = (OpenLyricsView *)
-                CFArrayGetValueAtIndex(g_active_panels_cf, i);
-            [arr addObject:v];
-        }
-        snapshot = [arr retain];
-    });
-    dispatch_async(dispatch_get_main_queue(), ^{
-        for (OpenLyricsView *v in snapshot) {
-            [v setNeedsDisplay:YES];
-        }
-        [snapshot release];
-    });
+    for_each_panel_on_main(^(OpenLyricsView *v) { [v setNeedsDisplay:YES]; });
 }
 
 void clear_all_lyric_panels() {
-    __block NSArray *snapshot = nil;
-    dispatch_sync(g_panels_queue, ^{
-        CFIndex count = CFArrayGetCount(g_active_panels_cf);
-        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
-        for (CFIndex i = 0; i < count; i++) {
-            OpenLyricsView *v = (OpenLyricsView *)
-                CFArrayGetValueAtIndex(g_active_panels_cf, i);
-            [arr addObject:v];
-        }
-        snapshot = [arr retain];
-    });
-    dispatch_async(dispatch_get_main_queue(), ^{
-        for (OpenLyricsView *v in snapshot) {
-            [v clearLyrics];
-        }
-        [snapshot release];
-    });
+    for_each_panel_on_main(^(OpenLyricsView *v) { [v clearLyrics]; });
 }
 
 // ---------------------------------------------------------------------------
@@ -1170,17 +1149,7 @@ void announce_lyric_update(LyricUpdate update) {
 
         LyricData *lyricsPtr = new LyricData(std::move(maybe_lyrics.value()));
 
-        __block NSArray *snapshot = nil;
-        dispatch_sync(g_panels_queue, ^{
-            CFIndex count = CFArrayGetCount(g_active_panels_cf);
-            NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
-            for (CFIndex i = 0; i < count; i++) {
-                OpenLyricsView *v = (OpenLyricsView *)
-                    CFArrayGetValueAtIndex(g_active_panels_cf, i);
-                [arr addObject:v];
-            }
-            snapshot = [arr retain];
-        });
+        NSArray *snapshot = capture_panels_snapshot();
         for (OpenLyricsView *v in snapshot) {
             [v setNowPlayingTrack:track info:*infoPtr];
             [v updateLyrics:*lyricsPtr];
@@ -1194,17 +1163,7 @@ void announce_lyric_update(LyricUpdate update) {
 void set_now_playing_track(metadb_handle_ptr track, metadb_v2_rec_t info) {
     metadb_v2_rec_t *infoPtr = new metadb_v2_rec_t(std::move(info));
     dispatch_async(dispatch_get_main_queue(), ^{
-        __block NSArray *snapshot = nil;
-        dispatch_sync(g_panels_queue, ^{
-            CFIndex count = CFArrayGetCount(g_active_panels_cf);
-            NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
-            for (CFIndex i = 0; i < count; i++) {
-                OpenLyricsView *v = (OpenLyricsView *)
-                    CFArrayGetValueAtIndex(g_active_panels_cf, i);
-                [arr addObject:v];
-            }
-            snapshot = [arr retain];
-        });
+        NSArray *snapshot = capture_panels_snapshot();
         for (OpenLyricsView *v in snapshot) {
             [v setNowPlayingTrack:track info:*infoPtr];
         }
@@ -1216,17 +1175,7 @@ void set_now_playing_track(metadb_handle_ptr track, metadb_v2_rec_t info) {
 void announce_lyric_search_avoided(metadb_handle_ptr track, SearchAvoidanceReason avoid_reason) {
     uint64_t ts = filetimestamp_from_system_timer();
     dispatch_async(dispatch_get_main_queue(), ^{
-        __block NSArray *snapshot = nil;
-        dispatch_sync(g_panels_queue, ^{
-            CFIndex count = CFArrayGetCount(g_active_panels_cf);
-            NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
-            for (CFIndex i = 0; i < count; i++) {
-                OpenLyricsView *v = (OpenLyricsView *)
-                    CFArrayGetValueAtIndex(g_active_panels_cf, i);
-                [arr addObject:v];
-            }
-            snapshot = [arr retain];
-        });
+        NSArray *snapshot = capture_panels_snapshot();
         for (OpenLyricsView *v in snapshot) {
             if ([v nowPlayingTrack] == track) {
                 [v setSearchAvoidedReason:avoid_reason timestamp:ts];

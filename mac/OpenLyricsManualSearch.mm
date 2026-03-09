@@ -41,7 +41,7 @@ static NSString * const kColTimestamped = @"timestamped";
     metadb_v2_rec_t    _trackInfo;
 
     // Search state — all access on main thread via poll timer
-    std::list<LyricData>               _allLyrics;
+    std::vector<LyricData>             _allLyrics;
     std::optional<LyricSearchHandle>   _childSearch;
     // Use unique_ptr so we can replace it for each new search (abort_callback_impl is not copyable/assignable)
     std::unique_ptr<abort_callback_impl> _childAbort;
@@ -511,9 +511,7 @@ static NSString * const kColTimestamped = @"timestamped";
     if (row < 0 || (NSUInteger)row >= _allLyrics.size()) return;
     if (!core_api::are_services_available()) return;
 
-    auto it = _allLyrics.begin();
-    std::advance(it, (size_t)row);
-    LyricData copy = *it;
+    LyricData copy = _allLyrics[(size_t)row];
 
     announce_lyric_update({
         std::move(copy),
@@ -538,9 +536,7 @@ static NSString * const kColTimestamped = @"timestamped";
 {
     if (row < 0 || (NSUInteger)row >= _allLyrics.size()) return @"";
 
-    auto it = _allLyrics.begin();
-    std::advance(it, (size_t)row);
-    const LyricData& lyrics = *it;
+    const LyricData& lyrics = _allLyrics[(size_t)row];
 
     NSString *colId = [tableColumn identifier];
 
@@ -576,9 +572,7 @@ static NSString * const kColTimestamped = @"timestamped";
         return;
     }
 
-    auto it = _allLyrics.begin();
-    std::advance(it, (size_t)row);
-    const LyricData& lyrics = *it;
+    const LyricData& lyrics = _allLyrics[(size_t)row];
 
     std::tstring expanded = parsers::lrc::expand_text(lyrics, false);
     NSString *str = [NSString stringWithUTF8String:expanded.c_str()];
