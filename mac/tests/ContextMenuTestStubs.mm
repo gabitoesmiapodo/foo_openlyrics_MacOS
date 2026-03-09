@@ -75,6 +75,12 @@ namespace display
     TextAlignment text_alignment()     { return TextAlignment::MidCentre; }
     double scroll_time_seconds()       { return 0.5; }
     LineScrollType scroll_type()       { return LineScrollType::Automatic; }
+    namespace raw
+    {
+        bool        font_is_custom()   { return false; }
+        std::string font_name()        { return ""; }
+        int         font_size()        { return 18; }
+    }
 }
 namespace saving
 {

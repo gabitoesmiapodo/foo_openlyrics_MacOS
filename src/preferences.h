@@ -160,6 +160,10 @@ namespace preferences
         namespace raw
         {
             bool font_is_custom();
+#ifdef __APPLE__
+            std::string font_name();
+            int font_size();
+#endif
         }
     }
 

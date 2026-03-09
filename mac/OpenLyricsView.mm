@@ -640,6 +640,22 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 // ---------------------------------------------------------------------------
 
 - (void)_recomputeLineHeight {
+    if (core_api::are_services_available()) {
+        NSFont *newFont = nil;
+        if (preferences::display::raw::font_is_custom()) {
+            std::string name = preferences::display::raw::font_name();
+            CGFloat size = (CGFloat)preferences::display::raw::font_size();
+            if (!name.empty()) {
+                NSString *nsName = [NSString stringWithUTF8String:name.c_str()];
+                newFont = [NSFont fontWithName:nsName size:size];
+            }
+            if (!newFont) newFont = [NSFont systemFontOfSize:size];
+        } else {
+            newFont = [NSFont systemFontOfSize:kFontSize];
+        }
+        [_font release];
+        _font = [newFont retain];
+    }
     CGFloat lineGap = 8.0;
     if (core_api::are_services_available()) {
         lineGap = (CGFloat)preferences::display::linegap();

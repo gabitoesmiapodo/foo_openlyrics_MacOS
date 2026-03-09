@@ -92,6 +92,8 @@ static const GUID GUID_CFG_DISPLAY_SCROLL_TIME              = { 0xc1c7dbf7, 0xd3
 static const GUID GUID_CFG_DISPLAY_SCROLL_TYPE              = { 0x3f2f17d8, 0x9309, 0x4721, { 0x9f, 0xa7, 0x79, 0x6d, 0x17, 0x84, 0x2a, 0x5d } };
 static const GUID GUID_CFG_DISPLAY_HIGHLIGHT_FADE_TIME      = { 0x63c31bb9, 0x2a83, 0x4685, { 0xb4, 0x15, 0x64, 0xd6, 0x05, 0x85, 0xbd, 0xa8 } };
 static const GUID GUID_CFG_DISPLAY_TEXT_ALIGNMENT           = { 0xfd228452, 0x6374, 0x4496, { 0xb9, 0xec, 0x19, 0xb9, 0x50, 0x02, 0x0b, 0xaa } };
+static const GUID GUID_CFG_DISPLAY_FONT_NAME_MAC            = { 0x1a6885c2, 0x7faf, 0x467d, { 0x87, 0x20, 0x28, 0xa8, 0x11, 0x04, 0x2d, 0x6b } };
+static const GUID GUID_CFG_DISPLAY_FONT_SIZE_MAC            = { 0xdd195780, 0x4865, 0x46d4, { 0xbd, 0xdd, 0xcb, 0xfc, 0x51, 0x3a, 0x64, 0xa2 } };
 
 // Background
 static const GUID GUID_CFG_BACKGROUND_MODE                     = { 0xdcb91bea, 0x942b, 0x4f0b, { 0xbc, 0xcd, 0x2f, 0x22, 0xb2, 0xaa, 0x89, 0xa9 } };
@@ -187,8 +189,10 @@ static cfg_int cfg_display_scroll_time(GUID_CFG_DISPLAY_SCROLL_TIME, 500);
 static cfg_int cfg_display_scroll_type(GUID_CFG_DISPLAY_SCROLL_TYPE,
                                        static_cast<int>(LineScrollType::Automatic));
 static cfg_int cfg_display_highlight_fade_time(GUID_CFG_DISPLAY_HIGHLIGHT_FADE_TIME, 500);
-static cfg_int cfg_display_text_alignment(GUID_CFG_DISPLAY_TEXT_ALIGNMENT,
-                                          static_cast<int>(TextAlignment::MidCentre));
+static cfg_int    cfg_display_text_alignment(GUID_CFG_DISPLAY_TEXT_ALIGNMENT,
+                                             static_cast<int>(TextAlignment::MidCentre));
+static cfg_string cfg_display_font_name(GUID_CFG_DISPLAY_FONT_NAME_MAC, "");
+static cfg_int    cfg_display_font_size(GUID_CFG_DISPLAY_FONT_SIZE_MAC, 18);
 
 // Background
 static cfg_int cfg_background_fill_type(GUID_CFG_BACKGROUND_MODE,
@@ -543,6 +547,16 @@ bool preferences::display::debug_logs_enabled()
 bool preferences::display::raw::font_is_custom()
 {
     return cfg_display_custom_font.get_value() != 0;
+}
+
+std::string preferences::display::raw::font_name()
+{
+    return std::string(cfg_display_font_name.get().c_str());
+}
+
+int preferences::display::raw::font_size()
+{
+    return (int)cfg_display_font_size.get_value();
 }
 
 // --- background ---
@@ -1589,7 +1603,9 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
 // Display page
 // ---------------------------------------------------------------------------
 
-@interface OpenLyricsPrefsDisplayVC : NSViewController
+@interface OpenLyricsPrefsDisplayVC : NSViewController {
+    NSButton *_fontButton;
+}
 @end
 
 @implementation OpenLyricsPrefsDisplayVC
@@ -1685,11 +1701,16 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
                                             self, @selector(onPastColour:));
 
     // Custom font toggle
-    NSButton* customFontCheck = make_checkbox(@"Use custom font (not yet configurable on macOS)");
+    NSButton* customFontCheck = make_checkbox(@"Use custom font:");
     customFontCheck.state = cfg_display_custom_font.get_value()
                                 ? NSControlStateValueOn : NSControlStateValueOff;
     [customFontCheck setTarget:self];
     [customFontCheck setAction:@selector(onCustomFont:)];
+
+    _fontButton = [NSButton buttonWithTitle:[self _currentFontLabel]
+                                     target:self
+                                     action:@selector(onChooseFont:)];
+    _fontButton.enabled = (cfg_display_custom_font.get_value() != 0);
 
     NSStackView* stack = make_form(@[
         make_row(@"Text alignment:", alignPopup),
@@ -1703,6 +1724,7 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
         make_row(@"Past text colour:", pastTypePopup),
         make_row(@"Past text (custom):", pastWell),
         customFontCheck,
+        make_row(@"Font:", _fontButton),
     ]);
     stack.frame = NSMakeRect(0, 0, 540, 420);
     self.view = stack;
@@ -1778,9 +1800,46 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
     repaint_all_lyric_panels();
 }
 
+- (NSString *)_currentFontLabel
+{
+    std::string name = preferences::display::raw::font_name();
+    int size = preferences::display::raw::font_size();
+    if (name.empty())
+        return [NSString stringWithFormat:@"System, %dpt", size];
+    return [NSString stringWithFormat:@"%s, %dpt", name.c_str(), size];
+}
+
 - (void)onCustomFont:(NSButton*)sender
 {
     cfg_display_custom_font = (sender.state == NSControlStateValueOn) ? 1 : 0;
+    _fontButton.enabled = (sender.state == NSControlStateValueOn);
+    recompute_lyric_panel_backgrounds();
+}
+
+- (void)onChooseFont:(id)sender
+{
+    NSFontManager *fm = [NSFontManager sharedFontManager];
+    std::string name = preferences::display::raw::font_name();
+    int size = preferences::display::raw::font_size();
+    NSFont *current = nil;
+    if (!name.empty()) {
+        NSString *nsName = [NSString stringWithUTF8String:name.c_str()];
+        current = [NSFont fontWithName:nsName size:(CGFloat)size];
+    }
+    if (!current) current = [NSFont systemFontOfSize:(CGFloat)size];
+    [fm setTarget:self];
+    [fm setSelectedFont:current isMultiple:NO];
+    [fm orderFrontFontPanel:self];
+}
+
+- (void)changeFont:(NSFontManager *)sender
+{
+    NSFont *newFont = [sender convertFont:sender.selectedFont];
+    if (!newFont) return;
+    cfg_display_font_name.set(newFont.fontName.UTF8String);
+    cfg_display_font_size = (int)round(newFont.pointSize);
+    [_fontButton setTitle:[self _currentFontLabel]];
+    recompute_lyric_panel_backgrounds();
 }
 
 @end
