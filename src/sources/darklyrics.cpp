@@ -84,8 +84,6 @@ void DarkLyricsSource::add_subsection_text_to_string(std::string& output, pugi::
 
 std::vector<LyricDataRaw> DarkLyricsSource::search(const LyricSearchParams& params, abort_callback& abort)
 {
-    http_request::ptr request = http_client::get()->create_request("GET");
-
     const std::string url_artist = remove_chars_for_url(params.artist);
     const std::string url_album = remove_chars_for_url(params.album);
     const std::string url_title = remove_chars_for_url(params.title);
@@ -93,15 +91,8 @@ std::vector<LyricDataRaw> DarkLyricsSource::search(const LyricSearchParams& para
     LOG_INFO("Querying for lyrics from %s...", url.c_str());
 
     pfc::string8 content;
-    try
+    if(!fetch_url(url, {}, content, abort))
     {
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download darklyrics.com page %s: %s", url.c_str(), e.what());
         return {};
     }
 

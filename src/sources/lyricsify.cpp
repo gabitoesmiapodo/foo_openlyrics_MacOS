@@ -72,27 +72,18 @@ std::string LyricsifySource::extract_lyrics_from_page(pfc::string8 page_content)
 
 std::vector<LyricDataRaw> LyricsifySource::search(const LyricSearchParams& params, abort_callback& abort)
 {
-    http_request::ptr request = http_client::get()->create_request("GET");
-
-    // Without a User-Agent we sometimes only get partial lyrics back
-    request->add_header("User-Agent",
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0");
-
     const std::string url_artist = transform_tag_for_url(params.artist);
     const std::string url_title = transform_tag_for_url(params.title);
     const std::string url = "http://www.lyricsify.com/lyrics/" + url_artist + "/" + url_title;
     LOG_INFO("Querying for lyrics from %s...", url.c_str());
 
+    // Without a User-Agent we sometimes only get partial lyrics back
     pfc::string8 content;
-    try
+    if(!fetch_url(url,
+                  {{"User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0"}},
+                  content, abort))
     {
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download lyricsify.com page %s: %s", url.c_str(), e.what());
         return {};
     }
 

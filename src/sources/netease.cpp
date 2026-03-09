@@ -30,21 +30,14 @@ static const LyricSourceFactory<NetEaseLyricsSource> src_factory;
 
 static const char* BASE_URL = "https://music.163.com/api";
 
-static http_request::ptr make_post_request()
-{
-    http_request::ptr request = http_client::get()->create_request("POST");
-    request->add_header("Referer", "https://music.163.com");
-    request->add_header("Cookie", "appver=2.0.2");
-    request->add_header("charset", "utf-8");
-    request->add_header("Content-Type", "application/x-www-form-urlencoded");
-
-    // For some reason, passing this header (which gives an IP in China's IP range,
-    // seemingly to suggest that the requester is in China) causes NetEase to return
-    // significantly more sensible results in some cases.
-    request->add_header("X-Real-IP", "202.96.0.0");
-
-    return request;
-}
+static const LyricSourceRemote::HttpHeaders g_netease_headers = {
+    {"Referer", "https://music.163.com"},
+    {"Cookie", "appver=2.0.2"},
+    {"charset", "utf-8"},
+    {"Content-Type", "application/x-www-form-urlencoded"},
+    // Passing a Chinese IP range header causes NetEase to return more sensible results.
+    {"X-Real-IP", "202.96.0.0"},
+};
 
 std::vector<LyricDataRaw> NetEaseLyricsSource::parse_song_ids(cJSON* json)
 {
@@ -157,16 +150,8 @@ std::vector<LyricDataRaw> NetEaseLyricsSource::search(const LyricSearchParams& p
     LOG_INFO("Querying for song ID from %s...", url.c_str());
 
     pfc::string8 content;
-    try
+    if(!post_url(url, g_netease_headers, "", "", content, abort))
     {
-        http_request::ptr request = make_post_request();
-        file_ptr response_file = request->run(url.c_str(), abort);
-
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download netease page %s: %s", url.c_str(), e.what());
         return {};
     }
 
@@ -190,16 +175,8 @@ bool NetEaseLyricsSource::lookup(LyricDataRaw& data, abort_callback& abort)
     LOG_INFO("Get NetEase lyrics for song ID %s from %s...", data.lookup_id.c_str(), url.c_str());
 
     pfc::string8 content;
-    try
+    if(!post_url(url, g_netease_headers, "", "", content, abort))
     {
-        http_request::ptr request = make_post_request();
-        file_ptr response_file = request->run(url.c_str(), abort);
-
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download NetEase page %s: %s", url.c_str(), e.what());
         return false;
     }
 

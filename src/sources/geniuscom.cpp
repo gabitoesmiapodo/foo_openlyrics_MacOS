@@ -13,8 +13,9 @@ constexpr int RESULT_LIMIT = 3;
 // The Genius API client access key used by MusicBee.
 // For some unknown reason when we request song data using *this* API key, we get lyrics,
 // but when we request song data using our own API key, we don't always get lyrics.
-constexpr auto API_KEY_HEADER =
-    "Authorization: Bearer ZTejoT_ojOEasIkT9WrMBhBQOz6eYKK5QULCMECmOhvwqjRZ6WbpamFe3geHnvp3";
+constexpr auto API_KEY_HEADER_NAME = "Authorization";
+constexpr auto API_KEY_HEADER_VALUE =
+    "Bearer ZTejoT_ojOEasIkT9WrMBhBQOz6eYKK5QULCMECmOhvwqjRZ6WbpamFe3geHnvp3";
 
 class GeniusComSource : public LyricSourceRemote
 {
@@ -64,24 +65,14 @@ static std::string remove_chars_for_url(const std::string_view input)
 
 std::vector<LyricDataRaw> GeniusComSource::search(const LyricSearchParams& params, abort_callback& abort)
 {
-    auto request = http_client::get()->create_request("GET");
-    request->add_header(API_KEY_HEADER);
-
     std::string url = "https://api.genius.com/search?q=";
     url += remove_chars_for_url(params.artist);
     url += ' ';
     url += remove_chars_for_url(params.title);
 
     pfc::string8 content;
-    try
+    if(!fetch_url(url, {{API_KEY_HEADER_NAME, API_KEY_HEADER_VALUE}}, content, abort))
     {
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to retrieve genius.com search result from %s: %s", url.c_str(), e.what());
         return {};
     }
 
@@ -147,20 +138,10 @@ std::vector<LyricDataRaw> GeniusComSource::search(const LyricSearchParams& param
 
 bool GeniusComSource::lookup(LyricDataRaw& data, abort_callback& abort)
 {
-    auto request = http_client::get()->create_request("GET");
-    request->add_header(API_KEY_HEADER);
-
     const std::string url = std::format("https://api.genius.com{}?text_format=plain", data.lookup_id);
     pfc::string8 content;
-    try
+    if(!fetch_url(url, {{API_KEY_HEADER_NAME, API_KEY_HEADER_VALUE}}, content, abort))
     {
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to retrieve genius.com song data from %s: %s", url.c_str(), e.what());
         return false;
     }
 

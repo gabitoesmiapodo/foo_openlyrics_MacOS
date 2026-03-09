@@ -65,8 +65,6 @@ static bool is_text_placeholder(std::string_view lyrics_text, const LyricSearchP
 
 std::vector<LyricDataRaw> SonglyricsSource::search(const LyricSearchParams& params, abort_callback& abort)
 {
-    auto request = http_client::get()->create_request("GET");
-
     std::string url = "https://songlyrics.com/";
     url += remove_chars_for_url(params.artist);
     url += '/';
@@ -74,17 +72,8 @@ std::vector<LyricDataRaw> SonglyricsSource::search(const LyricSearchParams& para
     url += "-lyrics";
 
     pfc::string8 content;
-    try
-    {
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download songlyrics.com page %s: %s", url.c_str(), e.what());
+    if(!fetch_url(url, {}, content, abort))
         return {};
-    }
 
     LOG_INFO("Page %s retrieved", url.c_str());
     std::string lyric_text;

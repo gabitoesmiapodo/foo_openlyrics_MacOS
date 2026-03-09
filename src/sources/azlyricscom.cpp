@@ -76,24 +76,14 @@ std::vector<LyricDataRaw> AZLyricsComSource::search(const LyricSearchParams& par
              firefox_version,
              firefox_version);
 
-    http_request::ptr request = http_client::get()->create_request("GET");
-    request->add_header("User-Agent", useragent);
-
     std::string url_artist = remove_chars_for_url(params.artist);
     std::string url_title = remove_chars_for_url(params.title);
     std::string url = "https://www.azlyrics.com/lyrics/" + url_artist + "/" + url_title + ".html";
     LOG_INFO("Querying for lyrics from %s...", url.c_str());
 
     pfc::string8 content;
-    try
+    if(!fetch_url(url, {{"User-Agent", useragent}}, content, abort))
     {
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download azlyrics.com page %s: %s", url.c_str(), e.what());
         return {};
     }
 

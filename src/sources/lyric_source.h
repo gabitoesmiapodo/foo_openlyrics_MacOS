@@ -67,6 +67,8 @@ protected:
 class LyricSourceRemote : public LyricSourceBase
 {
 public:
+    using HttpHeaders = std::vector<std::pair<std::string, std::string>>;
+
     bool is_local() const final;
     std::vector<LyricDataRaw> search(metadb_handle_ptr track,
                                      const metadb_v2_rec_t& track_info,
@@ -87,6 +89,23 @@ public:
                         abort_callback& abort); // Take lyrics by value since the upload happens in a task thread
 
 protected:
+    // Fetches a URL via GET. On macOS uses libcurl to avoid http_client encoding issues.
+    // Returns false on failure (logs warning internally).
+    bool fetch_url(const std::string& url,
+                   const HttpHeaders& headers,
+                   pfc::string8& out,
+                   abort_callback& abort) const;
+
+    // Makes a POST request. body may be empty for a bodyless POST.
+    // content_type is used as Content-Type header when non-empty.
+    // Returns false on failure (logs warning internally).
+    bool post_url(const std::string& url,
+                  const HttpHeaders& headers,
+                  const std::string& body,
+                  const std::string& content_type,
+                  pfc::string8& out,
+                  abort_callback& abort) const;
+
     static std::string urlencode(std::string_view input);
     void load_html_document(const char* html, pugi::xml_document& doc) const;
     static void add_all_text_to_string(std::string& output, const pugi::xml_node& node);

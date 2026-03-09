@@ -2,6 +2,7 @@
 
 #include "cJSON.h"
 
+#include "http.h"
 #include "logging.h"
 #include "lyric_data.h"
 #include "lyric_source.h"
@@ -51,27 +52,16 @@ std::vector<LyricDataRaw> MusixmatchLyricsSource::get_song_ids(const LyricSearch
     LOG_INFO("Querying for track ID from %s", url.c_str());
     url += apikey; // Add this after logging so we don't log sensitive info
 
+    // NOTE: Without adding the AWSELB and AWSELBCORS headers, we get a 301 (permanent redirect back)
+    //       with a header instructing us to set those cookies to the given hash.
+    //       The fb2k http API automatically follows the redirect but does not honour the Set-Cookie headers.
+    //       The redirect goes to the same URL and the request then fails after a while (presumably because
+    //       ELB thinks we're DoS'ing them and kills the connection).
+    //       Setting the headers here to just *some* value (even if its not a useful one) seems to make it work.
+    //       We may need to upgrade this in future to actually set the cookies that we're asked to set.
     pfc::string8 content;
-    try
+    if(!fetch_url(url, {{"cookie", "AWSELBCORS=0; AWSELB=0"}}, content, abort))
     {
-        http_request::ptr request = http_client::get()->create_request("GET");
-
-        // NOTE: Without adding the AWSELB and AWSELBCORS headers, we get a 301 (permanent redirect back)
-        //       with a header instructing us to set those cookies to the given hash.
-        //       The fb2k http API automatically follows the redirect but does not honour the Set-Cookie headers.
-        //       The redirect goes to the same URL and the request then fails after a while (presumably because
-        //       ELB thinks we're DoS'ing them and kills the connection).
-        //       Setting the headers here to just *some* value (even if its not a useful one) seems to make it work.
-        //       We may need to upgrade this in future to actually set the cookies that we're asked to set.
-        request->add_header("cookie", "AWSELBCORS=0; AWSELB=0");
-
-        file_ptr response_file = request->run(url.c_str(), abort);
-
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to make Musixmatch search request: %s", e.what());
         return {};
     }
 
@@ -150,19 +140,8 @@ bool MusixmatchLyricsSource::get_lyrics(LyricDataRaw& data,
     data.source_path = url;
 
     pfc::string8 content;
-    try
+    if(!fetch_url(url, {{"cookie", "AWSELBCORS=0; AWSELB=0"}}, content, abort)) // NOTE: See comment above
     {
-        http_request::ptr request = http_client::get()->create_request("GET");
-        request->add_header("cookie",
-                            "AWSELBCORS=0; AWSELB=0"); // NOTE: See the comment on the cookie in the track ID query
-
-        file_ptr response_file = request->run(url.c_str(), abort);
-
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to make Musixmatch %s request: %s", method, e.what());
         return false;
     }
 
@@ -236,14 +215,25 @@ std::string musixmatch_get_token(abort_callback& abort)
     LOG_INFO("Attempting to get Musixmatch token from %s...", url.c_str());
 
     pfc::string8 content;
+#ifdef __APPLE__
+    {
+        const http::Result result = http::get_request(
+            url, {{"cookie", "AWSELBCORS=0; AWSELB=0"}}, abort);
+        if(!result.is_success())
+        {
+            LOG_WARN("Failed to get Musixmatch token from %s: %s",
+                     url.c_str(), result.error_message.c_str());
+            return "";
+        }
+        content.set_string(result.response_content.c_str(), result.response_content.size());
+    }
+#else
     try
     {
         http_request::ptr request = http_client::get()->create_request("GET");
         request->add_header("cookie",
                             "AWSELBCORS=0; AWSELB=0"); // NOTE: See the comment on the cookie in the track ID query
-
         file_ptr response_file = request->run(url.c_str(), abort);
-
         response_file->read_string_raw(content, abort);
     }
     catch(const std::exception& e)
@@ -251,6 +241,7 @@ std::string musixmatch_get_token(abort_callback& abort)
         LOG_WARN("Failed to get Musixmatch token from %s: %s", url.c_str(), e.what());
         return "";
     }
+#endif
 
     cJSON* json = cJSON_ParseWithLength(content.c_str(), content.get_length());
     if((json == nullptr) || (json->type != cJSON_Object))
