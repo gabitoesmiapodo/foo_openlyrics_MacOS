@@ -2,7 +2,7 @@
 
 MacOS port of [foo_openlyrics](https://github.com/jacquesh/foo_openlyrics) - an open-source lyrics plugin for foobar2000.
 
-Tries to be a 1:1 port of the Windows version, but some features may be missing or not work as well as they do on Windows. Check the [original repository's README](https://github.com/jacquesh/foo_openlyrics/blob/master/README.md) for more info on the plugin's features and usage.
+Tries to be a 1:1 port of the Windows version, but some features may be missing or not work as well as they do on Windows. Check the [original repository's README](https://github.com/jacquesh/foo_openlyrics/blob/main/README.md) for more info on the plugin's features and usage.
 
 ---
 
