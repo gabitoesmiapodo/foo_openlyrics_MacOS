@@ -14,7 +14,7 @@ Tries to be a 1:1 port of the Windows version, but some features may be missing 
 - Download `foo_openlyrics_MacOS.fb2k-component` from the [releases page](https://github.com/gabitoesmiapodo/foo_openlyrics_MacOS/releases).
 - Install from foobar2000's components section: `foobar2000 -> Settings -> Components -> [+]` and select `foo_openlyrics_MacOS.fb2k-component`.
 
-## Adding the visualization to your layout
+## Adding the panel to your layout
 
 You can add the component to your layout in `View / Layout / Edit Layout` placing `openlyricsMacOS` in any place you like.
 
@@ -34,4 +34,4 @@ splitter horizontal style=thin
 
 You should see something like this:
 
-![openlyricsMacOS visualization example](images/screenshot.jpeg)
+![openlyricsMacOS panel example](images/screenshot.jpeg)
