@@ -35,7 +35,8 @@ class lyric_metadb_index_maintenance : public metadb_io_edit_callback_v2
                       t_infosref after,
                       t_infosref beforeInMetadb) override
     {
-        auto meta_index = metadb_index_manager_v2::get();
+        metadb_index_manager_v2::ptr meta_index = metadb_index_manager_v2::tryGet();
+        if(!meta_index.is_valid()) return;
         char data_buffer[MAX_METADATA_BYTES] = {};
 
         metadb_index_transaction::ptr trans = meta_index->begin_transaction();
@@ -66,7 +67,8 @@ static lyric_metadata load_lyric_metadata(const metadb_v2_rec_t& track_info)
 {
     char data_buffer[MAX_METADATA_BYTES] = {};
 
-    auto meta_index = metadb_index_manager::get();
+    metadb_index_manager::ptr meta_index = metadb_index_manager::tryGet();
+    if(!meta_index.is_valid()) return {};
     metadb_index_hash our_index_hash = lyric_metadb_index_client::hash_handle(track_info);
     const size_t data_bytes = meta_index->get_user_data_here(GUID_METADBINDEX_LYRIC_METADATA,
                                                              our_index_hash,
@@ -120,7 +122,8 @@ static void save_lyric_metadata(const metadb_v2_rec_t& track_info, lyric_metadat
     writer << metadata.last_edit_timestamp;
     writer << metadata.number_of_edits;
 
-    auto meta_index = metadb_index_manager::get();
+    metadb_index_manager::ptr meta_index = metadb_index_manager::tryGet();
+    if(!meta_index.is_valid()) return;
     metadb_index_hash our_index_hash = lyric_metadb_index_client::hash_handle(track_info);
     meta_index->set_user_data(GUID_METADBINDEX_LYRIC_METADATA,
                               our_index_hash,

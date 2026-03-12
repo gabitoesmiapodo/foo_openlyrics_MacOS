@@ -91,15 +91,23 @@ static int sort_by_name(const void* lhs_void, const void* rhs_void)
     return strcmp(((const mvtf_function_metadata*)lhs_void)->name, ((const mvtf_function_metadata*)rhs_void)->name);
 }
 
-extern "C" __declspec(dllexport) int run_mvtf_tests()
+#ifdef _WIN32
+#define MVTF_EXPORT __declspec(dllexport)
+#else
+#define MVTF_EXPORT __attribute__((visibility("default")))
+#endif
+
+extern "C" MVTF_EXPORT int run_mvtf_tests()
 {
     int return_code = 0;
     int pass_count = 0;
     int fail_count = 0;
     mvtf_running_tests = true;
     printf("Executing %d test functions...\n", mvtf_test_count);
+#ifdef _WIN32
     LARGE_INTEGER start_time = {};
     QueryPerformanceCounter(&start_time);
+#endif
     qsort(mvtf_test_functions, mvtf_test_count, sizeof(*mvtf_test_functions), sort_by_name);
     for(int i = 0; i < mvtf_test_count; i++)
     {
@@ -121,6 +129,7 @@ extern "C" __declspec(dllexport) int run_mvtf_tests()
         printf("[%s] %s\n", status_str, mvtf_test_functions[i].name);
     }
 
+#ifdef _WIN32
     LARGE_INTEGER end_time = {};
     QueryPerformanceCounter(&end_time);
     LARGE_INTEGER tick_freq = {};
@@ -128,6 +137,9 @@ extern "C" __declspec(dllexport) int run_mvtf_tests()
     uint64_t elapsed_ticks = end_time.QuadPart - start_time.QuadPart;
     double elapsed_sec = double(elapsed_ticks) / double(tick_freq.QuadPart);
     printf("Test execution completed in %.2fms: %d passed, %d failed\n", elapsed_sec * 1000.0, pass_count, fail_count);
+#else
+    printf("Test execution completed: %d passed, %d failed\n", pass_count, fail_count);
+#endif
     return return_code;
 }
 
@@ -137,7 +149,7 @@ extern "C" __declspec(dllexport) int run_mvtf_tests()
 // Main
 // ============================================================================
 
-#if defined(MVTF_MAIN)
+#if defined(MVTF_MAIN) && defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h> // For LoadLibraryA & GetProcAddress
 
@@ -188,4 +200,4 @@ int main(int argc, char** argv)
     }
     return result;
 }
-#endif // MVTF_MAIN
+#endif // MVTF_MAIN && _WIN32

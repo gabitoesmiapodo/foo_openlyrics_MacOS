@@ -1,0 +1,31 @@
+// MacStubs.mm
+// Stub implementations of Windows-only / UI-panel symbols needed by the shared
+// src/ files.  Real implementations will be provided as the macOS port matures.
+#include "stdafx.h"
+
+#include "../src/ui_hooks.h"
+
+// ---------------------------------------------------------------------------
+// UI panel hooks
+// ---------------------------------------------------------------------------
+
+// num_visible_lyric_panels, repaint_all_lyric_panels, announce_lyric_update,
+// announce_lyric_search_avoided, and set_now_playing_track are implemented
+// in OpenLyricsView.mm.
+
+// recompute_lyric_panel_backgrounds() is implemented in OpenLyricsView.mm.
+
+// ---------------------------------------------------------------------------
+// External window
+// ---------------------------------------------------------------------------
+
+// SpawnExternalLyricWindow() is implemented in OpenLyricsExternalWindow.mm.
+
+// ---------------------------------------------------------------------------
+// Lyric editor / manual search (macOS stubs — Task 7.1 / Task 8.1)
+// ---------------------------------------------------------------------------
+// SpawnLyricEditorMac is implemented in OpenLyricsEditor.mm.
+// SpawnManualSearchMac is implemented in OpenLyricsManualSearch.mm.
+
+// preferences::*, defaultui::*, and GUID_PREFERENCES_PAGE_* are implemented
+// in OpenLyricsPreferences.mm (Task 9.1).

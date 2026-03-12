@@ -27,12 +27,9 @@ private:
 };
 static const LyricSourceFactory<QQMusicLyricsSource> src_factory;
 
-static http_request::ptr make_get_request()
-{
-    http_request::ptr request = http_client::get()->create_request("GET");
-    request->add_header("Referer", "http://y.qq.com/portal/player.html");
-    return request;
-}
+static const LyricSourceRemote::HttpHeaders g_qqmusic_headers = {
+    {"Referer", "http://y.qq.com/portal/player.html"},
+};
 
 std::vector<LyricDataRaw> QQMusicLyricsSource::parse_song_ids(cJSON* json) const
 {
@@ -120,18 +117,8 @@ std::vector<LyricDataRaw> QQMusicLyricsSource::search(const LyricSearchParams& p
     LOG_INFO("Querying for song ID from %s...", url.c_str());
 
     pfc::string8 content;
-    try
-    {
-        http_request::ptr request = make_get_request();
-        file_ptr response_file = request->run(url.c_str(), abort);
-
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download QQMusic page %s: %s", url.c_str(), e.what());
+    if(!fetch_url(url, g_qqmusic_headers, content, abort))
         return {};
-    }
 
     cJSON* json = cJSON_ParseWithLength(content.c_str(), content.get_length());
     std::vector<LyricDataRaw> song_ids = parse_song_ids(json);
@@ -155,18 +142,8 @@ bool QQMusicLyricsSource::lookup(LyricDataRaw& data, abort_callback& abort)
     LOG_INFO("Get QQMusic lyrics for song ID %s from %s...", data.lookup_id.c_str(), url.c_str());
 
     pfc::string8 content;
-    try
-    {
-        http_request::ptr request = make_get_request();
-        file_ptr response_file = request->run(url.c_str(), abort);
-
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download QQMusic page %s: %s", url.c_str(), e.what());
+    if(!fetch_url(url, g_qqmusic_headers, content, abort))
         return false;
-    }
 
     bool success = false;
     cJSON* json = cJSON_ParseWithLength(content.c_str(), content.get_length());

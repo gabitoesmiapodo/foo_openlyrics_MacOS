@@ -70,8 +70,6 @@ std::vector<LyricDataRaw> BandcampSource::search(const LyricSearchParams& params
     std::vector<LyricDataRaw> result;
     for(int page_index = 1; page_index < 8; page_index++)
     {
-        http_request::ptr request = http_client::get()->create_request("GET");
-
         const std::string url_artist = remove_artist_url_chars(params.artist);
         const std::string url_title = remove_title_url_chars(params.title);
         std::string url = "http://" + url_artist + ".bandcamp.com/track/" + url_title;
@@ -82,15 +80,8 @@ std::vector<LyricDataRaw> BandcampSource::search(const LyricSearchParams& params
         LOG_INFO("Querying for lyrics from %s...", url.c_str());
 
         pfc::string8 content;
-        try
+        if(!fetch_url(url, {}, content, abort))
         {
-            file_ptr response_file = request->run(url.c_str(), abort);
-            response_file->read_string_raw(content, abort);
-            // NOTE: We're assuming here that the response is encoded in UTF-8
-        }
-        catch(const std::exception& e)
-        {
-            LOG_WARN("Failed to download bandcamp.com page %s: %s", url.c_str(), e.what());
             break;
         }
 

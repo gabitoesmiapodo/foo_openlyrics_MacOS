@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace foobar2000_io
 {
@@ -8,6 +9,12 @@ namespace foobar2000_io
 
 namespace http
 {
+    struct Header
+    {
+        std::string name;
+        std::string value;
+    };
+
     struct Result
     {
         bool completed_successfully;
@@ -19,4 +26,14 @@ namespace http
     };
 
     Result get_http2(const std::string& url, foobar2000_io::abort_callback& abort);
+    Result get_request(const std::string& url,
+                       const std::vector<Header>& headers,
+                       foobar2000_io::abort_callback& abort);
+    // body may be empty for a bodyless POST (e.g. NetEase, LRCLIB challenge).
+    // content_type is added as Content-Type header when non-empty.
+    Result post_request(const std::string& url,
+                        const std::vector<Header>& headers,
+                        const std::string& body,
+                        const std::string& content_type,
+                        foobar2000_io::abort_callback& abort);
 }

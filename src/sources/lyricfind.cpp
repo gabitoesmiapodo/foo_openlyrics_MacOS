@@ -192,22 +192,13 @@ std::vector<LyricDataRaw> LyricfindSource::search(const LyricSearchParams& param
     url += '-';
     url += transform_chars_for_url(params.title);
 
+    // Without a modern User-Agent we get 403s back
     pfc::string8 content;
-    try
+    if(!fetch_url(url,
+                  {{"User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0"}},
+                  content, abort))
     {
-        auto request = http_client::get()->create_request("GET");
-
-        // Without these we get 403s back
-        request->add_header("User-Agent",
-                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0");
-
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download lyricfind.com page %s: %s", url.c_str(), e.what());
         return {};
     }
 

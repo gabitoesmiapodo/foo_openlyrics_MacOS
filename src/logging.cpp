@@ -31,8 +31,19 @@ void openlyrics_logging::printf(openlyrics_logging::Level lvl, const char* fmt, 
         if(g_verbose_logs == VerboseLogConfig::Unknown)
         {
             const std::string verbose_file_path = std::string(core_api::get_profile_path())
+#ifdef __APPLE__
+                                                  + "/openlyrics-verbose-log.txt";
+#else
                                                   + "\\openlyrics-verbose-log.txt";
-            const bool verbose_logs = filesystem::g_exists(verbose_file_path.c_str(), fb2k::noAbort);
+#endif
+            bool verbose_logs = false;
+            try
+            {
+                verbose_logs = filesystem::g_exists(verbose_file_path.c_str(), fb2k::noAbort);
+            }
+            catch(...)
+            {
+            }
             g_verbose_logs = verbose_logs ? VerboseLogConfig::Enabled : VerboseLogConfig::Disabled;
         }
 

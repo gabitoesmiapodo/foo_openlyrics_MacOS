@@ -10,6 +10,7 @@
 #endif
 
 #include "hash_utils.h"
+#include "http.h"
 #include "logging.h"
 #include "lyric_data.h"
 #include "lyric_source.h"
@@ -151,17 +152,11 @@ std::vector<LyricDataRaw> LrclibLyricsSource::search_for_lyrics(std::string_view
     LOG_INFO("Searching for lyrics from %s", url.c_str());
 
     pfc::string8 content;
-    try
+    if(!fetch_url(url,
+                  {{"User-Agent",
+                    "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)"}},
+                  content, abort))
     {
-        http_request::ptr request = http_client::get()->create_request("GET");
-        request->add_header("User-Agent",
-                            "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)");
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to make LRCLIB search request to %s: %s", url.c_str(), e.what());
         return {};
     }
 
@@ -205,17 +200,11 @@ std::vector<LyricDataRaw> LrclibLyricsSource::get_lyrics(std::string_view artist
     LOG_INFO("Retrieving lyrics from %s", url.c_str());
 
     pfc::string8 content;
-    try
+    if(!fetch_url(url,
+                  {{"User-Agent",
+                    "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)"}},
+                  content, abort))
     {
-        http_request::ptr request = http_client::get()->create_request("GET");
-        request->add_header("User-Agent",
-                            "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)");
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to make LRCLIB search request to %s: %s", url.c_str(), e.what());
         return {};
     }
 
@@ -263,18 +252,33 @@ static std::optional<UploadChallenge> get_challenge(abort_callback& abort)
     LOG_INFO("Requesting a challenge for LRCLIB upload...");
     std::string url = std::string(g_api_url) + "request-challenge";
     pfc::string8 content;
-    try
     {
-        http_request::ptr request = http_client::get()->create_request("POST");
-        request->add_header("User-Agent",
-                            "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)");
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to request LRCLIB upload challenge from %s: %s", url.c_str(), e.what());
-        return {};
+        const std::vector<http::Header> headers = {
+            {"User-Agent",
+             "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)"}};
+#ifdef __APPLE__
+        const http::Result result = http::post_request(url, headers, "", "", abort);
+        if(!result.is_success())
+        {
+            LOG_WARN("Failed to get LRCLIB challenge from %s: %s", url.c_str(), result.error_message.c_str());
+            return {};
+        }
+        content.set_string(result.response_content.c_str(), result.response_content.size());
+#else
+        try
+        {
+            http_request::ptr request = http_client::get()->create_request("POST");
+            for(const auto& [name, value] : headers)
+                request->add_header(name.c_str(), value.c_str());
+            file_ptr response_file = request->run(url.c_str(), abort);
+            response_file->read_string_raw(content, abort);
+        }
+        catch(const std::exception& e)
+        {
+            LOG_WARN("Failed to get LRCLIB challenge from %s: %s", url.c_str(), e.what());
+            return {};
+        }
+#endif
     }
 
     cJSON* json = cJSON_ParseWithLength(content.c_str(), content.get_length());
@@ -364,8 +368,12 @@ static uint64_t solve_challenge(const UploadChallenge& challenge, abort_callback
 {
     // Compute the sha-256 of challenge `prefix`, with an integer concatenated at the end (as a utf-8 string).
     // Find one such integer for which the resulting hash value is less than `target` (IE 000000N) for N less than FF
+#ifdef __APPLE__
+    const auto start_time = std::chrono::high_resolution_clock::now();
+#else
     LARGE_INTEGER start_time = {};
     QueryPerformanceCounter(&start_time);
+#endif
 
     uint8_t target_buffer[32] = {};
     uint8_t hash_buffer[32] = {};
@@ -411,11 +419,16 @@ static uint64_t solve_challenge(const UploadChallenge& challenge, abort_callback
         nonce++;
     }
 
+#ifdef __APPLE__
+    const auto end_time = std::chrono::high_resolution_clock::now();
+    const float elapsed_sec = std::chrono::duration<float>(end_time - start_time).count();
+#else
     LARGE_INTEGER end_time = {};
     QueryPerformanceCounter(&end_time);
     LARGE_INTEGER freq = {};
     QueryPerformanceFrequency(&freq);
     const float elapsed_sec = float(end_time.QuadPart - start_time.QuadPart) / float(freq.QuadPart);
+#endif
     LOG_INFO("Solved challenge SHA256(%s) < %s with nonce %llu in %.2fs",
              challenge.prefix.c_str(),
              challenge.target.c_str(),
@@ -466,27 +479,40 @@ static void upload_lyrics(LyricData lyrics, const UploadChallenge& challenge, ui
 
     LOG_INFO("Uploading lyrics to LRCLIB...");
     std::string url = std::string(g_api_url) + "publish";
-    pfc::string8 content;
-    try
-    {
-        http_request_post_v2::ptr post;
-        http_client::get()->create_request("POST")->cast(post);
-        assert(post.is_valid());
-
-        post->add_header("User-Agent",
-                         "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)");
-        post->add_header("X-Publish-Token", token_buffer);
-        post->set_post_data(json_str, strlen(json_str), "application/json");
-        file_ptr response_file = post->run_ex(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to upload to LRCLIB via %s: %s", url.c_str(), e.what());
-        cJSON_free(json_str);
-        return;
-    }
+    const std::string json_body(json_str);
     cJSON_free(json_str);
+
+    pfc::string8 content;
+    {
+        const std::vector<http::Header> headers = {
+            {"User-Agent",
+             "foo_openlyrics v" OPENLYRICS_VERSION " (https://github.com/jacquesh/foo_openlyrics)"},
+            {"X-Publish-Token", token_buffer}};
+#ifdef __APPLE__
+        const http::Result result = http::post_request(url, headers, json_body, "application/json", abort);
+        if(!result.is_success())
+        {
+            LOG_WARN("Failed to upload lyrics to LRCLIB at %s: %s", url.c_str(), result.error_message.c_str());
+            return;
+        }
+        content.set_string(result.response_content.c_str(), result.response_content.size());
+#else
+        try
+        {
+            http_request_post_v2::ptr request = http_client::get()->create_request("POST").cast_to<http_request_post_v2>();
+            for(const auto& [name, value] : headers)
+                request->add_header(name.c_str(), value.c_str());
+            request->set_post_data(json_body.c_str(), json_body.size(), "application/json");
+            file_ptr response_file = request->run_ex(url.c_str(), abort);
+            response_file->read_string_raw(content, abort);
+        }
+        catch(const std::exception& e)
+        {
+            LOG_WARN("Failed to upload lyrics to LRCLIB at %s: %s", url.c_str(), e.what());
+            return;
+        }
+#endif
+    }
 
     // This is empty on success, and only populated on error
     if(content.get_length() == 0)

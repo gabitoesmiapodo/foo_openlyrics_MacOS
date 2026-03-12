@@ -36,45 +36,22 @@ static size_t write_callback(void* contents, size_t size, size_t nmemb, std::str
     return content_len;
 }
 
-http::Result http::get_http2(const std::string& url, abort_callback& abort)
+// Runs a pre-configured CURL easy handle on a CURLM multi handle.
+// Consumes both handles (cleans them up). Also frees header_list if non-null.
+static http::Result curl_perform(CURL* curl, CURLM* multi, curl_slist* header_list,
+                                  char* error_buf, abort_callback& abort)
 {
-    CURLM* multi = curl_multi_init();
-    if(multi == nullptr)
-    {
-        Result result = {};
-        result.error_message = "Failed to initialise curl-multi handle";
-        return result;
-    }
-
-    CURL* curl = curl_easy_init();
-    if(curl == nullptr)
-    {
-        curl_multi_cleanup(multi);
-
-        Result result = {};
-        result.error_message = "Failed to initialise curl-easy handle";
-        return result;
-    }
-
-    char error_message[CURL_ERROR_SIZE] = {};
-    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_message);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "foo_openlyrics/" OPENLYRICS_VERSION);
-
-    // Force HTTP/2
-    curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-
-    Result result = {};
+    http::Result result = {};
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result.response_content);
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+    if(header_list)
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
 
     const CURLMcode add_result = curl_multi_add_handle(multi, curl);
     if(add_result != CURLM_OK)
     {
+        curl_slist_free_all(header_list);
         curl_easy_cleanup(curl);
         curl_multi_cleanup(multi);
         result.error_message = curl_multi_strerror(add_result);
@@ -92,7 +69,6 @@ http::Result http::get_http2(const std::string& url, abort_callback& abort)
             break;
         }
 
-        // Wait for socket activity for up to 2ms, will return immediately if there are no handles to wait for
         const CURLMcode wait_result = curl_multi_wait(multi, nullptr, 0, 2, nullptr);
         if(wait_result != CURLM_OK)
         {
@@ -107,12 +83,11 @@ http::Result http::get_http2(const std::string& url, abort_callback& abort)
     if((msg != nullptr) && (msg->msg == CURLMSG_DONE))
     {
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &result.response_status);
-
         const CURLcode curl_error = msg->data.result;
         result.completed_successfully = (curl_error == CURLE_OK);
-        if(error_message[0] != '\0')
+        if(error_buf[0] != '\0')
         {
-            result.error_message = error_message;
+            result.error_message = error_buf;
         }
         else if(curl_error != CURLE_OK)
         {
@@ -122,17 +97,119 @@ http::Result http::get_http2(const std::string& url, abort_callback& abort)
     else if(!abort.is_aborting())
     {
         if(msg == nullptr)
-        {
             LOG_WARN("Received unexpected info read result from curl: Null message");
-        }
         else
-        {
             LOG_WARN("Received unexpected info read result from curl: Message type %d", int(msg->msg));
-        }
     }
 
+    curl_slist_free_all(header_list);
     curl_multi_remove_handle(multi, curl);
     curl_easy_cleanup(curl);
     curl_multi_cleanup(multi);
     return result;
+}
+
+static CURL* make_curl_easy(CURLM* multi, const std::string& url, char* error_buf)
+{
+    CURL* curl = curl_easy_init();
+    if(!curl)
+    {
+        curl_multi_cleanup(multi);
+        return nullptr;
+    }
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buf);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "foo_openlyrics/" OPENLYRICS_VERSION);
+    curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    return curl;
+}
+
+static curl_slist* build_header_list(const std::vector<http::Header>& headers)
+{
+    curl_slist* list = nullptr;
+    for(const auto& h : headers)
+    {
+        const std::string header_str = h.name + ": " + h.value;
+        list = curl_slist_append(list, header_str.c_str());
+    }
+    return list;
+}
+
+http::Result http::get_http2(const std::string& url, abort_callback& abort)
+{
+    CURLM* multi = curl_multi_init();
+    if(!multi)
+    {
+        Result result = {};
+        result.error_message = "Failed to initialise curl-multi handle";
+        return result;
+    }
+    char error_buf[CURL_ERROR_SIZE] = {};
+    CURL* curl = make_curl_easy(multi, url, error_buf);
+    if(!curl)
+    {
+        Result result = {};
+        result.error_message = "Failed to initialise curl-easy handle";
+        return result;
+    }
+    return curl_perform(curl, multi, nullptr, error_buf, abort);
+}
+
+http::Result http::get_request(const std::string& url,
+                                const std::vector<Header>& headers,
+                                abort_callback& abort)
+{
+    CURLM* multi = curl_multi_init();
+    if(!multi)
+    {
+        Result result = {};
+        result.error_message = "Failed to initialise curl-multi handle";
+        return result;
+    }
+    char error_buf[CURL_ERROR_SIZE] = {};
+    CURL* curl = make_curl_easy(multi, url, error_buf);
+    if(!curl)
+    {
+        Result result = {};
+        result.error_message = "Failed to initialise curl-easy handle";
+        return result;
+    }
+    curl_slist* header_list = build_header_list(headers);
+    return curl_perform(curl, multi, header_list, error_buf, abort);
+}
+
+http::Result http::post_request(const std::string& url,
+                                 const std::vector<Header>& headers,
+                                 const std::string& body,
+                                 const std::string& content_type,
+                                 abort_callback& abort)
+{
+    CURLM* multi = curl_multi_init();
+    if(!multi)
+    {
+        Result result = {};
+        result.error_message = "Failed to initialise curl-multi handle";
+        return result;
+    }
+    char error_buf[CURL_ERROR_SIZE] = {};
+    CURL* curl = make_curl_easy(multi, url, error_buf);
+    if(!curl)
+    {
+        Result result = {};
+        result.error_message = "Failed to initialise curl-easy handle";
+        return result;
+    }
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)body.size());
+
+    std::vector<Header> all_headers = headers;
+    if(!content_type.empty())
+        all_headers.push_back({"Content-Type", content_type});
+    curl_slist* header_list = build_header_list(all_headers);
+    return curl_perform(curl, multi, header_list, error_buf, abort);
 }

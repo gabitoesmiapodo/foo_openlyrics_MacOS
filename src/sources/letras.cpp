@@ -62,23 +62,14 @@ static std::string transform_artist_for_url(const std::string_view artist)
 
 std::vector<LyricDataRaw> LetrasSource::search(const LyricSearchParams& params, abort_callback& abort)
 {
-    http_request::ptr request = http_client::get()->create_request("GET");
-
     const std::string url_artist = transform_artist_for_url(params.artist);
     const std::string url_title = transform_tag_for_url(params.title);
     const std::string url = "http://www.letras.com/" + url_artist + "/" + url_title;
     LOG_INFO("Querying for lyrics from %s...", url.c_str());
 
     pfc::string8 content;
-    try
+    if(!fetch_url(url, {}, content, abort))
     {
-        file_ptr response_file = request->run(url.c_str(), abort);
-        response_file->read_string_raw(content, abort);
-        // NOTE: We're assuming here that the response is encoded in UTF-8
-    }
-    catch(const std::exception& e)
-    {
-        LOG_WARN("Failed to download letras.com page %s: %s", url.c_str(), e.what());
         return {};
     }
 

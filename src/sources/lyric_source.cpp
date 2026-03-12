@@ -4,6 +4,7 @@
 #include "tidy.h"
 #include "tidybuffio.h"
 
+#include "http.h"
 #include "logging.h"
 #include "lyric_source.h"
 #include "tag_util.h"
@@ -106,6 +107,111 @@ std::vector<uint8_t> LyricSourceBase::string_to_raw_bytes(std::string_view str)
 {
     return std::vector((uint8_t*)str.data(), (uint8_t*)str.data() + str.length());
 }
+
+#ifdef __APPLE__
+
+bool LyricSourceRemote::fetch_url(const std::string& url,
+                                   const HttpHeaders& headers,
+                                   pfc::string8& out,
+                                   abort_callback& abort) const
+{
+    std::vector<http::Header> curl_headers;
+    curl_headers.reserve(headers.size());
+    for(const auto& [name, value] : headers)
+        curl_headers.push_back({name, value});
+    const http::Result result = http::get_request(url, curl_headers, abort);
+    if(!result.is_success())
+    {
+        LOG_INFO("HTTP GET to %s failed (status %ld): %s",
+                 url.c_str(), result.response_status, result.error_message.c_str());
+        return false;
+    }
+    out.set_string(result.response_content.c_str(), result.response_content.size());
+    return true;
+}
+
+bool LyricSourceRemote::post_url(const std::string& url,
+                                  const HttpHeaders& headers,
+                                  const std::string& body,
+                                  const std::string& content_type,
+                                  pfc::string8& out,
+                                  abort_callback& abort) const
+{
+    std::vector<http::Header> curl_headers;
+    curl_headers.reserve(headers.size());
+    for(const auto& [name, value] : headers)
+        curl_headers.push_back({name, value});
+    const http::Result result = http::post_request(url, curl_headers, body, content_type, abort);
+    if(!result.is_success())
+    {
+        LOG_INFO("HTTP POST to %s failed (status %ld): %s",
+                 url.c_str(), result.response_status, result.error_message.c_str());
+        return false;
+    }
+    out.set_string(result.response_content.c_str(), result.response_content.size());
+    return true;
+}
+
+#else // Windows: use http_client
+
+bool LyricSourceRemote::fetch_url(const std::string& url,
+                                   const HttpHeaders& headers,
+                                   pfc::string8& out,
+                                   abort_callback& abort) const
+{
+    try
+    {
+        http_request::ptr request = http_client::get()->create_request("GET");
+        for(const auto& [name, value] : headers)
+            request->add_header(name.c_str(), value.c_str());
+        file_ptr rf = request->run(url.c_str(), abort);
+        rf->read_string_raw(out, abort);
+        return true;
+    }
+    catch(const std::exception& e)
+    {
+        LOG_WARN("HTTP GET to %s failed: %s", url.c_str(), e.what());
+        return false;
+    }
+}
+
+bool LyricSourceRemote::post_url(const std::string& url,
+                                  const HttpHeaders& headers,
+                                  const std::string& body,
+                                  const std::string& content_type,
+                                  pfc::string8& out,
+                                  abort_callback& abort) const
+{
+    try
+    {
+        if(body.empty())
+        {
+            http_request::ptr request = http_client::get()->create_request("POST");
+            for(const auto& [name, value] : headers)
+                request->add_header(name.c_str(), value.c_str());
+            file_ptr rf = request->run(url.c_str(), abort);
+            rf->read_string_raw(out, abort);
+        }
+        else
+        {
+            http_request_post_v2::ptr post;
+            http_client::get()->create_request("POST")->cast(post);
+            for(const auto& [name, value] : headers)
+                post->add_header(name.c_str(), value.c_str());
+            post->set_post_data(body.c_str(), body.size(), content_type.c_str());
+            file_ptr rf = post->run_ex(url.c_str(), abort);
+            rf->read_string_raw(out, abort);
+        }
+        return true;
+    }
+    catch(const std::exception& e)
+    {
+        LOG_WARN("HTTP POST to %s failed: %s", url.c_str(), e.what());
+        return false;
+    }
+}
+
+#endif // __APPLE__
 
 bool LyricSourceRemote::is_local() const
 {

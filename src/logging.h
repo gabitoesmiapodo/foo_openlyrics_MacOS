@@ -16,6 +16,23 @@
 #define LOG_INFO_TRACKER_CONCAT(prefix, suffix) prefix##suffix
 #define LOG_INFO_TRACKER_NAME(id) LOG_INFO_TRACKER_CONCAT(TRACKER_, id)
 
+#ifdef __APPLE__
+#define LOG_ERROR(MSG, ...)                                                                                            \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        openlyrics_logging::printf(openlyrics_logging::Level::Error, "ERROR-OpenLyrics: " MSG, ##__VA_ARGS__);         \
+    } while(false)
+#define LOG_WARN(MSG, ...)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        openlyrics_logging::printf(openlyrics_logging::Level::Warn, "WARN-OpenLyrics: " MSG, ##__VA_ARGS__);           \
+    } while(false)
+#define LOG_INFO(MSG, ...)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        openlyrics_logging::printf(openlyrics_logging::Level::Info, "INFO-OpenLyrics: " MSG, ##__VA_ARGS__);           \
+    } while(false)
+#else
 #define LOG_ERROR(MSG, ...)                                                                                            \
     uCallStackTracker LOG_INFO_TRACKER_NAME(__LINE__)(#MSG);                                                           \
     do                                                                                                                 \
@@ -34,6 +51,7 @@
     {                                                                                                                  \
         openlyrics_logging::printf(openlyrics_logging::Level::Info, "INFO-OpenLyrics: " MSG, ##__VA_ARGS__);           \
     } while(false)
+#endif
 
 namespace openlyrics_logging
 {

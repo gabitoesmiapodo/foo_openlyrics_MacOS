@@ -74,7 +74,11 @@ metadb_v2_rec_t get_full_metadata(metadb_handle_ptr track)
     // always have data for non-standard tags like lyrics when running in fb2k pre-v2.
     // This function can be removed if we migrate to targetting FB2K SDK version 81 or higher.
 #if FOOBAR2000_TARGET_VERSION >= 81
+#ifdef __APPLE__
+    return track->query_v2_();
+#else
     return static_cast<const metadb_handle_v2*>(track)->query_v2();
+#endif
 #else
     metadb_handle_v2::ptr track_v2;
     if(track->cast(track_v2))

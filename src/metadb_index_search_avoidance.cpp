@@ -35,7 +35,8 @@ static lyric_search_avoidance load_search_avoidance(const metadb_v2_rec_t& track
 {
     char data_buffer[512] = {};
 
-    auto meta_index = metadb_index_manager::get();
+    metadb_index_manager::ptr meta_index = metadb_index_manager::tryGet();
+    if(!meta_index.is_valid()) return {};
     metadb_index_hash our_index_hash = lyric_metadb_index_client::hash_handle(track_info);
     size_t data_bytes = meta_index->get_user_data_here(GUID_METADBINDEX_LYRIC_HISTORY,
                                                        our_index_hash,
@@ -130,7 +131,8 @@ SearchAvoidanceReason search_avoidance_allows_search(metadb_handle_ptr track, co
 
 static void save_search_avoidance(const metadb_v2_rec_t& track_info, lyric_search_avoidance avoidance)
 {
-    auto meta_index = metadb_index_manager::get();
+    metadb_index_manager::ptr meta_index = metadb_index_manager::tryGet();
+    if(!meta_index.is_valid()) return;
     metadb_index_hash our_index_hash = lyric_metadb_index_client::hash_handle(track_info);
 
     stream_writer_formatter_simple<false> writer;
@@ -174,7 +176,8 @@ void search_avoidance_force_by_mark_instrumental(metadb_handle_ptr track, const 
 
 void clear_search_avoidance(const metadb_v2_rec_t& track_info)
 {
-    auto meta_index = metadb_index_manager::get();
+    metadb_index_manager::ptr meta_index = metadb_index_manager::tryGet();
+    if(!meta_index.is_valid()) return;
     metadb_index_hash our_index_hash = lyric_metadb_index_client::hash_handle(track_info);
 
     meta_index->set_user_data(GUID_METADBINDEX_LYRIC_HISTORY, our_index_hash, nullptr, 0);

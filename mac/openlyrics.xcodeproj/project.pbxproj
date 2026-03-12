@@ -1,0 +1,859 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */; };
+		AA11BB22CC33DD44EE55FF66 /* OpenLyricsView.mm in Sources */ = {isa = PBXBuildFile; fileRef = EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */; };
+		BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */ = {isa = PBXBuildFile; fileRef = EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */; };
+		CC33DD44EE55FF6677AABB11 /* OpenLyricsViewTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */; };
+		A3B4C5D6E7F8A9B0C1D2E3F4 /* ContextMenuTestStubs.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */; };
+		A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */; };
+		F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */; };
+		C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */; };
+		56EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */; };
+		995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */; };
+		E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */; };
+		F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */; };
+		0B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7079C6FA865741CEBE3A5895 /* libshared.a */; };
+		DF17D0F81D714E62ACE2D820 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D002BA792BF34441AC69085D /* Cocoa.framework */; };
+		252EBF78C23740E4B7AB5D19 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25543FC2712D4815AF91FD57 /* Security.framework */; };
+		4B823349763B4CE4B96BE1AA /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90B611BBC0924F24A91E26FB /* CoreFoundation.framework */; };
+		8C7FE58D94C74C44877465C6 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 781A1B8653064DD097E8A7DF /* SystemConfiguration.framework */; };
+		C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */; };
+		A1FFD025F69746FFB4E44CED /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A568C7C1D2A9410BAAD9E40C /* XCTest.framework */; };
+		B9CBE483268F4A5F99872233 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D002BA792BF34441AC69085D /* Cocoa.framework */; };
+		T056EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */; };
+		T0995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = 974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */; };
+		T0E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */; };
+		T0F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = 31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */; };
+		T00B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = 7079C6FA865741CEBE3A5895 /* libshared.a */; };
+		C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1C23D43CF14E4D87B46A96 /* PCH.cpp */; };
+		2C2ECE56ECD5458C88C6E3D0 /* lyric_metadb_index_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E248C0E0F11947AD953E74B3 /* lyric_metadb_index_client.cpp */; };
+		074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8E3FFEC597CE404D9D0B8017 /* MacStubs.mm */; };
+		/* src/ shared files */
+		F17DB2412162485682C7A2CD /* hash_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 303058D9DB8F4CB4B2FC85F8 /* hash_utils.cpp */; };
+		D93FEAB693F54376A0692802 /* http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 857F583F8D4B4C8C9EB8A7B9 /* http.cpp */; };
+		274AD124C9334EB9971B9B24 /* logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 29FF6283FA554236847D4E11 /* logging.cpp */; };
+		0AB246A515F84A1D82470375 /* lyric_auto_edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D89776C61945239CF3F1CF /* lyric_auto_edit.cpp */; };
+		33B739C661C548F496E5AE1E /* lyric_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA4C6263655E4265B096F20A /* lyric_data.cpp */; };
+		T033B739C661C548F496E5AE1E /* lyric_data.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = AA4C6263655E4265B096F20A /* lyric_data.cpp */; };
+		ED7A8AE3E3534B7284F680E6 /* lyric_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3490ADBAAB74E8ABB79BED1 /* lyric_io.cpp */; };
+		E2C7DDAA74FC4EA0B1C6B6F9 /* lyric_metadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F23F80FDE0484F1AB6F3127B /* lyric_metadata.cpp */; };
+		150B50AEAEF8424780D1B73F /* lyric_search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B312A5095948638704369C /* lyric_search.cpp */; };
+		977F385EF2E6477C81A1F171 /* metadb_index_search_avoidance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0114172B6D94C6C9D0E6493 /* metadb_index_search_avoidance.cpp */; };
+		42E60870D2C543F88F60F297 /* metrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A94535311F584C668A6CF96E /* metrics.cpp */; };
+		5F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */; };
+		571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 48A742FAFE944BC59DC864E1 /* lrc.cpp */; };
+		67B5493A860445408F7E636B /* lyric_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2B98C56F46F4BFBA17991AC /* lyric_source.cpp */; };
+		C4680A104D044F52B568ABE2 /* azlyricscom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB81EFE3AD584B4E81DC7756 /* azlyricscom.cpp */; };
+		9233419182D74AE0BE41A8F8 /* bandcamp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50BD1B411C494F1183323258 /* bandcamp.cpp */; };
+		1156F667FE104E428433FF0B /* darklyrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9B972E4C6CCE40A892C52351 /* darklyrics.cpp */; };
+		6226B907E1F64FD09268C5C9 /* geniuscom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8BD5B77C26A4A2B951959E2 /* geniuscom.cpp */; };
+		F2CA6460F8834DD8992BBB89 /* id3tag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB4359CF18DD4099AE3EA961 /* id3tag.cpp */; };
+		16507EDD66134262B220A6AA /* letras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D900AD3ACF0B4BE1BD3950D4 /* letras.cpp */; };
+		AB0C6E78EADE4810B6661999 /* localfiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4BF75D08A94815844B853B /* localfiles.cpp */; };
+		3DBE8938BD80492089962604 /* lrclib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49A81EC9A943447F85C7FEB7 /* lrclib.cpp */; };
+		62EFD9FFDADC4810BFDB6CD3 /* lyricfind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949A336C9064498B9C979B7C /* lyricfind.cpp */; };
+		15179BD170CC434CBA411DC2 /* lyricsify.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007B8BF44DED41F2B3696917 /* lyricsify.cpp */; };
+		B3A8568B136B49EA9DA43A5A /* metalarchives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B48994F403BD4C1FABF2D864 /* metalarchives.cpp */; };
+		6D69786489724397945264CD /* musixmatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7AC4A61D361A45A496F7BC5A /* musixmatch.cpp */; };
+		2073AEC6B3AF4B9B9ED9F1C2 /* netease.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4891D1247343DFADB565F8 /* netease.cpp */; };
+		06A7E464D7744424AC88162E /* qqmusic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99FA7A0CDC51401EAAAA56C9 /* qqmusic.cpp */; };
+		D4BEE8467AEE492AB97F9603 /* songlyrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69439EFED9A043349A002A32 /* songlyrics.cpp */; };
+		/* 3rdparty */
+		F7FB69F028DD475EB3258935 /* pugixml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE7D1FD319AA48FEAEFB4EA6 /* pugixml.cpp */; };
+		04F10303F4694C2AB2422064 /* cJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = 009F89D9108C43A1B4BBD2CD /* cJSON.c */; };
+		9487AC4FCE9A4A71AFC456CC /* access.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D6A8DBB88E441E93029AFE /* access.c */; };
+		644BCACB7B004DEFA7512D8A /* alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 89900E7991A34996847793F5 /* alloc.c */; };
+		B4DEFF34387A4B85803B685F /* attrdict.c in Sources */ = {isa = PBXBuildFile; fileRef = DAF55E046681483198FAC6A1 /* attrdict.c */; };
+		57C57762654C47368B90F11F /* attrs.c in Sources */ = {isa = PBXBuildFile; fileRef = 737EE35B06F64E3A8BCED1A1 /* attrs.c */; };
+		876A887480904F99A38242FC /* buffio.c in Sources */ = {isa = PBXBuildFile; fileRef = F6EFDA286A554CAD9643FDB2 /* buffio.c */; };
+		28FC26AEE3444CD7B975F868 /* charsets.c in Sources */ = {isa = PBXBuildFile; fileRef = A9999F0784AD41D59F91C26F /* charsets.c */; };
+		8CB5C034853F46808399DDCC /* clean.c in Sources */ = {isa = PBXBuildFile; fileRef = BA93F83BE9E54F35994A1D65 /* clean.c */; };
+		F94B4687AFE34596A5CB4FE7 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = 996B438D9F964D998FC033C2 /* config.c */; };
+		18BC95C8441B4342928A6B6B /* entities.c in Sources */ = {isa = PBXBuildFile; fileRef = 3E04F62518884FE2888914D9 /* entities.c */; };
+		67C4087C889348039F90B97B /* fileio.c in Sources */ = {isa = PBXBuildFile; fileRef = 246CB497F88B4439922E19A7 /* fileio.c */; };
+		53245D759F1E4389920F11E0 /* gdoc.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D1845D654D24BB5BF779699 /* gdoc.c */; };
+		6154426681B04A96B5F8A5A9 /* istack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1087978012FF4196A7C042FF /* istack.c */; };
+		CF7704CBB994403BA9429AB1 /* language.c in Sources */ = {isa = PBXBuildFile; fileRef = 0851F0C05B5F4BBE8ACF213D /* language.c */; };
+		1DC23FDD58CC4B0BAA252B8F /* lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB5DEFCC20408B9ED09B33 /* lexer.c */; };
+		F9B9AF305369492FB297FE65 /* mappedio.c in Sources */ = {isa = PBXBuildFile; fileRef = D5DB0787DA6B4EC8A7B8E8A3 /* mappedio.c */; };
+		3CF81F0049DF43C4BD52145E /* message.c in Sources */ = {isa = PBXBuildFile; fileRef = 35235C7B9EF640D7BC0AA427 /* message.c */; };
+		96875E8DCEC543B9B635B69D /* messageobj.c in Sources */ = {isa = PBXBuildFile; fileRef = F4BFFDCE63E14FD5AEDAD683 /* messageobj.c */; };
+		0792D482470944C096850F73 /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 72E1479DA10D4E958E14BFB7 /* parser.c */; };
+		6415C37BF9FD46329E2B5829 /* pprint.c in Sources */ = {isa = PBXBuildFile; fileRef = 1ABE01E97BBD4227A8370921 /* pprint.c */; };
+		1327E7E33FB44E81BCCC2576 /* sprtf.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F6930FC07444384DBB0A1 /* sprtf.c */; };
+		ED1C269E68C64EA5ABCA5364 /* streamio.c in Sources */ = {isa = PBXBuildFile; fileRef = 0BC932FB902F4B8D9CCE125F /* streamio.c */; };
+		F0F7CCDE403D4434B9D287BB /* tagask.c in Sources */ = {isa = PBXBuildFile; fileRef = 8547F54AE2814ACD8E5B3A4B /* tagask.c */; };
+		6A7F9A390CC54B31B6B13AA5 /* tags.c in Sources */ = {isa = PBXBuildFile; fileRef = 5B50D1E926C244A0BB6ED570 /* tags.c */; };
+		ABB0C88AF8C44C0A982D6A37 /* tidylib.c in Sources */ = {isa = PBXBuildFile; fileRef = A804A764EAAB470A9A475F8D /* tidylib.c */; };
+		6C4F31A1158A4B008979D712 /* tmbstr.c in Sources */ = {isa = PBXBuildFile; fileRef = 06E1BAD8DDD84148B09EACC4 /* tmbstr.c */; };
+		51180E0934414236B97F6499 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4D5BCEB70684BD79DF45712 /* utf8.c */; };
+		E1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */; };
+		E2A3B4C5D6E7F8A9B0C1D2E3 /* OpenLyricsEditor.mm in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */; };
+		E3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = F3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm */; };
+		MS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsManualSearch.mm in Sources */ = {isa = PBXBuildFile; fileRef = MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */; };
+		MS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsManualSearch.mm in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */; };
+		MS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsManualSearchTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = MS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsManualSearchTests.mm */; };
+		BS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsBulkSearch.mm in Sources */ = {isa = PBXBuildFile; fileRef = BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */; };
+		BS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsBulkSearch.mm in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */; };
+		BS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsBulkSearchTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = BS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsBulkSearchTests.mm */; };
+		CM01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsContextMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = CM11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsContextMenu.mm */; };
+		UU01A2B3C4D5E6F7A8B9C0D1 /* ui_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = UU11A2B3C4D5E6F7A8B9C0D1E /* ui_util.cpp */; };
+		PR01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = PR11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsPreferences.mm */; };
+		IP01A2B3C4D5E6F7A8B9C0D1 /* ImageProcessing.mm in Sources */ = {isa = PBXBuildFile; fileRef = IP11A2B3C4D5E6F7A8B9C0D1E /* ImageProcessing.mm */; };
+		IP02A2B3C4D5E6F7A8B9C0D1 /* ImageProcessing.mm in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = IP11A2B3C4D5E6F7A8B9C0D1E /* ImageProcessing.mm */; };
+		IP03A2B3C4D5E6F7A8B9C0D1 /* ImageProcessingTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = IP12A2B3C4D5E6F7A8B9C0D1E /* ImageProcessingTests.mm */; };
+		AC01A2B3C4D5E6F7A8B9C0D1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC11A2B3C4D5E6F7A8B9C0D1E /* Accelerate.framework */; };
+		AC02A2B3C4D5E6F7A8B9C0D1 /* Accelerate.framework in Frameworks (Tests) */ = {isa = PBXBuildFile; fileRef = AC11A2B3C4D5E6F7A8B9C0D1E /* Accelerate.framework */; };
+		EW01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsExternalWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = EW11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsExternalWindow.mm */; };
+		T0571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 48A742FAFE944BC59DC864E1 /* lrc.cpp */; };
+		T0274AD124C9334EB9971B9B24 /* logging.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = 29FF6283FA554236847D4E11 /* logging.cpp */; };
+		T05F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */; };
+		T0C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources (Tests) */ = {isa = PBXBuildFile; fileRef = EF1C23D43CF14E4D87B46A96 /* PCH.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		6A623AF8125548C8953E5B91 /* foo_openlyrics_MacOS.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = foo_openlyrics_MacOS.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsRegistration.mm; path = OpenLyricsRegistration.mm; sourceTree = "<group>"; };
+		DD44EE55FF6677AABB11CC22 /* OpenLyricsView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsView.h; path = OpenLyricsView.h; sourceTree = "<group>"; };
+		EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsView.mm; path = OpenLyricsView.mm; sourceTree = "<group>"; };
+		FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsViewTests.mm; path = tests/OpenLyricsViewTests.mm; sourceTree = "<group>"; };
+		B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ContextMenuTestStubs.mm; path = tests/ContextMenuTestStubs.mm; sourceTree = "<group>"; };
+		31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsTests.mm; path = tests/OpenLyricsTests.mm; sourceTree = "<group>"; };
+		E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PlatformUtil.h; path = PlatformUtil.h; sourceTree = "<group>"; };
+		B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = PlatformUtil.mm; path = PlatformUtil.mm; sourceTree = "<group>"; };
+		D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = PlatformUtilTests.mm; path = tests/PlatformUtilTests.mm; sourceTree = "<group>"; };
+		ED800983836547708F5ED86F /* openlyricsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = openlyricsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A568C7C1D2A9410BAAD9E40C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
+		D002BA792BF34441AC69085D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		25543FC2712D4815AF91FD57 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		90B611BBC0924F24A91E26FB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		781A1B8653064DD097E8A7DF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpfc-Mac.a"; path = "../deps/foobar2000-sdk/pfc/build/Release/libpfc-Mac.a"; sourceTree = "<group>"; };
+		974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK.a; path = "../deps/foobar2000-sdk/foobar2000/SDK/build/Release/libfoobar2000_SDK.a"; sourceTree = "<group>"; };
+		A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK_helpers.a; path = "../deps/foobar2000-sdk/foobar2000/helpers/build/Release/libfoobar2000_SDK_helpers.a"; sourceTree = "<group>"; };
+		31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_component_client.a; path = "../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release/libfoobar2000_component_client.a"; sourceTree = "<group>"; };
+		7079C6FA865741CEBE3A5895 /* libshared.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libshared.a; path = "../deps/foobar2000-sdk/foobar2000/shared/build/Release/libshared.a"; sourceTree = "<group>"; };
+		/* src/ shared files */
+		EF1C23D43CF14E4D87B46A96 /* PCH.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PCH.cpp; path = "../src/PCH.cpp"; sourceTree = "<group>"; };
+		E248C0E0F11947AD953E74B3 /* lyric_metadb_index_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_metadb_index_client.cpp; path = "../src/lyric_metadb_index_client.cpp"; sourceTree = "<group>"; };
+		8E3FFEC597CE404D9D0B8017 /* MacStubs.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = MacStubs.mm; path = MacStubs.mm; sourceTree = "<group>"; };
+		303058D9DB8F4CB4B2FC85F8 /* hash_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = hash_utils.cpp; path = "../src/hash_utils.cpp"; sourceTree = "<group>"; };
+		857F583F8D4B4C8C9EB8A7B9 /* http.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = http.cpp; path = "../src/http.cpp"; sourceTree = "<group>"; };
+		29FF6283FA554236847D4E11 /* logging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = logging.cpp; path = "../src/logging.cpp"; sourceTree = "<group>"; };
+		E2D89776C61945239CF3F1CF /* lyric_auto_edit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_auto_edit.cpp; path = "../src/lyric_auto_edit.cpp"; sourceTree = "<group>"; };
+		AA4C6263655E4265B096F20A /* lyric_data.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_data.cpp; path = "../src/lyric_data.cpp"; sourceTree = "<group>"; };
+		D3490ADBAAB74E8ABB79BED1 /* lyric_io.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_io.cpp; path = "../src/lyric_io.cpp"; sourceTree = "<group>"; };
+		F23F80FDE0484F1AB6F3127B /* lyric_metadata.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_metadata.cpp; path = "../src/lyric_metadata.cpp"; sourceTree = "<group>"; };
+		E1B312A5095948638704369C /* lyric_search.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_search.cpp; path = "../src/lyric_search.cpp"; sourceTree = "<group>"; };
+		C0114172B6D94C6C9D0E6493 /* metadb_index_search_avoidance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = metadb_index_search_avoidance.cpp; path = "../src/metadb_index_search_avoidance.cpp"; sourceTree = "<group>"; };
+		A94535311F584C668A6CF96E /* metrics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = metrics.cpp; path = "../src/metrics.cpp"; sourceTree = "<group>"; };
+		BCE45EFBF6C54D07BBCFB7DA /* tag_util.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = tag_util.cpp; path = "../src/tag_util.cpp"; sourceTree = "<group>"; };
+		48A742FAFE944BC59DC864E1 /* lrc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lrc.cpp; path = "../src/parsers/lrc.cpp"; sourceTree = "<group>"; };
+		F2B98C56F46F4BFBA17991AC /* lyric_source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_source.cpp; path = "../src/sources/lyric_source.cpp"; sourceTree = "<group>"; };
+		AB81EFE3AD584B4E81DC7756 /* azlyricscom.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = azlyricscom.cpp; path = "../src/sources/azlyricscom.cpp"; sourceTree = "<group>"; };
+		50BD1B411C494F1183323258 /* bandcamp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bandcamp.cpp; path = "../src/sources/bandcamp.cpp"; sourceTree = "<group>"; };
+		9B972E4C6CCE40A892C52351 /* darklyrics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = darklyrics.cpp; path = "../src/sources/darklyrics.cpp"; sourceTree = "<group>"; };
+		B8BD5B77C26A4A2B951959E2 /* geniuscom.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = geniuscom.cpp; path = "../src/sources/geniuscom.cpp"; sourceTree = "<group>"; };
+		FB4359CF18DD4099AE3EA961 /* id3tag.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = id3tag.cpp; path = "../src/sources/id3tag.cpp"; sourceTree = "<group>"; };
+		D900AD3ACF0B4BE1BD3950D4 /* letras.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = letras.cpp; path = "../src/sources/letras.cpp"; sourceTree = "<group>"; };
+		FA4BF75D08A94815844B853B /* localfiles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = localfiles.cpp; path = "../src/sources/localfiles.cpp"; sourceTree = "<group>"; };
+		49A81EC9A943447F85C7FEB7 /* lrclib.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lrclib.cpp; path = "../src/sources/lrclib.cpp"; sourceTree = "<group>"; };
+		949A336C9064498B9C979B7C /* lyricfind.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyricfind.cpp; path = "../src/sources/lyricfind.cpp"; sourceTree = "<group>"; };
+		007B8BF44DED41F2B3696917 /* lyricsify.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyricsify.cpp; path = "../src/sources/lyricsify.cpp"; sourceTree = "<group>"; };
+		B48994F403BD4C1FABF2D864 /* metalarchives.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = metalarchives.cpp; path = "../src/sources/metalarchives.cpp"; sourceTree = "<group>"; };
+		7AC4A61D361A45A496F7BC5A /* musixmatch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = musixmatch.cpp; path = "../src/sources/musixmatch.cpp"; sourceTree = "<group>"; };
+		3A4891D1247343DFADB565F8 /* netease.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = netease.cpp; path = "../src/sources/netease.cpp"; sourceTree = "<group>"; };
+		99FA7A0CDC51401EAAAA56C9 /* qqmusic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = qqmusic.cpp; path = "../src/sources/qqmusic.cpp"; sourceTree = "<group>"; };
+		69439EFED9A043349A002A32 /* songlyrics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = songlyrics.cpp; path = "../src/sources/songlyrics.cpp"; sourceTree = "<group>"; };
+		/* 3rdparty */
+		AE7D1FD319AA48FEAEFB4EA6 /* pugixml.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = pugixml.cpp; path = "../3rdparty/pugixml-1.12.1/src/pugixml.cpp"; sourceTree = "<group>"; };
+		009F89D9108C43A1B4BBD2CD /* cJSON.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = cJSON.c; path = "../3rdparty/cJSON/cJSON.c"; sourceTree = "<group>"; };
+		D0D6A8DBB88E441E93029AFE /* access.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = access.c; path = "../3rdparty/tidy-html5-5.8.0/src/access.c"; sourceTree = "<group>"; };
+		89900E7991A34996847793F5 /* alloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = alloc.c; path = "../3rdparty/tidy-html5-5.8.0/src/alloc.c"; sourceTree = "<group>"; };
+		DAF55E046681483198FAC6A1 /* attrdict.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = attrdict.c; path = "../3rdparty/tidy-html5-5.8.0/src/attrdict.c"; sourceTree = "<group>"; };
+		737EE35B06F64E3A8BCED1A1 /* attrs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = attrs.c; path = "../3rdparty/tidy-html5-5.8.0/src/attrs.c"; sourceTree = "<group>"; };
+		F6EFDA286A554CAD9643FDB2 /* buffio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = buffio.c; path = "../3rdparty/tidy-html5-5.8.0/src/buffio.c"; sourceTree = "<group>"; };
+		A9999F0784AD41D59F91C26F /* charsets.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = charsets.c; path = "../3rdparty/tidy-html5-5.8.0/src/charsets.c"; sourceTree = "<group>"; };
+		BA93F83BE9E54F35994A1D65 /* clean.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = clean.c; path = "../3rdparty/tidy-html5-5.8.0/src/clean.c"; sourceTree = "<group>"; };
+		996B438D9F964D998FC033C2 /* config.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = config.c; path = "../3rdparty/tidy-html5-5.8.0/src/config.c"; sourceTree = "<group>"; };
+		3E04F62518884FE2888914D9 /* entities.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = entities.c; path = "../3rdparty/tidy-html5-5.8.0/src/entities.c"; sourceTree = "<group>"; };
+		246CB497F88B4439922E19A7 /* fileio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = fileio.c; path = "../3rdparty/tidy-html5-5.8.0/src/fileio.c"; sourceTree = "<group>"; };
+		0D1845D654D24BB5BF779699 /* gdoc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gdoc.c; path = "../3rdparty/tidy-html5-5.8.0/src/gdoc.c"; sourceTree = "<group>"; };
+		1087978012FF4196A7C042FF /* istack.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = istack.c; path = "../3rdparty/tidy-html5-5.8.0/src/istack.c"; sourceTree = "<group>"; };
+		0851F0C05B5F4BBE8ACF213D /* language.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = language.c; path = "../3rdparty/tidy-html5-5.8.0/src/language.c"; sourceTree = "<group>"; };
+		4CCB5DEFCC20408B9ED09B33 /* lexer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = lexer.c; path = "../3rdparty/tidy-html5-5.8.0/src/lexer.c"; sourceTree = "<group>"; };
+		D5DB0787DA6B4EC8A7B8E8A3 /* mappedio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mappedio.c; path = "../3rdparty/tidy-html5-5.8.0/src/mappedio.c"; sourceTree = "<group>"; };
+		35235C7B9EF640D7BC0AA427 /* message.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = message.c; path = "../3rdparty/tidy-html5-5.8.0/src/message.c"; sourceTree = "<group>"; };
+		F4BFFDCE63E14FD5AEDAD683 /* messageobj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = messageobj.c; path = "../3rdparty/tidy-html5-5.8.0/src/messageobj.c"; sourceTree = "<group>"; };
+		72E1479DA10D4E958E14BFB7 /* parser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = parser.c; path = "../3rdparty/tidy-html5-5.8.0/src/parser.c"; sourceTree = "<group>"; };
+		1ABE01E97BBD4227A8370921 /* pprint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pprint.c; path = "../3rdparty/tidy-html5-5.8.0/src/pprint.c"; sourceTree = "<group>"; };
+		1C4F6930FC07444384DBB0A1 /* sprtf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = sprtf.c; path = "../3rdparty/tidy-html5-5.8.0/src/sprtf.c"; sourceTree = "<group>"; };
+		0BC932FB902F4B8D9CCE125F /* streamio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = streamio.c; path = "../3rdparty/tidy-html5-5.8.0/src/streamio.c"; sourceTree = "<group>"; };
+		8547F54AE2814ACD8E5B3A4B /* tagask.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tagask.c; path = "../3rdparty/tidy-html5-5.8.0/src/tagask.c"; sourceTree = "<group>"; };
+		5B50D1E926C244A0BB6ED570 /* tags.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tags.c; path = "../3rdparty/tidy-html5-5.8.0/src/tags.c"; sourceTree = "<group>"; };
+		A804A764EAAB470A9A475F8D /* tidylib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tidylib.c; path = "../3rdparty/tidy-html5-5.8.0/src/tidylib.c"; sourceTree = "<group>"; };
+		06E1BAD8DDD84148B09EACC4 /* tmbstr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tmbstr.c; path = "../3rdparty/tidy-html5-5.8.0/src/tmbstr.c"; sourceTree = "<group>"; };
+		E4D5BCEB70684BD79DF45712 /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = "../3rdparty/tidy-html5-5.8.0/src/utf8.c"; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F6A7B8C9D0E1 /* OpenLyricsEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsEditor.h; path = OpenLyricsEditor.h; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsEditor.mm; path = OpenLyricsEditor.mm; sourceTree = "<group>"; };
+		F3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsEditorTests.mm; path = tests/OpenLyricsEditorTests.mm; sourceTree = "<group>"; };
+		MS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsManualSearch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsManualSearch.h; path = OpenLyricsManualSearch.h; sourceTree = "<group>"; };
+		MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsManualSearch.mm; path = OpenLyricsManualSearch.mm; sourceTree = "<group>"; };
+		MS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsManualSearchTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsManualSearchTests.mm; path = tests/OpenLyricsManualSearchTests.mm; sourceTree = "<group>"; };
+		BS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsBulkSearch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpenLyricsBulkSearch.h; path = OpenLyricsBulkSearch.h; sourceTree = "<group>"; };
+		BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsBulkSearch.mm; path = OpenLyricsBulkSearch.mm; sourceTree = "<group>"; };
+		BS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsBulkSearchTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsBulkSearchTests.mm; path = tests/OpenLyricsBulkSearchTests.mm; sourceTree = "<group>"; };
+		CM11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsContextMenu.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsContextMenu.mm; path = OpenLyricsContextMenu.mm; sourceTree = "<group>"; };
+		UU11A2B3C4D5E6F7A8B9C0D1E /* ui_util.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ui_util.cpp; path = "../src/ui_util.cpp"; sourceTree = "<group>"; };
+		PR11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsPreferences.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsPreferences.mm; path = OpenLyricsPreferences.mm; sourceTree = "<group>"; };
+		IP11A2B3C4D5E6F7A8B9C0D1E /* ImageProcessing.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ImageProcessing.mm; path = ImageProcessing.mm; sourceTree = "<group>"; };
+		IP12A2B3C4D5E6F7A8B9C0D1E /* ImageProcessingTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ImageProcessingTests.mm; path = tests/ImageProcessingTests.mm; sourceTree = "<group>"; };
+		AC11A2B3C4D5E6F7A8B9C0D1E /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		EW11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsExternalWindow.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenLyricsExternalWindow.mm; path = OpenLyricsExternalWindow.mm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F513554553004585A81472B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks */,
+				F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks */,
+				E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks */,
+				995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks */,
+				56EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks */,
+				DF17D0F81D714E62ACE2D820 /* Cocoa.framework in Frameworks */,
+				252EBF78C23740E4B7AB5D19 /* Security.framework in Frameworks */,
+				4B823349763B4CE4B96BE1AA /* CoreFoundation.framework in Frameworks */,
+				8C7FE58D94C74C44877465C6 /* SystemConfiguration.framework in Frameworks */,
+				AC01A2B3C4D5E6F7A8B9C0D1 /* Accelerate.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		735CDBFE7DDC48F6A5236B64 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9CBE483268F4A5F99872233 /* Cocoa.framework in Frameworks */,
+				A1FFD025F69746FFB4E44CED /* XCTest.framework in Frameworks */,
+				T00B78A45C4C6849EEA704A0C8 /* libshared.a in Frameworks (Tests) */,
+				T0F1C9E30281744B4594E778C6 /* libfoobar2000_component_client.a in Frameworks (Tests) */,
+				T0E98C3B6B9AFF436BA14B8D40 /* libfoobar2000_SDK_helpers.a in Frameworks (Tests) */,
+				T0995C1C4C56AF4866ACF4639B /* libfoobar2000_SDK.a in Frameworks (Tests) */,
+				T056EFF6CF240244DF9D9B3EC5 /* libpfc-Mac.a in Frameworks (Tests) */,
+				AC02A2B3C4D5E6F7A8B9C0D1 /* Accelerate.framework in Frameworks (Tests) */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		303246F298224F309E1E6642 = {
+			isa = PBXGroup;
+			children = (
+				09A66935666B4956AED3DE6A /* Sources */,
+				C410B049EB7041E38C97808A /* Frameworks */,
+				9310B529F2A3406CAEB1652A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		09A66935666B4956AED3DE6A /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				34B39BD7D9BC44708CF510C9 /* OpenLyricsRegistration.mm */,
+				DD44EE55FF6677AABB11CC22 /* OpenLyricsView.h */,
+				EE55FF6677AABB11CC22DD33 /* OpenLyricsView.mm */,
+				F0A1B2C3D4E5F6A7B8C9D0E1 /* OpenLyricsEditor.h */,
+				F1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm */,
+				MS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsManualSearch.h */,
+				MS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsManualSearch.mm */,
+				BS00A1B2C3D4E5F6A7B8C9D0 /* OpenLyricsBulkSearch.h */,
+				BS11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsBulkSearch.mm */,
+				CM11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsContextMenu.mm */,
+				UU11A2B3C4D5E6F7A8B9C0D1E /* ui_util.cpp */,
+				PR11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsPreferences.mm */,
+				IP11A2B3C4D5E6F7A8B9C0D1E /* ImageProcessing.mm */,
+				EW11A2B3C4D5E6F7A8B9C0D1E /* OpenLyricsExternalWindow.mm */,
+				E6F7A8B9C0D1E2F3A4B5C6D7 /* PlatformUtil.h */,
+				B3C4D5E6F7A8B9C0D1E2F3A4 /* PlatformUtil.mm */,
+				8345C604167042049726FE2D /* Tests */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		8345C604167042049726FE2D /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				31D60440DF1E43FF82C48AD9 /* OpenLyricsTests.mm */,
+				FF6677AABB11CC22DD33EE44 /* OpenLyricsViewTests.mm */,
+				F3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm */,
+				MS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsManualSearchTests.mm */,
+				BS33A4B5C6D7E8F9A0B1C2D3E /* OpenLyricsBulkSearchTests.mm */,
+				D5E6F7A8B9C0D1E2F3A4B5C6 /* PlatformUtilTests.mm */,
+				B4C5D6E7F8A9B0C1D2E3F4A5 /* ContextMenuTestStubs.mm */,
+				IP12A2B3C4D5E6F7A8B9C0D1E /* ImageProcessingTests.mm */,
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		9310B529F2A3406CAEB1652A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6A623AF8125548C8953E5B91 /* foo_openlyrics_MacOS.component */,
+				ED800983836547708F5ED86F /* openlyricsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C410B049EB7041E38C97808A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A568C7C1D2A9410BAAD9E40C /* XCTest.framework */,
+				7079C6FA865741CEBE3A5895 /* libshared.a */,
+				31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */,
+				A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */,
+				974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */,
+				AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */,
+				781A1B8653064DD097E8A7DF /* SystemConfiguration.framework */,
+				90B611BBC0924F24A91E26FB /* CoreFoundation.framework */,
+				25543FC2712D4815AF91FD57 /* Security.framework */,
+				D002BA792BF34441AC69085D /* Cocoa.framework */,
+				AC11A2B3C4D5E6F7A8B9C0D1E /* Accelerate.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4DF1FB760DF84FF29658D926 /* openlyrics */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2567A70D1BC46E3B45836AB /* Build configuration list for PBXNativeTarget "openlyrics" */;
+			buildPhases = (
+				FA6209B70ACA441099F52941 /* Sources */,
+				F513554553004585A81472B7 /* Frameworks */,
+				700C2054E2ED491C985A934B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = openlyrics;
+			packageProductDependencies = (
+			);
+			productName = openlyrics;
+			productReference = 6A623AF8125548C8953E5B91 /* foo_openlyrics_MacOS.component */;
+			productType = "com.apple.product-type.bundle";
+		};
+		D8052217FE294CE78A92416C /* openlyricsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 39ECEBD1FF454BE58A0480B4 /* Build configuration list for PBXNativeTarget "openlyricsTests" */;
+			buildPhases = (
+				A7FD33995C8A400080282899 /* Sources */,
+				735CDBFE7DDC48F6A5236B64 /* Frameworks */,
+				F6C6BBB299744A53A2BA4310 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = openlyricsTests;
+			packageProductDependencies = (
+			);
+			productName = openlyricsTests;
+			productReference = ED800983836547708F5ED86F /* openlyricsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C27CFBDC3BDC43EDBE70BF55 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					4DF1FB760DF84FF29658D926 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					D8052217FE294CE78A92416C = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 4DF1FB760DF84FF29658D926;
+					};
+				};
+			};
+			buildConfigurationList = 57363133832D4458A014103B /* Build configuration list for PBXProject "openlyrics" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 303246F298224F309E1E6642;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9310B529F2A3406CAEB1652A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4DF1FB760DF84FF29658D926 /* openlyrics */,
+				D8052217FE294CE78A92416C /* openlyricsTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		700C2054E2ED491C985A934B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6C6BBB299744A53A2BA4310 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA6209B70ACA441099F52941 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F975E6D6CF74907975C623A /* OpenLyricsRegistration.mm in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* OpenLyricsView.mm in Sources */,
+				E1A2B3C4D5E6F7A8B9C0D1E2 /* OpenLyricsEditor.mm in Sources */,
+				MS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsManualSearch.mm in Sources */,
+				BS01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsBulkSearch.mm in Sources */,
+				CM01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsContextMenu.mm in Sources */,
+				UU01A2B3C4D5E6F7A8B9C0D1 /* ui_util.cpp in Sources */,
+				PR01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsPreferences.mm in Sources */,
+				IP01A2B3C4D5E6F7A8B9C0D1 /* ImageProcessing.mm in Sources */,
+				EW01A2B3C4D5E6F7A8B9C0D1 /* OpenLyricsExternalWindow.mm in Sources */,
+				A2B3C4D5E6F7A8B9C0D1E2F3 /* PlatformUtil.mm in Sources */,
+				074F8532ABD34922BA202AF5 /* MacStubs.mm in Sources */,
+				C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources */,
+				2C2ECE56ECD5458C88C6E3D0 /* lyric_metadb_index_client.cpp in Sources */,
+				/* src/ shared files */
+				F17DB2412162485682C7A2CD /* hash_utils.cpp in Sources */,
+				D93FEAB693F54376A0692802 /* http.cpp in Sources */,
+				274AD124C9334EB9971B9B24 /* logging.cpp in Sources */,
+				0AB246A515F84A1D82470375 /* lyric_auto_edit.cpp in Sources */,
+				33B739C661C548F496E5AE1E /* lyric_data.cpp in Sources */,
+				ED7A8AE3E3534B7284F680E6 /* lyric_io.cpp in Sources */,
+				E2C7DDAA74FC4EA0B1C6B6F9 /* lyric_metadata.cpp in Sources */,
+				150B50AEAEF8424780D1B73F /* lyric_search.cpp in Sources */,
+				977F385EF2E6477C81A1F171 /* metadb_index_search_avoidance.cpp in Sources */,
+				42E60870D2C543F88F60F297 /* metrics.cpp in Sources */,
+				5F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources */,
+				571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources */,
+				67B5493A860445408F7E636B /* lyric_source.cpp in Sources */,
+				C4680A104D044F52B568ABE2 /* azlyricscom.cpp in Sources */,
+				9233419182D74AE0BE41A8F8 /* bandcamp.cpp in Sources */,
+				1156F667FE104E428433FF0B /* darklyrics.cpp in Sources */,
+				6226B907E1F64FD09268C5C9 /* geniuscom.cpp in Sources */,
+				F2CA6460F8834DD8992BBB89 /* id3tag.cpp in Sources */,
+				16507EDD66134262B220A6AA /* letras.cpp in Sources */,
+				AB0C6E78EADE4810B6661999 /* localfiles.cpp in Sources */,
+				3DBE8938BD80492089962604 /* lrclib.cpp in Sources */,
+				62EFD9FFDADC4810BFDB6CD3 /* lyricfind.cpp in Sources */,
+				15179BD170CC434CBA411DC2 /* lyricsify.cpp in Sources */,
+				B3A8568B136B49EA9DA43A5A /* metalarchives.cpp in Sources */,
+				6D69786489724397945264CD /* musixmatch.cpp in Sources */,
+				2073AEC6B3AF4B9B9ED9F1C2 /* netease.cpp in Sources */,
+				06A7E464D7744424AC88162E /* qqmusic.cpp in Sources */,
+				D4BEE8467AEE492AB97F9603 /* songlyrics.cpp in Sources */,
+				/* 3rdparty */
+				F7FB69F028DD475EB3258935 /* pugixml.cpp in Sources */,
+				04F10303F4694C2AB2422064 /* cJSON.c in Sources */,
+				9487AC4FCE9A4A71AFC456CC /* access.c in Sources */,
+				644BCACB7B004DEFA7512D8A /* alloc.c in Sources */,
+				B4DEFF34387A4B85803B685F /* attrdict.c in Sources */,
+				57C57762654C47368B90F11F /* attrs.c in Sources */,
+				876A887480904F99A38242FC /* buffio.c in Sources */,
+				28FC26AEE3444CD7B975F868 /* charsets.c in Sources */,
+				8CB5C034853F46808399DDCC /* clean.c in Sources */,
+				F94B4687AFE34596A5CB4FE7 /* config.c in Sources */,
+				18BC95C8441B4342928A6B6B /* entities.c in Sources */,
+				67C4087C889348039F90B97B /* fileio.c in Sources */,
+				53245D759F1E4389920F11E0 /* gdoc.c in Sources */,
+				6154426681B04A96B5F8A5A9 /* istack.c in Sources */,
+				CF7704CBB994403BA9429AB1 /* language.c in Sources */,
+				1DC23FDD58CC4B0BAA252B8F /* lexer.c in Sources */,
+				F9B9AF305369492FB297FE65 /* mappedio.c in Sources */,
+				3CF81F0049DF43C4BD52145E /* message.c in Sources */,
+				96875E8DCEC543B9B635B69D /* messageobj.c in Sources */,
+				0792D482470944C096850F73 /* parser.c in Sources */,
+				6415C37BF9FD46329E2B5829 /* pprint.c in Sources */,
+				1327E7E33FB44E81BCCC2576 /* sprtf.c in Sources */,
+				ED1C269E68C64EA5ABCA5364 /* streamio.c in Sources */,
+				F0F7CCDE403D4434B9D287BB /* tagask.c in Sources */,
+				6A7F9A390CC54B31B6B13AA5 /* tags.c in Sources */,
+				ABB0C88AF8C44C0A982D6A37 /* tidylib.c in Sources */,
+				6C4F31A1158A4B008979D712 /* tmbstr.c in Sources */,
+				51180E0934414236B97F6499 /* utf8.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7FD33995C8A400080282899 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C26980C780D2492B8963932B /* OpenLyricsTests.mm in Sources */,
+				CC33DD44EE55FF6677AABB11 /* OpenLyricsViewTests.mm in Sources */,
+				E3A4B5C6D7E8F9A0B1C2D3E4 /* OpenLyricsEditorTests.mm in Sources */,
+				MS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsManualSearchTests.mm in Sources */,
+				BS03A4B5C6D7E8F9A0B1C2D3 /* OpenLyricsBulkSearchTests.mm in Sources */,
+				BB22CC33DD44EE55FF6677AA /* OpenLyricsView.mm in Sources */,
+				E2A3B4C5D6E7F8A9B0C1D2E3 /* OpenLyricsEditor.mm in Sources (Tests) */,
+				MS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsManualSearch.mm in Sources (Tests) */,
+				BS02A3B4C5D6E7F8A9B0C1D2 /* OpenLyricsBulkSearch.mm in Sources (Tests) */,
+				/* NOTE: lyric_io.cpp, lyric_source.cpp, and their deps are NOT compiled in the
+				   test target; ContextMenuTestStubs.mm provides the required stub symbols instead. */
+				C4D5E6F7A8B9C0D1E2F3A4B5 /* PlatformUtilTests.mm in Sources */,
+				F8A9B0C1D2E3F4A5B6C7D8E9 /* PlatformUtil.mm in Sources */,
+				T033B739C661C548F496E5AE1E /* lyric_data.cpp in Sources (Tests) */,
+				T0C8916DBE896B4B0F8F25FE59 /* PCH.cpp in Sources (Tests) */,
+				T0571B65ECCDE34220811E0DA1 /* lrc.cpp in Sources (Tests) */,
+				T05F17A34BE39141F3AE68A410 /* tag_util.cpp in Sources (Tests) */,
+				A3B4C5D6E7F8A9B0C1D2E3F4 /* ContextMenuTestStubs.mm in Sources */,
+				IP02A2B3C4D5E6F7A8B9C0D1 /* ImageProcessing.mm in Sources (Tests) */,
+				IP03A2B3C4D5E6F7A8B9C0D1 /* ImageProcessingTests.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3020417A418945A0ABFD890D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B524F1CCF17E48B3BEEF9D6A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		DBC8ED1C7948405BB69CC501 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = stdafx.h;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../deps/curl/include",
+					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/include",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/src",
+					"$(SRCROOT)/../3rdparty/pugixml-1.12.1/src",
+					"$(SRCROOT)/../3rdparty/cJSON",
+					"$(SRCROOT)/../src",
+					"$(SRCROOT)",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../deps/curl/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 0.0.1;
+				OTHER_LDFLAGS = (
+					"-lpfc-Mac",
+					"-lfoobar2000_SDK",
+					"-lfoobar2000_SDK_helpers",
+					"-lfoobar2000_component_client",
+					"-lshared",
+					"-lcurl",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
+				PRODUCT_NAME = foo_openlyrics_MacOS;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = component;
+			};
+			name = Debug;
+		};
+		946BF1E46D85425E80160A6F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = stdafx.h;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../deps/curl/include",
+					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/include",
+					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/src",
+					"$(SRCROOT)/../3rdparty/pugixml-1.12.1/src",
+					"$(SRCROOT)/../3rdparty/cJSON",
+					"$(SRCROOT)/../src",
+					"$(SRCROOT)",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../deps/curl/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 0.0.1;
+				OTHER_LDFLAGS = (
+					"-lpfc-Mac",
+					"-lfoobar2000_SDK",
+					"-lfoobar2000_SDK_helpers",
+					"-lfoobar2000_component_client",
+					"-lshared",
+					"-lcurl",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
+				PRODUCT_NAME = foo_openlyrics_MacOS;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = component;
+			};
+			name = Release;
+		};
+		05782023FD154698A5CA8928 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = stdafx.h;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../deps/curl/include",
+					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../src",
+					"$(SRCROOT)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		777D6960738A4A0A8952FA45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUNDLE_LOADER = "";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = stdafx.h;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../deps/curl/include",
+					"$(SRCROOT)/../3rdparty",
+					"$(SRCROOT)/../src",
+					"$(SRCROOT)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		57363133832D4458A014103B /* Build configuration list for PBXProject "openlyrics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3020417A418945A0ABFD890D /* Debug */,
+				B524F1CCF17E48B3BEEF9D6A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2567A70D1BC46E3B45836AB /* Build configuration list for PBXNativeTarget "openlyrics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBC8ED1C7948405BB69CC501 /* Debug */,
+				946BF1E46D85425E80160A6F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		39ECEBD1FF454BE58A0480B4 /* Build configuration list for PBXNativeTarget "openlyricsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05782023FD154698A5CA8928 /* Debug */,
+				777D6960738A4A0A8952FA45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C27CFBDC3BDC43EDBE70BF55 /* Project object */;
+}

@@ -2,10 +2,12 @@
 
 #include <chrono>
 
+#ifndef __APPLE__
 #pragma warning(push, 0)
 #include <bcrypt.h>
 #include <foobar2000/helpers/DarkMode.h>
 #pragma warning(pop)
+#endif
 
 #include "cJSON.h"
 
@@ -21,6 +23,8 @@
 #include "metrics.h"
 #include "sources/lyric_source.h"
 #include "ui_hooks.h"
+
+#ifndef __APPLE__
 
 // clang-format off: GUIDs should be one line
 static const GUID GUID_METRICS_FIRST_VERSION_INSTALL_DATE_DAYS_SINCE_UNIX_EPOCH = { 0x6ce22b14, 0x3237, 0x4afb, { 0x9d, 0x66, 0xe8, 0xe9, 0x9b, 0xa4, 0xee, 0xe6 } };
@@ -203,6 +207,7 @@ void metrics::log_hidden_search()
     featuretrack_hiddensearch.log_usage();
 }
 
+#ifndef __APPLE__
 static const char* get_windows_version_string()
 {
     // NOTE: There is no `IsWindows11OrGreater()` function
@@ -213,6 +218,7 @@ static const char* get_windows_version_string()
     if(IsWindows7OrGreater()) return "7.0";
     return "old";
 }
+#endif
 
 static std::string get_openlyrics_dll_hash(abort_callback& abort)
 {
@@ -280,6 +286,7 @@ std::string collect_metrics(abort_callback& abort, bool is_dark_mode, size_t num
     {
         cJSON* json_os = cJSON_AddObjectToObject(json, "os");
 
+#ifndef __APPLE__
         // NOTE: We use GetDeviceCaps instead of GetDpiForMonitor (or similar functions) because
         //       fb2k supports Windows 7 and so we should too.
         HDC screen_dc = GetDC(nullptr);
@@ -290,6 +297,11 @@ std::string collect_metrics(abort_callback& abort, bool is_dark_mode, size_t num
         cJSON_AddStringToObject(json_os, "version", get_windows_version_string());
         cJSON_AddNumberToObject(json_os, "dpi_x", dpiX);
         cJSON_AddNumberToObject(json_os, "dpi_y", dpiY);
+#else
+        cJSON_AddStringToObject(json_os, "version", "macOS");
+        cJSON_AddNumberToObject(json_os, "dpi_x", 0);
+        cJSON_AddNumberToObject(json_os, "dpi_y", 0);
+#endif
     }
 
     {
@@ -426,8 +438,12 @@ public:
     void on_init(ctx_t /*p_wnd*/) override
     {
         LOG_INFO("Initiating pre-collection metrics flow...");
+#ifndef __APPLE__
         m_is_dark_mode = fb2k::isDarkMode(); // In fb2k v2 beta 31 and earlier, isDarkMode() should only be called from
                                              // the main/UI thread.
+#else
+        m_is_dark_mode = false;
+#endif
         m_num_visible_lyric_panels = num_visible_lyric_panels(); // This needs to be done from the main thread
     }
 
@@ -562,3 +578,23 @@ static void send_metrics_on_init()
     }
 }
 FB2K_RUN_ON_INIT(send_metrics_on_init)
+
+#else // __APPLE__
+
+// Stub implementations for macOS -- metrics collection is Windows-only
+namespace metrics
+{
+    void log_used_bulk_search() {}
+    void log_used_manual_search() {}
+    void log_used_lyric_editor() {}
+    void log_used_auto_edit() {}
+    void log_used_mark_instrumental() {}
+    void log_used_show_lyrics() {}
+    void log_used_external_window() {}
+    void log_used_manual_scroll() {}
+    void log_used_lyric_upload() {}
+    void log_searched_for_lyrics_for_a_remote_track() {}
+    void log_hidden_search() {}
+}
+
+#endif // __APPLE__

@@ -26,7 +26,9 @@ struct Image
     bool valid() const;
 };
 
+#ifndef __APPLE__
 RGBAColour from_colorref(COLORREF colour);
+#endif
 RGBAColour lerp_colour(RGBAColour lhs, RGBAColour rhs, uint8_t factor);
 
 std::optional<Image> load_image(const char* file_path);
@@ -45,4 +47,6 @@ Image resize_image(const Image& input, int out_width, int out_height);
 Image transpose_image(const Image& input);
 Image blur_image(const Image& input, int radius);
 
+#ifndef __APPLE__
 void toggle_image_rgba_bgra_inplace(Image& img);
+#endif
