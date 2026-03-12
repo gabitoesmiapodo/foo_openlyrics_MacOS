@@ -35,7 +35,12 @@ public:
     }
 
     bool match_name(const char *name) override {
-        return strcmp(name, "openlyricsMacOS") == 0;
+        static const char kName[] = "openlyricsMacOS";
+        static const size_t kLen = sizeof(kName) - 1;
+        if (strncmp(name, kName, kLen) != 0) return false;
+        // Accept trailing whitespace/newline (bare template lines are not trimmed).
+        char c = name[kLen];
+        return c == '\0' || c == ' ' || c == '\t' || c == '\n' || c == '\r';
     }
 
     fb2k::stringRef get_name() override {

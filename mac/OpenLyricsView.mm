@@ -154,6 +154,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     self = [super initWithFrame:frame];
     if (self) {
         self.wantsLayer = YES;
+        self.translatesAutoresizingMaskIntoConstraints = NO;
         _lyricsText = nil;
         _scrollOffset = 0.0;
         _targetScrollOffset = 0.0;
