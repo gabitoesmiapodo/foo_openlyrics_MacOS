@@ -68,7 +68,7 @@ sed -i '' "s/MARKETING_VERSION = [0-9]*\.[0-9]*\.[0-9]*;/MARKETING_VERSION = $NE
 # ── Build & deploy ─────────────────────────────────────────────────────────────
 
 echo "==> Building..."
-SKIP_DEPS_BUILD=1 bash "$SCRIPT_DIR/deploy-component.sh" --build
+bash "$SCRIPT_DIR/deploy-component.sh" --build
 
 BUILD_DIR="$PROJECT_DIR/mac/build/Release"
 COMPONENT="$BUILD_DIR/foo_openlyrics_MacOS.component"
