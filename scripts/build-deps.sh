@@ -19,16 +19,15 @@ ARCHS=(x86_64 arm64)
 echo "Building dependencies for ${ARCHS[*]}..."
 
 if [ ! -d "$DEPS_DIR/foobar2000-sdk" ]; then
-    # Try to copy from the sibling reference project automatically.
     REF_SDK="$(dirname "$PROJECT_DIR")/foo_vis_projectM/deps/foobar2000-sdk"
     if [ -d "$REF_SDK" ]; then
-        echo "  deps/foobar2000-sdk/ not found -- copying from $REF_SDK ..."
+        echo "  deps/foobar2000-sdk/ not found -- symlinking to $REF_SDK ..."
         mkdir -p "$DEPS_DIR"
-        cp -R "$REF_SDK" "$DEPS_DIR/foobar2000-sdk"
+        ln -s "$REF_SDK" "$DEPS_DIR/foobar2000-sdk"
     else
         echo "ERROR: deps/foobar2000-sdk/ not found and no reference project at $REF_SDK."
-        echo "Copy it manually:"
-        echo "  cp -R /path/to/foobar2000-sdk/ deps/foobar2000-sdk/"
+        echo "Copy or symlink it manually:"
+        echo "  ln -s /path/to/foobar2000-sdk deps/foobar2000-sdk"
         exit 1
     fi
 fi
