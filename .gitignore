@@ -19,3 +19,5 @@ metrics/.venv
 # macOS build artifacts
 mac/build/
 deps/
+
+.claude/settings.local.json
