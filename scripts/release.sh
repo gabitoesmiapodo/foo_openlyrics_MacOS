@@ -87,10 +87,14 @@ cd "$PROJECT_DIR"
 
 # ── Commit & push ──────────────────────────────────────────────────────────────
 
-echo "==> Committing version bump..."
 git add mac/OpenLyricsRegistration.mm mac/openlyrics.xcodeproj/project.pbxproj
-git commit -m "chore: bump version to $NEW_VERSION"
-git push origin main
+if ! git diff --cached --quiet; then
+    echo "==> Committing version bump..."
+    git commit -m "chore: bump version to $NEW_VERSION"
+    git push origin main
+else
+    echo "==> Version unchanged, skipping commit."
+fi
 
 # ── Tag ────────────────────────────────────────────────────────────────────────
 
