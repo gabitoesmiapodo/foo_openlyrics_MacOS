@@ -1,10 +1,8 @@
 #!/bin/bash
 # Build script for foo_openlyrics macOS dependencies.
 #
-# Prerequisites:
-#   The foobar2000 SDK must be placed at deps/foobar2000-sdk/ before running.
-#   You can copy it from the reference project:
-#     cp -R /path/to/foo_vis_projectM/deps/foobar2000-sdk/ deps/foobar2000-sdk/
+# The foobar2000 SDK is expected at deps/foobar2000-sdk/ (typically a symlink
+# to the sibling foo_vis_projectM project).  Only libcurl is built locally.
 #
 # Usage:
 #   bash scripts/build-deps.sh
@@ -18,18 +16,15 @@ ARCHS=(x86_64 arm64)
 
 echo "Building dependencies for ${ARCHS[*]}..."
 
-if [ ! -d "$DEPS_DIR/foobar2000-sdk" ]; then
-    REF_SDK="$(dirname "$PROJECT_DIR")/foo_vis_projectM/deps/foobar2000-sdk"
-    if [ -d "$REF_SDK" ]; then
-        echo "  deps/foobar2000-sdk/ not found -- symlinking to $REF_SDK ..."
-        mkdir -p "$DEPS_DIR"
-        ln -s "$REF_SDK" "$DEPS_DIR/foobar2000-sdk"
-    else
-        echo "ERROR: deps/foobar2000-sdk/ not found and no reference project at $REF_SDK."
-        echo "Copy or symlink it manually:"
-        echo "  ln -s /path/to/foobar2000-sdk deps/foobar2000-sdk"
-        exit 1
-    fi
+# ── Resolve foobar2000 SDK ────────────────────────────────────────────────────
+
+SDK="$DEPS_DIR/foobar2000-sdk"
+
+if [ ! -d "$SDK" ]; then
+    echo "ERROR: deps/foobar2000-sdk/ not found."
+    echo "Symlink it from the sibling project:"
+    echo "  mkdir -p deps && ln -s ../../foo_vis_projectM/deps/foobar2000-sdk deps/foobar2000-sdk"
+    exit 1
 fi
 
 has_all_arches() {
@@ -43,10 +38,10 @@ has_all_arches() {
     return 0
 }
 
-# 1. Build foobar2000 SDK static libraries
+# ── Build foobar2000 SDK static libraries ─────────────────────────────────────
+
 echo ""
 echo "=== Building foobar2000 SDK ==="
-SDK="$DEPS_DIR/foobar2000-sdk"
 
 SDK_PROJECTS=(
     "$SDK/pfc/pfc.xcodeproj"
@@ -56,7 +51,7 @@ SDK_PROJECTS=(
     "$SDK/foobar2000/shared/shared.xcodeproj"
 )
 SDK_LIBS=(
-    "$SDK/pfc/build/Release/libpfc.a"
+    "$SDK/pfc/build/Release/libpfc-Mac.a"
     "$SDK/foobar2000/SDK/build/Release/libfoobar2000_SDK.a"
     "$SDK/foobar2000/helpers/build/Release/libfoobar2000_SDK_helpers.a"
     "$SDK/foobar2000/foobar2000_component_client/build/Release/libfoobar2000_component_client.a"
@@ -77,7 +72,8 @@ done
 
 echo "SDK libraries built."
 
-# 2. Build libcurl as a universal static lib with SecureTransport
+# ── Build libcurl as a universal static lib with SecureTransport ──────────────
+
 echo ""
 echo "=== Building libcurl ==="
 CURL_DIR="$DEPS_DIR/curl"
