@@ -150,7 +150,7 @@ else
 
     # Copy headers from the last built arch (they are arch-independent)
     if [ ! -d "$CURL_DIR/include/curl" ]; then
-        cp -R "${CURL_TMPDIR}/build-${ARCHS[-1]}/install/include/curl" "$CURL_DIR/include/"
+        cp -R "${CURL_TMPDIR}/build-${ARCHS[${#ARCHS[@]}-1]}/install/include/curl" "$CURL_DIR/include/"
     fi
 
     rm -rf "$CURL_TMPDIR"
