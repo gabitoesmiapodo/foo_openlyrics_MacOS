@@ -21,6 +21,8 @@ command -v git >/dev/null 2>&1 || die "git not found"
 
 cd "$PROJECT_DIR"
 
+GH_REPO=$(git remote get-url origin | sed 's|.*github.com[:/]||;s|\.git$||')
+
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [ "$CURRENT_BRANCH" != "main" ]; then
     die "must be on main branch (currently on '$CURRENT_BRANCH')"
@@ -113,12 +115,13 @@ git push origin "$TAG"
 # ── Release ────────────────────────────────────────────────────────────────────
 
 echo "==> Creating GitHub release $TAG..."
-if gh release view "$TAG" >/dev/null 2>&1; then
+if gh release view "$TAG" -R "$GH_REPO" >/dev/null 2>&1; then
     echo "    Release $TAG already exists -- deleting..."
-    gh release delete "$TAG" --yes
+    gh release delete "$TAG" -R "$GH_REPO" --yes
 fi
 
 gh release create "$TAG" \
+    -R "$GH_REPO" \
     --title "$TAG" \
     --generate-notes \
     "$ARTIFACT"
