@@ -683,7 +683,7 @@
 					"$(SRCROOT)/../deps/curl/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.9.0;
 				OTHER_LDFLAGS = (
 					"-lpfc-Mac",
 					"-lfoobar2000_SDK",
@@ -691,6 +691,7 @@
 					"-lfoobar2000_component_client",
 					"-lshared",
 					"-lcurl",
+					"-lz",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
 				PRODUCT_NAME = foo_openlyrics_MacOS;
@@ -736,7 +737,7 @@
 					"$(SRCROOT)/../deps/curl/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.9.0;
 				OTHER_LDFLAGS = (
 					"-lpfc-Mac",
 					"-lfoobar2000_SDK",
@@ -744,6 +745,7 @@
 					"-lfoobar2000_component_client",
 					"-lshared",
 					"-lcurl",
+					"-lz",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics";
 				PRODUCT_NAME = foo_openlyrics_MacOS;
