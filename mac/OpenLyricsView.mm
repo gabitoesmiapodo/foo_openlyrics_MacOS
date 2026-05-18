@@ -55,6 +55,17 @@ static inline void colorref_to_cgfloat(t_ui_color c, CGFloat out[4]) {
 static CFMutableArrayRef g_active_panels_cf;
 static dispatch_queue_t  g_panels_queue;
 
+static void ensure_panels_state(void) {
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        CFArrayCallBacks weakCallbacks = kCFTypeArrayCallBacks;
+        weakCallbacks.retain  = NULL;
+        weakCallbacks.release = NULL;
+        g_active_panels_cf = CFArrayCreateMutable(NULL, 0, &weakCallbacks);
+        g_panels_queue = dispatch_queue_create("com.foo_openlyrics.panels", DISPATCH_QUEUE_SERIAL);
+    });
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -138,11 +149,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
 + (void)initialize {
     if (self == [OpenLyricsView class]) {
-        CFArrayCallBacks weakCallbacks = kCFTypeArrayCallBacks;
-        weakCallbacks.retain  = NULL;
-        weakCallbacks.release = NULL;
-        g_active_panels_cf = CFArrayCreateMutable(NULL, 0, &weakCallbacks);
-        g_panels_queue = dispatch_queue_create("com.foo_openlyrics.panels", DISPATCH_QUEUE_SERIAL);
+        ensure_panels_state();
     }
 }
 
@@ -153,6 +160,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 - (instancetype)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        ensure_panels_state();
         self.wantsLayer = YES;
         self.translatesAutoresizingMaskIntoConstraints = NO;
         _lyricsText = nil;
@@ -1066,6 +1074,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 // ---------------------------------------------------------------------------
 
 size_t num_visible_lyric_panels() {
+    ensure_panels_state();
     __block size_t count = 0;
     dispatch_sync(g_panels_queue, ^{
         CFIndex total = CFArrayGetCount(g_active_panels_cf);
@@ -1081,6 +1090,7 @@ size_t num_visible_lyric_panels() {
 // Capture a retained NSArray snapshot of all active panels (must be safe to call from any thread).
 // Caller takes ownership of the retain; call [snapshot release] when done.
 static NSArray *capture_panels_snapshot() {
+    ensure_panels_state();
     __block NSArray *snapshot = nil;
     dispatch_sync(g_panels_queue, ^{
         CFIndex count = CFArrayGetCount(g_active_panels_cf);
@@ -1129,6 +1139,7 @@ void clear_all_lyric_panels() {
 
 LyricData get_active_panel_lyrics(metadb_handle_ptr& out_track, metadb_v2_rec_t& out_info) {
     // Must be called on main thread.
+    ensure_panels_state();
     __block LyricData result;
     __block metadb_handle_ptr track;
     __block metadb_v2_rec_t info;
