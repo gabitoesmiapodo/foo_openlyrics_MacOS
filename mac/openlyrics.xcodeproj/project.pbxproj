@@ -683,7 +683,7 @@
 					"$(SRCROOT)/../deps/curl/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 0.9.0;
+				MARKETING_VERSION = 0.9.1;
 				OTHER_LDFLAGS = (
 					"-lpfc-Mac",
 					"-lfoobar2000_SDK",
@@ -737,7 +737,7 @@
 					"$(SRCROOT)/../deps/curl/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 0.9.0;
+				MARKETING_VERSION = 0.9.1;
 				OTHER_LDFLAGS = (
 					"-lpfc-Mac",
 					"-lfoobar2000_SDK",
