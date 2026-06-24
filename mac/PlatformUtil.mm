@@ -42,9 +42,9 @@ std::string fold_for_tag_match(std::string_view input) {
     if (!ns) return std::string(input);
 
     NSMutableString *m = [[ns mutableCopy] autorelease];
-    // ICU transform: fold Traditional Han characters to Simplified. This is a no-op
-    // for strings that contain no Traditional characters (e.g. ASCII or already-Simplified),
-    // so it is safe to apply unconditionally.
+    // ICU transform: fold Traditional Han characters to Simplified. It is a no-op for input that
+    // contains no Traditional characters (e.g. already-Simplified or kana), so it is safe to run
+    // on any string that reached this point.
     CFStringTransform((__bridge CFMutableStringRef)m, NULL, CFSTR("Traditional-Simplified"), false);
 
     const char *utf8 = [m UTF8String];
