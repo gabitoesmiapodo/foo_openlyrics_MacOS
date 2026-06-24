@@ -421,13 +421,23 @@ static void internal_search_for_lyrics(LyricSearchHandle& handle, bool local_onl
 
             for(LyricDataRaw& result : search_results)
             {
-                // NOTE: Some sources don't return an album so we ignore album data if the source didn't give us any.
-                //       Similarly, the local tag data might not contain an album, in which case we shouldn't reject
-                //       candidates because they have non-empty album data.
-                bool tag_match = (result.album.empty() || tag_album.empty()
-                                  || tag_values_match(tag_album, result.album))
-                                 && tag_values_match(tag_artist, result.artist)
-                                 && tag_values_match(tag_title, result.title);
+                // Primary rule: require the artist and title to match. The album is the most
+                // volatile tag (remasters, compilations, live/single editions all differ from
+                // the original release) and is a frequent cause of false rejections, so it is
+                // not a hard filter here (it still feeds ranking via sort_source_results).
+                const bool artist_title_match = tag_values_match(tag_artist, result.artist)
+                                                && tag_values_match(tag_title, result.title);
+
+                // Recovery rule for romanised vs native artist names (e.g. local "Hikaru Utada"
+                // vs online "宇多田ヒカル"): no transliteration can bridge a romaji tag back to
+                // the original kanji, so the artist can never match by edit distance. When the
+                // title AND album both match we treat the result as the same recording anyway -
+                // requiring both to coincide keeps accidental cross-artist matches very unlikely.
+                const bool title_album_match = !result.album.empty() && !tag_album.empty()
+                                               && tag_values_match(tag_album, result.album)
+                                               && tag_values_match(tag_title, result.title);
+
+                bool tag_match = artist_title_match || title_album_match;
                 if(!tag_match)
                 {
                     LOG_INFO("Rejected %s search result for tag mismatch: Local track has %s/%s/%s while search result "

@@ -25,6 +25,24 @@ std::tstring normalise_utf8(std::tstring_view input) {
     return std::tstring(utf8, [normalised lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 }
 
+std::string fold_for_tag_match(std::string_view input) {
+    if (input.empty()) return std::string(input);
+    NSString *ns = [[[NSString alloc] initWithBytes:input.data()
+                                             length:input.size()
+                                           encoding:NSUTF8StringEncoding] autorelease];
+    if (!ns) return std::string(input);
+
+    NSMutableString *m = [[ns mutableCopy] autorelease];
+    // ICU transform: fold Traditional Han characters to Simplified. This is a no-op
+    // for strings that contain no Traditional characters (e.g. ASCII or already-Simplified),
+    // so it is safe to apply unconditionally.
+    CFStringTransform((__bridge CFMutableStringRef)m, NULL, CFSTR("Traditional-Simplified"), false);
+
+    const char *utf8 = [m UTF8String];
+    if (!utf8) return std::string(input);
+    return std::string(utf8, [m lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+}
+
 bool is_char_whitespace(TCHAR c) {
     return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f';
 }

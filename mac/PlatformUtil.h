@@ -91,6 +91,12 @@ std::string from_tstring(const std::tstring& s);
 
 std::tstring normalise_utf8(std::tstring_view input);
 
+// Folds a tag value into a canonical form for fuzzy matching of search results.
+// Currently converts Traditional Chinese to Simplified (via ICU's
+// "Traditional-Simplified" transform) so that Traditional-tagged local tracks
+// match the Simplified metadata returned by sources such as QQ Music / NetEase.
+std::string fold_for_tag_match(std::string_view input);
+
 bool is_char_whitespace(TCHAR c);
 size_t find_first_whitespace(std::tstring_view str, size_t pos = 0);
 size_t find_first_nonwhitespace(std::tstring_view str, size_t pos = 0);

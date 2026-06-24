@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 // PlatformUtil.h will be included via mac/stdafx.h PCH
+#include "tag_util.h"
 
 @interface PlatformUtilTests : XCTestCase
 @end
@@ -67,6 +68,37 @@
 - (void)testFindFirstNonWhitespace {
     std::tstring s = "   hello";
     XCTAssertEqual(find_first_nonwhitespace(std::tstring_view(s)), (size_t)3);
+}
+
+// --- Tag matching (search-result matching changes) ---
+
+- (void)testFoldForTagMatchAsciiIsNoOp {
+    XCTAssertEqual(fold_for_tag_match("Hello World"), std::string("Hello World"));
+}
+
+- (void)testFoldForTagMatchTraditionalEqualsSimplified {
+    // Traditional and Simplified variants of the same word must fold to the same form.
+    // Assert equality of the folded results rather than a hardcoded codepoint so the test
+    // does not depend on the exact ICU output bytes, only that the transform unifies them.
+    XCTAssertEqual(fold_for_tag_match("\xE6\x84\x9B"), fold_for_tag_match("\xE7\x88\xB1")); // 愛 / 爱
+}
+
+- (void)testTagValuesMatchIdentical {
+    XCTAssertTrue(tag_values_match("Bohemian Rhapsody", "Bohemian Rhapsody"));
+}
+
+- (void)testTagValuesMatchTraditionalVsSimplified {
+    // Traditional-tagged local track vs Simplified result from a CJK source (後窗 / 后窗).
+    XCTAssertTrue(tag_values_match("\xE5\xBE\x8C\xE7\xAA\x97", "\xE5\x90\x8E\xE7\xAA\x97"));
+}
+
+- (void)testTagValuesMatchTrailingEditionMarker {
+    // A bare title matches one carrying a trailing edition/version marker.
+    XCTAssertTrue(tag_values_match("Beautiful World", "Beautiful World -2021 Remastered-"));
+}
+
+- (void)testTagValuesMatchRejectsUnrelated {
+    XCTAssertFalse(tag_values_match("Yesterday", "Paranoid Android"));
 }
 
 @end

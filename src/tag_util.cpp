@@ -150,6 +150,41 @@ int string_edit_distance(const std::string_view strA, const std::string_view str
     return result;
 }
 
+static std::string normalise_tag_for_match(std::string_view s)
+{
+#ifdef __APPLE__
+    // Many CJK tracks are tagged in Traditional Chinese locally while remote sources
+    // (QQ Music, NetEase, ...) return Simplified Chinese. A byte-level edit distance treats
+    // these as completely different strings, so fold both sides to a common (Simplified)
+    // form first. This is a no-op for non-Traditional input (ASCII, kana, already-Simplified).
+    return fold_for_tag_match(s);
+#else
+    return std::string(s);
+#endif
+}
+
+// Returns true when `shorter` is a case-insensitive prefix of `longer` that ends on a word
+// boundary. This lets a bare title match one carrying a trailing edition/version marker, e.g.
+// "Beautiful World" vs "Beautiful World -2021 Remastered-", while still rejecting "Love" vs
+// "Lover" (the prefix there is not followed by a separator).
+static bool is_word_boundary_prefix(const std::string& shorter, const std::string& longer)
+{
+    if(shorter.empty() || shorter.size() >= longer.size())
+    {
+        return false;
+    }
+    for(size_t i = 0; i < shorter.size(); i++)
+    {
+        if(std::tolower(static_cast<unsigned char>(shorter[i]))
+           != std::tolower(static_cast<unsigned char>(longer[i])))
+        {
+            return false;
+        }
+    }
+    const unsigned char next = static_cast<unsigned char>(longer[shorter.size()]);
+    return (std::isalnum(next) == 0);
+}
+
 bool tag_values_match(std::string_view tagA, std::string_view tagB)
 {
     if(preferences::searching::exclude_trailing_brackets())
@@ -158,8 +193,28 @@ bool tag_values_match(std::string_view tagA, std::string_view tagB)
         tagB = trim_surrounding_whitespace(trim_trailing_text_in_brackets(tagB));
     }
 
-    const int MAX_TAG_EDIT_DISTANCE = 3; // Arbitrarily selected
-    return (string_edit_distance(tagA, tagB) <= MAX_TAG_EDIT_DISTANCE);
+    const std::string a = normalise_tag_for_match(tagA);
+    const std::string b = normalise_tag_for_match(tagB);
+
+    // Allow a few edits plus a small length-proportional slack, so minor spacing/punctuation
+    // differences and multi-byte UTF-8 inflation (one CJK glyph == 3 bytes) don't cause a
+    // false reject. The base of 3 preserves the historical behaviour for short ASCII tags.
+    const size_t max_len = std::max(a.size(), b.size());
+    const int max_edit_distance = std::max(3, static_cast<int>(max_len / 8));
+    if(string_edit_distance(a, b) <= max_edit_distance)
+    {
+        return true;
+    }
+
+    // Tolerate a trailing edition/version marker that only one side carries.
+    const std::string& shorter = (a.size() <= b.size()) ? a : b;
+    const std::string& longer = (a.size() <= b.size()) ? b : a;
+    if((shorter.size() >= 4) && is_word_boundary_prefix(shorter, longer))
+    {
+        return true;
+    }
+
+    return false;
 }
 
 std::string track_metadata(const metadb_v2_rec_t& track, std::string_view key)
