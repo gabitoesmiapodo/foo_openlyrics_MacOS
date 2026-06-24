@@ -117,21 +117,11 @@ bool LocalFileSource::lookup(LyricDataRaw& data, abort_callback& abort)
 
 static void ensure_dir_exists(const pfc::string& dir_path, abort_callback& abort)
 {
-    // On macOS, exception_io_not_found thrown across the foobar2000.app/component binary
-    // boundary is not caught by filesystem::g_exists's internal handler (typeinfo mismatch),
-    // so a missing directory surfaces as a thrown exception rather than a `false` return. If
-    // we let that escape, the save aborts before ever creating the directory (which is exactly
-    // what a non-existent per-artist subfolder needs). Treat any failure as "does not exist".
-    bool dir_exists = false;
-    try
-    {
-        dir_exists = filesystem::g_exists(dir_path.c_str(), abort);
-    }
-    catch(const std::exception&)
-    {
-        dir_exists = false;
-    }
-    if(dir_exists)
+    // g_exists_safe treats a thrown exception as "does not exist". This matters on macOS, where a
+    // missing directory surfaces as a thrown exception rather than a `false` return (see the
+    // helper). If that escaped, the save would abort before ever creating the directory, which is
+    // exactly what a non-existent per-artist subfolder needs.
+    if(g_exists_safe(dir_path.c_str(), abort))
     {
         return;
     }

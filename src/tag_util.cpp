@@ -320,6 +320,18 @@ bool track_is_remote(metadb_handle_ptr track)
 #endif
 }
 
+bool g_exists_safe(const char* path, abort_callback& abort)
+{
+    try
+    {
+        return filesystem::g_exists(path, abort);
+    }
+    catch(const std::exception&)
+    {
+        return false;
+    }
+}
+
 bool track_exists_on_filesystem(metadb_handle_ptr track)
 {
     const char* path = track->get_path();
@@ -334,14 +346,7 @@ bool track_exists_on_filesystem(metadb_handle_ptr track)
         return true;
     }
 
-    try
-    {
-        return filesystem::g_exists(path, fb2k::noAbort);
-    }
-    catch(const std::exception&)
-    {
-        return false;
-    }
+    return g_exists_safe(path, fb2k::noAbort);
 }
 
 bool starts_with_ignore_case(std::string_view input, std::string_view prefix)

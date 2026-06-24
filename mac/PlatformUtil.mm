@@ -26,7 +26,16 @@ std::tstring normalise_utf8(std::tstring_view input) {
 }
 
 std::string fold_for_tag_match(std::string_view input) {
-    if (input.empty()) return std::string(input);
+    // The Traditional-Simplified transform only affects Han characters, which are all encoded as
+    // 3-byte (or longer) UTF-8 sequences whose lead byte is >= 0xE0. If the input has no such byte
+    // (pure ASCII, Latin-1-range text, anything below U+0800) the transform cannot change it, so
+    // skip the Cocoa allocation entirely. This keeps the common Western-tag case allocation-free.
+    bool maybe_han = false;
+    for (unsigned char c : input) {
+        if (c >= 0xE0) { maybe_han = true; break; }
+    }
+    if (!maybe_han) return std::string(input);
+
     NSString *ns = [[[NSString alloc] initWithBytes:input.data()
                                              length:input.size()
                                            encoding:NSUTF8StringEncoding] autorelease];

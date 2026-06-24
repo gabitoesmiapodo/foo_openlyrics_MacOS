@@ -21,3 +21,9 @@ std::optional<int> track_duration_in_seconds(const metadb_v2_rec_t& track);
 
 bool track_is_remote(metadb_handle_ptr track);
 bool track_exists_on_filesystem(metadb_handle_ptr track);
+
+// filesystem::g_exists, but returns false instead of letting an exception escape. On macOS
+// exception_io_not_found thrown by g_exists across the app/component binary boundary is not
+// caught by its own internal handler (typeinfo mismatch), so a missing path surfaces as a
+// throw rather than a false return. Callers that only want a boolean should use this.
+bool g_exists_safe(const char* path, abort_callback& abort);
