@@ -20,3 +20,4 @@ bool tag_values_match(std::string_view tagA, std::string_view tagB);
 std::optional<int> track_duration_in_seconds(const metadb_v2_rec_t& track);
 
 bool track_is_remote(metadb_handle_ptr track);
+bool track_exists_on_filesystem(metadb_handle_ptr track);

@@ -202,13 +202,17 @@ void LyricAutosearchManager::on_playback_new_track(metadb_handle_ptr track)
 
     const bool search_postponed_for_dynamic_info = track_is_remote(
         track); // If this is an internet radio then don't search until we get dynamic track info
-    const bool should_search = track_changed && !search_postponed_for_dynamic_info;
+    const bool search_skipped_for_missing_local_file = !search_postponed_for_dynamic_info && !track_exists_on_filesystem(
+        track); // Skip search for missing local files as it can create lyric files and directories for missing paths
+    const bool should_search = track_changed && !search_postponed_for_dynamic_info && !search_skipped_for_missing_local_file;
     if(!should_search)
     {
-        LOG_INFO("Skipping new-playback search. %s, %s",
+        LOG_INFO("Skipping new-playback search. %s, %s, %s",
                  track_changed ? "The track has changed" : "The track didn't change",
                  search_postponed_for_dynamic_info ? "the search is being postponed waiting for dynamic info"
-                                                   : "we're not waiting for dynamic track info");
+                                                   : "we're not waiting for dynamic track info",
+                 search_skipped_for_missing_local_file ? "the search is being skipped due to a missing local file"
+                                                       : "the search is not being skipped due to a missing local file");
         return;
     }
 
