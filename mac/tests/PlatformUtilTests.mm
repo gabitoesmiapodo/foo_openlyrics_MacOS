@@ -101,4 +101,26 @@
     XCTAssertFalse(tag_values_match("Yesterday", "Paranoid Android"));
 }
 
+- (void)testTagValuesMatchLongStringsAllowMoreEdits {
+    // Length-proportional slack: on a 34-byte tag the threshold scales to max_len/8 == 4, so a
+    // 4-substitution difference still matches. This guards the loosened CJK/long-title behaviour.
+    std::string a(34, 'a');
+    std::string b = a;
+    b[0] = b[9] = b[18] = b[27] = 'b'; // 4 substitutions => edit distance 4
+    XCTAssertTrue(tag_values_match(a, b));
+}
+
+- (void)testTagValuesMatchShortStringsKeepBaseThreshold {
+    // The same magnitude of difference (4 edits) on short tags stays rejected, since short tags
+    // keep the historical base threshold of 3 - the loosening must not match unrelated titles.
+    XCTAssertFalse(tag_values_match(std::string(4, 'a'), std::string(4, 'b')));
+}
+
+- (void)testTagValuesMatchRejectsMidGlyphPrefix {
+    // A prefix that ends in the middle of a multi-byte UTF-8 glyph is not a real word boundary,
+    // so it must not be accepted as a trailing-edition-marker match. "abcd\xC3" stops on the lead
+    // byte of "é" (0xC3 0xA9); the byte after it in the longer string is a continuation byte.
+    XCTAssertFalse(tag_values_match("abcd\xC3", "abcd\xC3\xA9 Extended Mix Version"));
+}
+
 @end

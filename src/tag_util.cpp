@@ -182,6 +182,12 @@ static bool is_word_boundary_prefix(const std::string& shorter, const std::strin
         }
     }
     const unsigned char next = static_cast<unsigned char>(longer[shorter.size()]);
+    // A UTF-8 continuation byte (0x80-0xBF) means `shorter` ended in the middle of a multi-byte
+    // glyph, which is not a real boundary. ASCII or lead bytes that are non-alphanumeric are.
+    if((next & 0xC0) == 0x80)
+    {
+        return false;
+    }
     return (std::isalnum(next) == 0);
 }
 
@@ -196,9 +202,10 @@ bool tag_values_match(std::string_view tagA, std::string_view tagB)
     const std::string a = normalise_tag_for_match(tagA);
     const std::string b = normalise_tag_for_match(tagB);
 
-    // Allow a few edits plus a small length-proportional slack, so minor spacing/punctuation
-    // differences and multi-byte UTF-8 inflation (one CJK glyph == 3 bytes) don't cause a
-    // false reject. The base of 3 preserves the historical behaviour for short ASCII tags.
+    // Allow a base of 3 edits, scaled up for longer tags so that multi-byte UTF-8 inflation
+    // (one CJK glyph == 3 bytes) and minor punctuation differences don't cause a false reject.
+    // The slack only adds to the threshold once a tag exceeds 24 bytes; shorter ASCII tags keep
+    // the historical base of 3.
     const size_t max_len = std::max(a.size(), b.size());
     const int max_edit_distance = std::max(3, static_cast<int>(max_len / 8));
     if(string_edit_distance(a, b) <= max_edit_distance)
@@ -315,9 +322,20 @@ bool track_is_remote(metadb_handle_ptr track)
 
 bool track_exists_on_filesystem(metadb_handle_ptr track)
 {
+    const char* path = track->get_path();
+
+    // Only local files can be "missing" in the way the caller guards against. Anything with a
+    // non-file scheme (archive members via unpack://, network streams, ...) is reported as
+    // present so that search proceeds exactly as before. This also avoids running g_exists -
+    // which can block or throw across the binary boundary - on schemes whose semantics differ,
+    // where a thrown or false result would otherwise wrongly skip the search for a valid track.
+    if(std::string_view(path).substr(0, 7) != "file://")
+    {
+        return true;
+    }
+
     try
     {
-        const char* path = track->get_path();
         return filesystem::g_exists(path, fb2k::noAbort);
     }
     catch(const std::exception&)
