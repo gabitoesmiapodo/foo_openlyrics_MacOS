@@ -1,6 +1,7 @@
 #include "shared.h"
 #include <dirent.h>
 #include <pfc/wildcard.h>
+#include <unistd.h>
 
 // foobar2000 SDK project method... bah
 namespace foobar2000_io {
@@ -190,6 +191,22 @@ pfc::string8 uGetTempFileName() {
 
 
 void fb2k::crashWithMessage [[noreturn]] ( const char * msg_ ) {
-    // there used to be code throwing Objective-C exceptions, but those were of no use,
+    uAddDebugEvent( msg_ );
     pfc::crashWithMessageOnStack(msg_);
+}
+
+bool uSetCurrentDirectory(const char * path) {
+    return chdir(path) == 0;
+}
+bool uGetCurrentDirectory(pfc::string_base & out) {
+    pfc::array_t<char> work;
+    work.resize( PATH_MAX );
+    for(;;) {
+        errno = 0;
+        if ( getcwd(work.get_ptr(), work.size()) != nullptr ) {
+            out = work.get_ptr(); return true;
+        }
+        if ( errno != ENAMETOOLONG ) return false;
+        work.resize( work.size() * 2 );
+    }
 }

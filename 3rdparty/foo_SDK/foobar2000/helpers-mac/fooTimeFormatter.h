@@ -6,11 +6,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "foobar2000-mac-helpers.h"
 
-NS_ASSUME_NONNULL_BEGIN
+#define fooTimeFormatter FB2K_OBJC_CLASS(fooTimeFormatter)
 
 @interface fooTimeFormatter : NSFormatter
 @property (nonatomic) NSNumber * digits;
 @end
-
-NS_ASSUME_NONNULL_END

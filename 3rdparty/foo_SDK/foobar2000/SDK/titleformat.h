@@ -1,12 +1,14 @@
 #pragma once
 
+#include "titleformat_object.h"
+
 namespace titleformat_inputtypes {
 	extern const GUID meta, unknown;
 };
 
 class NOVTABLE titleformat_text_out {
 public:
-	virtual void write(const GUID & p_inputtype,const char * p_data,t_size p_data_length = ~0) = 0;
+	virtual void write(const GUID & p_inputtype,const char * p_data,t_size p_data_length = SIZE_MAX) = 0;
 	void write_int(const GUID & p_inputtype,t_int64 val);
 	void write_int_padded(const GUID & p_inputtype,t_int64 val,t_int64 maxval);
 protected:
@@ -38,20 +40,6 @@ class NOVTABLE titleformat_hook
 public:
 	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,t_size p_name_length,bool & p_found_flag) = 0;
 	virtual bool process_function(titleformat_text_out * p_out,const char * p_name,t_size p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) = 0;
-};
-//! Represents precompiled executable title-formatting script. Use titleformat_compiler to instantiate; do not reimplement.
-class NOVTABLE titleformat_object : public service_base
-{
-public:
-	virtual void run(titleformat_hook * p_source,pfc::string_base & p_out,titleformat_text_filter * p_filter)=0;
-
-	void run_hook(const playable_location & p_location,const file_info * p_source,titleformat_hook * p_hook,pfc::string_base & p_out,titleformat_text_filter * p_filter);
-	void run_simple(const playable_location & p_location,const file_info * p_source,pfc::string_base & p_out);
-
-	//! Helper, see titleformat_object_v2::requires_metadb_info()
-	bool requires_metadb_info_();
-
-	FB2K_MAKE_SERVICE_INTERFACE(titleformat_object,service_base);
 };
 
 //! \since 2.0
@@ -133,7 +121,7 @@ private:
 class titleformat_text_out_impl_string : public titleformat_text_out {
 public:
 	titleformat_text_out_impl_string(pfc::string_receiver & p_string) : m_string(p_string) {}
-	void write(const GUID & p_inputtype,const char * p_data,t_size p_data_length) {m_string.add_string(p_data,p_data_length);}
+	void write(const GUID &,const char * p_data,t_size p_data_length) override {m_string.add_string(p_data,p_data_length);}
 private:
 	pfc::string_receiver & m_string;
 };
@@ -199,14 +187,14 @@ class titleformat_hook_impl_list : public titleformat_hook {
 public:
 	titleformat_hook_impl_list(t_size p_index /* zero-based! */,t_size p_total) : m_index(p_index), m_total(p_total) {}
 	
-	bool process_field(titleformat_text_out * p_out,const char * p_name,t_size p_name_length,bool & p_found_flag) {
+	bool process_field(titleformat_text_out * p_out,const char * p_name,t_size p_name_length,bool & p_found_flag) override {
 		if (
-			pfc::stricmp_ascii_ex(p_name,p_name_length,"list_index",~0) == 0
+			pfc::stricmp_ascii_ex(p_name,p_name_length,"list_index",SIZE_MAX) == 0
 			) {
 			p_out->write_int_padded(titleformat_inputtypes::unknown,m_index+1, m_total);
 			p_found_flag = true; return true;
 		} else if (
-            pfc::stricmp_ascii_ex(p_name,p_name_length,"list_total",~0) == 0
+            pfc::stricmp_ascii_ex(p_name,p_name_length,"list_total",SIZE_MAX) == 0
 			) {
 			p_out->write_int(titleformat_inputtypes::unknown,m_total);
 			p_found_flag = true; return true;			
@@ -215,7 +203,7 @@ public:
 		}
 	}
 
-	bool process_function(titleformat_text_out * p_out,const char * p_name,t_size p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) {return false;}
+	bool process_function(titleformat_text_out *,const char *,t_size,titleformat_hook_function_params *,bool &) override {return false;}
 
 private:
 	t_size m_index, m_total;
@@ -226,25 +214,25 @@ class string_formatter_tf : public pfc::string_base {
 public:
 	string_formatter_tf(titleformat_text_out * out, const GUID & inputType = titleformat_inputtypes::meta) : m_out(out), m_inputType(inputType) {}
 
-	const char * get_ptr() const {
+	const char * get_ptr() const override {
 		verboten();
 	}
-	void add_string(const char * p_string,t_size p_length) {
+	void add_string(const char * p_string,t_size p_length) override {
 		m_out->write(m_inputType,p_string,p_length);
 	}
-	void set_string(const char * p_string,t_size p_length) {
+	void set_string(const char *,t_size) override {
 		verboten();
 	}
-	void truncate(t_size len) {
+	void truncate(t_size) override {
 		verboten();
 	}
-	t_size get_length() const {
+	t_size get_length() const override {
 		verboten();
 	}
-	char * lock_buffer(t_size p_requested_length) {
+	char * lock_buffer(t_size) override {
 		verboten();
 	}
-	void unlock_buffer() {
+	void unlock_buffer() override {
 		verboten();
 	}
 

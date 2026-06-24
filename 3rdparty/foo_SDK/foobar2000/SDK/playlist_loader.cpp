@@ -9,9 +9,10 @@
 #include <unordered_set>
 #include <list>
 
-static void process_path_internal(const char * p_path,const service_ptr_t<file> & p_reader,playlist_loader_callback::ptr callback, abort_callback & abort,playlist_loader_callback::t_entry_type type,const t_filestats & p_stats);
+constexpr unsigned allowRecurseBase = 2; // max. 2 archive levels - mitigate droste.zip stack overflow
+static void process_path_internal(const char * p_path,const service_ptr_t<file> & p_reader,playlist_loader_callback::ptr callback, abort_callback & abort,playlist_loader_callback::t_entry_type type,const t_filestats & p_stats, unsigned allowRecurse );
 
-bool playlist_loader::g_try_load_playlist(file::ptr fileHint,const char * p_path,playlist_loader_callback::ptr p_callback, abort_callback & p_abort) {
+static bool g_try_load_playlist(file::ptr & fileHint,const char * p_path,playlist_loader_callback::ptr p_callback, abort_callback & p_abort) {
 	// Determine if this file is a playlist or not (which usually means that it's a media file)
 	pfc::string8 filepath;
 
@@ -19,28 +20,26 @@ bool playlist_loader::g_try_load_playlist(file::ptr fileHint,const char * p_path
 	
 	pfc::string8 extension = filesystem::g_get_extension(filepath);
 
-	service_ptr_t<file> l_file = fileHint;
-
-	if (l_file.is_empty()) {
+	if (fileHint.is_empty()) {
 		filesystem::ptr fs;
 		if (filesystem::g_get_interface(fs,filepath)) {
 			if (fs->supports_content_types()) {
 				try {
-					fs->open(l_file,filepath,filesystem::open_mode_read,p_abort);
-				} catch(exception_io) { return false; } // fall thru
+					fs->open(fileHint,filepath,filesystem::open_mode_read,p_abort);
+				} catch(exception_io const &) { return false; } // fall thru
 			}
 		}
 	}
 
 	service_enum_t<playlist_loader> e;
 
-	if (l_file.is_valid()) {
+	if (fileHint.is_valid()) {
 
 		// Important: in case of remote HTTP files, use actual connected path for matching file extensions, following any redirects.
 		// At least one internet radio station has been known to present .pls links that are 302 redirects to real streams, so they don't parse as playlists.
 		{
 			file_metadata_http::ptr meta;
-			if (meta &= l_file->get_metadata_(p_abort)) {
+			if (meta &= fileHint->get_metadata_(p_abort)) {
 				pfc::string8 realPath;
 				meta->get_connected_path(realPath);
 				extension = filesystem::g_get_extension(realPath);
@@ -48,14 +47,14 @@ bool playlist_loader::g_try_load_playlist(file::ptr fileHint,const char * p_path
 		}
 
 		pfc::string8 content_type;
-		if (l_file->get_content_type(content_type)) {
+		if (fileHint->get_content_type(content_type)) {
 			for (auto l : e) {
 				if (l->is_our_content_type(content_type)) {
 					try {
-						TRACK_CODE("playlist_loader::open",l->open(filepath,l_file,p_callback, p_abort));
+						TRACK_CODE("playlist_loader::open",l->open(filepath,fileHint,p_callback, p_abort));
 						return true;
-					} catch(exception_io_unsupported_format) {
-						l_file->reopen(p_abort);
+					} catch(exception_io_unsupported_format const &) {
+                        fileHint->reopen(p_abort);
 					}
 				}
 			}
@@ -65,12 +64,12 @@ bool playlist_loader::g_try_load_playlist(file::ptr fileHint,const char * p_path
 	if (extension.length()>0) {
 		for (auto l : e) {
 			if (stricmp_utf8(l->get_extension(),extension) == 0) {
-				if (l_file.is_empty()) filesystem::g_open_read(l_file,filepath,p_abort);
+                if (fileHint.is_empty()) filesystem::g_open_read(fileHint,filepath,p_abort);
 				try {
-					TRACK_CODE("playlist_loader::open",l->open(filepath,l_file,p_callback,p_abort));
+					TRACK_CODE("playlist_loader::open",l->open(filepath,fileHint,p_callback,p_abort));
 					return true;
-				} catch(exception_io_unsupported_format) {
-					l_file->reopen(p_abort);
+				} catch(exception_io_unsupported_format const &) {
+                    fileHint->reopen(p_abort);
 				}
 			}
 		}
@@ -84,7 +83,7 @@ void playlist_loader::g_load_playlist_filehint(file::ptr fileHint,const char * p
 }
 
 void playlist_loader::g_load_playlist(const char * p_path,playlist_loader_callback::ptr callback, abort_callback & abort) {
-	g_load_playlist_filehint(NULL,p_path,callback,abort);
+	g_load_playlist_filehint(nullptr,p_path,callback,abort);
 }
 namespace {
 	class MIC_impl : public metadb_info_container_v2 {
@@ -113,10 +112,10 @@ static void index_tracks_helper(const char * p_path,const service_ptr_t<file> & 
 		service_ptr_t<input_info_reader> instance;
 		try {
 			input_entry::g_open_for_info_read(instance,p_reader,p_path,p_abort);
-		} catch(exception_io_unsupported_format) {
+		} catch(exception_io_unsupported_format const &) {
 			// specifically bail
 			throw;
-		} catch(exception_io) {
+		} catch(exception_io const &) {
 			// broken file or some other error, open() failed - show it anyway
 			metadb_handle_ptr handle;
 			p_callback->handle_create(handle, make_playable_location(p_path, 0));
@@ -169,9 +168,9 @@ static void track_indexer__g_get_tracks_wrap(const char * p_path,const service_p
 	bool fail = false;
 	try {
 		index_tracks_helper(p_path,p_reader,p_stats,p_type,p_callback,p_abort, got_input);
-	} catch(exception_aborted) {
+	} catch(exception_aborted const &) {
 		throw;
-	} catch(exception_io_unsupported_format) {
+	} catch(exception_io_unsupported_format const &) {
 		fail = true;
 	} catch(std::exception const & e) {
 		fail = true;
@@ -272,8 +271,9 @@ namespace {
 }
 
 
-static void process_path_internal(const char * p_path,const service_ptr_t<file> & p_reader,playlist_loader_callback::ptr callback, abort_callback & abort,playlist_loader_callback::t_entry_type type,const t_filestats & p_stats)
+static void process_path_internal(const char * p_path,const service_ptr_t<file> & p_reader,playlist_loader_callback::ptr callback, abort_callback & abort,playlist_loader_callback::t_entry_type type,const t_filestats & p_stats, unsigned allowRecurse)
 {
+	if (allowRecurse == 0) return;
 	//p_path must be canonical
 
 	abort.check();
@@ -288,8 +288,8 @@ static void process_path_internal(const char * p_path,const service_ptr_t<file> 
 				results.main( p_path, abort );
 				for( auto & i : results.m_entries ) {
 					try {
-						process_path_internal(i.m_path.c_str(), 0, callback, abort, playlist_loader_callback::entry_directory_enumerated, i.m_stats);
-					} catch (exception_aborted) {
+						process_path_internal(i.m_path.c_str(), nullptr, callback, abort, playlist_loader_callback::entry_directory_enumerated, i.m_stats, allowRecurse);
+					} catch (exception_aborted const &) {
 						throw;
 					} catch (std::exception const& e) {
 						FB2K_console_formatter() << "Error walking path (" << e << "): " << file_path_display(i.m_path.c_str());
@@ -298,11 +298,11 @@ static void process_path_internal(const char * p_path,const service_ptr_t<file> 
 					}
 				}
 				return; // successfully enumerated directory - go no further
-			} catch(exception_aborted) {
+			} catch(exception_aborted const &) {
 				throw;
-			} catch (exception_io_not_directory) {
+			} catch (exception_io_not_directory const &) {
 				// disregard
-			} catch(exception_io_not_found) {
+			} catch(exception_io_not_found const &) {
 				// disregard
 			} catch (std::exception const& e) {
 				FB2K_console_formatter() << "Error walking directory (" << e << "): " << p_path;
@@ -311,7 +311,7 @@ static void process_path_internal(const char * p_path,const service_ptr_t<file> 
 			}
 		}
 
-		{
+		if (allowRecurse > 1) {
 			for (auto f : filesystem::enumerate()) {
 				abort.check();
 				service_ptr_t<archive> arch;
@@ -319,12 +319,12 @@ static void process_path_internal(const char * p_path,const service_ptr_t<file> 
 					if (p_reader.is_valid()) p_reader->reopen(abort);
 
 					try {
-						archive::list_func_t archive_results = [callback, &abort](const char* p_path, const t_filestats& p_stats, file::ptr p_reader) {
-							process_path_internal(p_path,p_reader,callback,abort,playlist_loader_callback::entry_directory_enumerated,p_stats);
+						archive::list_func_t archive_results = [callback, &abort, allowRecurse](const char* p_path, const t_filestats& p_stats, file::ptr p_reader) {
+							process_path_internal(p_path,p_reader,callback,abort,playlist_loader_callback::entry_directory_enumerated,p_stats,allowRecurse - 1);
 						};
 						TRACK_CODE("archive::archive_list",arch->archive_list(p_path,p_reader,archive_results,/*want readers*/true, abort));
 						return;
-					} catch(exception_aborted) {throw;} 
+					} catch(exception_aborted const &) {throw;} 
 					catch(...) {
 						// Something failed hard
 						// Is is_our_archive() meaningful?
@@ -352,9 +352,9 @@ static void process_path_internal(const char * p_path,const service_ptr_t<file> 
 			try {
 				TRACK_CODE("link_resolver::resolve",ptr->resolve(p_reader,p_path,temp,abort));
 
-				track_indexer__g_get_tracks_wrap(temp,0,filestats_invalid,playlist_loader_callback::entry_from_playlist,callback, abort);
+				track_indexer__g_get_tracks_wrap(temp,nullptr,filestats_invalid,playlist_loader_callback::entry_from_playlist,callback, abort);
 				return;//success
-			} catch(exception_aborted) {throw;}
+			} catch(exception_aborted const &) {throw;}
 			catch(...) {}
 		}
 	}
@@ -367,16 +367,19 @@ static void process_path_internal(const char * p_path,const service_ptr_t<file> 
 namespace {
 	class plcallback_simple : public playlist_loader_callback {
 	public:
-		void on_progress(const char* p_path) override {}
+		void on_progress(const char* p_path) override { (void)p_path; }
 
 		void on_entry(const metadb_handle_ptr& p_item, t_entry_type p_type, const t_filestats& p_stats, bool p_fresh) override {
+			(void)p_type; (void)p_stats; (void)p_fresh;
 			m_items += p_item;
 		}
 		bool want_info(const metadb_handle_ptr& p_item, t_entry_type p_type, const t_filestats& p_stats, bool p_fresh) override {
+			(void)p_type; (void)p_stats; (void)p_fresh;
 			return p_item->should_reload(p_stats, p_fresh);
 		}
 
 		void on_entry_info(const metadb_handle_ptr& p_item, t_entry_type p_type, const t_filestats& p_stats, const file_info& p_info, bool p_fresh) override {
+			(void)p_type;
 			m_items += p_item;
 			m_hints->add_hint(p_item, p_info, p_stats, p_fresh);
 		}
@@ -385,12 +388,17 @@ namespace {
 			m_metadb->handle_create(p_out, p_location);
 		}
 
-		bool is_path_wanted(const char* path, t_entry_type type) override { return true; }
+		bool is_path_wanted(const char* path, t_entry_type type) override { 
+			(void)path; (void)type;
+			return true; 
+		}
 
 		bool want_browse_info(const metadb_handle_ptr& p_item, t_entry_type p_type, t_filetimestamp ts) override {
+			(void)p_item; (void)p_type; (void)ts;
 			return true;
 		}
 		void on_browse_info(const metadb_handle_ptr& p_item, t_entry_type p_type, const file_info& info, t_filetimestamp ts) override {
+			(void)p_type;
 			metadb_hint_list_v2::ptr v2;
 			if (v2 &= m_hints) v2->add_hint_browse(p_item, info, ts);
 		}
@@ -415,7 +423,7 @@ void playlist_loader::g_process_path(const char * p_filename,playlist_loader_cal
 
 	auto filename = file_path_canonical(p_filename);
 
-	process_path_internal(filename,0,callback,abort, type,filestats_invalid);
+	process_path_internal(filename,nullptr,callback,abort, type,filestats_invalid, allowRecurseBase);
 }
 
 void playlist_loader::g_save_playlist(const char * p_filename,const pfc::list_base_const_t<metadb_handle_ptr> & data,abort_callback & p_abort)
@@ -436,7 +444,7 @@ void playlist_loader::g_save_playlist(const char * p_filename,const pfc::list_ba
 				try {
 					TRACK_CODE("playlist_loader::write",l->write(filename,r,data,p_abort));
 					return;
-				} catch(exception_io_data) {}
+				} catch(exception_io_data const &) {}
 			}
 		} while(e.next(l));
 		throw exception_io_data();
@@ -449,8 +457,9 @@ void playlist_loader::g_save_playlist(const char * p_filename,const pfc::list_ba
 
 bool playlist_loader::g_process_path_ex(const char * filename,playlist_loader_callback::ptr callback, abort_callback & abort,playlist_loader_callback::t_entry_type type)
 {
-	if (g_try_load_playlist(NULL, filename, callback, abort)) return true;
+    file::ptr fileHint;
+    if (g_try_load_playlist(fileHint, filename, callback, abort)) return true;
 	//not a playlist format
-	g_process_path(filename,callback,abort,type);
+    process_path_internal(file_path_canonical(filename),fileHint,callback,abort,type,filestats_invalid,allowRecurseBase);
 	return false;
 }

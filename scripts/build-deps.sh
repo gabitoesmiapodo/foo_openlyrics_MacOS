@@ -1,8 +1,8 @@
 #!/bin/bash
 # Build script for foo_openlyrics macOS dependencies.
 #
-# The foobar2000 SDK is expected at deps/foobar2000-sdk/ (typically a symlink
-# to the sibling foo_vis_projectM project).  Only libcurl is built locally.
+# The foobar2000 SDK source is vendored in-tree at 3rdparty/foo_SDK/. Its static
+# libraries and libcurl are both built locally; no external dependency is needed.
 #
 # Usage:
 #   bash scripts/build-deps.sh
@@ -18,12 +18,10 @@ echo "Building dependencies for ${ARCHS[*]}..."
 
 # ── Resolve foobar2000 SDK ────────────────────────────────────────────────────
 
-SDK="$DEPS_DIR/foobar2000-sdk"
+SDK="$PROJECT_DIR/3rdparty/foo_SDK"
 
 if [ ! -d "$SDK" ]; then
-    echo "ERROR: deps/foobar2000-sdk/ not found."
-    echo "Symlink it from the sibling project:"
-    echo "  mkdir -p deps && ln -s ../../foo_vis_projectM/deps/foobar2000-sdk deps/foobar2000-sdk"
+    echo "ERROR: 3rdparty/foo_SDK/ not found (the vendored foobar2000 SDK source)."
     exit 1
 fi
 

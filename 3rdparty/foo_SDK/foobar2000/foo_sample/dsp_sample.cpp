@@ -20,9 +20,7 @@ public:
 	}
 
 	static GUID g_get_guid() {
-		//This is our GUID. Generate your own one when reusing this code.
-		static const GUID guid = { 0x890827b, 0x67df, 0x4c27, { 0xba, 0x1a, 0x4f, 0x95, 0x8d, 0xf, 0xb5, 0xd0 } };
-		return guid;
+		return dsp_sample_common::guid;
 	}
 
 	static void g_get_name(pfc::string_base & p_out) { p_out = "Sample DSP";}

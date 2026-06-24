@@ -23,6 +23,10 @@ struct replaygain_info
 	inline bool format_album_peak(char p_buffer[text_buffer_size]) const {return g_format_peak(m_album_peak,p_buffer);}
 	inline bool format_track_peak(char p_buffer[text_buffer_size]) const {return g_format_peak(m_track_peak,p_buffer);}
 
+
+	typedef std::function<void(const char*, const char*)> for_each_t;
+	void for_each(for_each_t) const;
+
 	static float g_parse_gain_text(const char * p_text, t_size p_text_len = SIZE_MAX);
 	void set_album_gain_text(const char * p_text,t_size p_text_len = SIZE_MAX);
 	void set_track_gain_text(const char * p_text,t_size p_text_len = SIZE_MAX);
@@ -53,6 +57,12 @@ struct replaygain_info
 	static bool g_equal(const replaygain_info & item1,const replaygain_info & item2);
 
 	void reset();
+	void clear() { reset(); }
+	void clear_gain() { m_album_gain = m_track_gain = gain_invalid; }
+	void clear_peak() { m_album_peak = m_track_peak = peak_invalid; }
+
+	// Alter gain/peak info, if available, by <delta> dB - after file gain has been altered by other means
+	void adjust(double deltaDB);
 };
 
 class format_rg_gain {
@@ -169,6 +179,7 @@ public:
 
 	inline t_size		meta_find(const char* p_name) const { PFC_ASSERT(p_name != nullptr); return meta_find_ex(p_name, SIZE_MAX); }
 	inline bool			meta_exists(const char* p_name) const { PFC_ASSERT(p_name != nullptr); return meta_exists_ex(p_name, SIZE_MAX); }
+    bool                meta_value_exists( const char * name, const char * value, bool insensitive = false ) const;
 	inline void			meta_remove_field(const char* p_name) { PFC_ASSERT(p_name != nullptr); meta_remove_field_ex(p_name, SIZE_MAX); }
 	inline t_size		meta_set(const char* p_name, const char* p_value) { PFC_ASSERT(p_name != nullptr && p_value != nullptr); return meta_set_ex(p_name, SIZE_MAX, p_value, SIZE_MAX); }
 	inline void			meta_insert_value(t_size p_index,t_size p_value_index,const char * p_value) {meta_insert_value_ex(p_index,p_value_index,p_value,SIZE_MAX);}
@@ -238,6 +249,8 @@ public:
 
 	//! Is a lossy codec?
 	bool is_encoding_lossy() const;
+	//! Is explicitly reported as lossless codec?
+	bool is_encoding_lossless() const;
 	//! Is lossless/PCM that can't be sanely represented in this fb2k build due to audio_sample limitations? \n
 	//! Always returns false in 64-bit fb2k.
 	bool is_encoding_overkill() const;
@@ -254,6 +267,9 @@ public:
 
 	//! Foramts long codec name ( codec + profile )
 	bool info_get_codec_long( pfc::string_base & out, const char * delim = " / ") const;
+
+    //! Simplified title getter, returns fallback value if title not set, useful for debugging.
+    const char * meta_get_title( const char * fallback = "(untitled)") const;
 
 private:
 	void merge(const pfc::list_base_const_t<const file_info*> & p_sources);
@@ -315,6 +331,7 @@ public:
 #ifdef FOOBAR2000_MOBILE
     void info_set_pictures( const GUID * guids, size_t size );
     pfc::array_t<GUID> info_get_pictures( ) const;
+    bool info_have_picture(const GUID&) const;
     uint64_t makeMetaHash() const;
 #endif
 protected:

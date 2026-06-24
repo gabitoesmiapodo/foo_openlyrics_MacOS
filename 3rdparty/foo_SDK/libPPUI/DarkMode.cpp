@@ -208,7 +208,7 @@ namespace DarkMode {
 		return val;
 	}
 	bool IsSupportedSystem() {
-		return Win10BuildNumber() >= 17763; // require at least Win10 1809 / Server 2019
+		return Win10BuildNumber() >= 17763 && !IsWine(); // require at least Win10 1809 / Server 2019
 	}
 	bool IsWindows11() {
 		return Win10BuildNumber() >= 22000;
@@ -270,10 +270,18 @@ namespace DarkMode {
 		}
 	}
 
+	void ApplyDarkThemeCtrl2(HWND ctrl, bool bDark, const wchar_t* ThemeID_light, const wchar_t * ThemeID_dark) {
+		if (ctrl == NULL) return;
+		AllowDarkModeForWindow(ctrl, bDark);
+		if (bDark && IsSupportedSystem()) {
+			::SetWindowTheme(ctrl, ThemeID_dark, NULL);
+		} else {
+			::SetWindowTheme(ctrl, ThemeID_light, NULL);
+		}
+	}
+
 	void ApplyDarkThemeCtrl(HWND ctrl, bool bDark, const wchar_t* ThemeID) {
 		if ( ctrl == NULL ) return;
-		// Both ways work
-		// DarkMode_Theme approach doesn't require evil undocumented MS API calls though
 		AllowDarkModeForWindow(ctrl, bDark);
 		if (bDark && IsSupportedSystem()) {
 			std::wstring temp = L"DarkMode_"; temp += ThemeID;
@@ -1168,13 +1176,20 @@ namespace DarkMode {
 				if (v != m_dark) {
 					m_dark = v;
 					Invalidate();
-					ApplyDarkThemeCtrl(m_hWnd, m_dark);
+					applyDark();
 				}
 			}
 
 			void SubclassWindow(HWND wnd) {
 				WIN32_OP_D(__super::SubclassWindow(wnd));
-				ApplyDarkThemeCtrl(m_hWnd, m_dark);
+				applyDark();
+			}
+
+			void applyDark() {
+				// 2025-02 fix: disabled "Explorer" theming for checkboxes
+				// it caused bugs with specific custom themes, missing checkbox marks in light mode
+				// See: https://hydrogenaud.io/index.php/topic,127426.0.html
+				ApplyDarkThemeCtrl2(m_hWnd, m_dark, NULL);
 			}
 
 			bool m_dark = false;
@@ -1395,9 +1410,7 @@ namespace DarkMode {
 				
 				const DWORD style = this->GetStyle();
 				
-				dc.SelectFont(GetFont());
-
-				HBRUSH br = (HBRUSH) GetParent().SendMessage(WM_CTLCOLORSTATIC, (WPARAM)dc.m_hDC, (LPARAM)m_hWnd);;
+				HBRUSH br = (HBRUSH) GetParent().SendMessage(WM_CTLCOLORSTATIC, (WPARAM)dc.m_hDC, (LPARAM)m_hWnd);
 				if (br == NULL) {
 					dc.FillSolidRect(rcClient, DarkMode::GetSysColor(COLOR_WINDOW));
 				} else {
@@ -1405,7 +1418,9 @@ namespace DarkMode {
 				}
 
 				if (icon != NULL) {
-					dc.DrawIcon(0, 0, icon);
+					// https://hydrogenaud.io/index.php/topic,127458.0.html
+					// dc.DrawIcon(0, 0, icon); <= doesn't use actual size, doesn't match MS control behavior
+					dc.DrawIconEx(0, 0, icon, 0, 0); // <= good
 				} else {
 					DWORD flags = 0;
 					if (style & SS_SIMPLE) flags |= DT_SINGLELINE | DT_WORD_ELLIPSIS;
@@ -1413,6 +1428,7 @@ namespace DarkMode {
 					if (style & SS_RIGHT) flags |= DT_RIGHT;
 					else if (style & SS_CENTER) flags |= DT_CENTER;
 
+					dc.SelectFont(GetFont());
 					dc.SetTextColor(DarkMode::GetSysColor(COLOR_GRAYTEXT));
 					dc.SetBkMode(TRANSPARENT);
 					dc.DrawText(str, str.GetLength(), rcClient, flags);

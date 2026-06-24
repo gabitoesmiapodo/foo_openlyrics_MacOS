@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 
 //! Entrypoint interface for registering media file types that can be opened through "open file" dialogs or associated with foobar2000 application in Windows shell. \n
 //! Instead of implementing this directly, use DECLARE_FILE_TYPE() / DECLARE_FILE_TYPE_EX() macros.
@@ -8,6 +9,8 @@ public:
 	virtual bool get_name(unsigned idx,pfc::string_base & out)=0;//eg. "MPEG files"
 	virtual bool get_mask(unsigned idx,pfc::string_base & out)=0;//eg. "*.MP3;*.MP2"; separate with semicolons
 	virtual bool is_associatable(unsigned idx) = 0;
+	
+	static void for_each_media_ext( std::function<void (const char*)>, bool bDotExt = false);
 
 #if FOOBAR2000_TARGET_VERSION >= 76
 	static void build_openfile_mask(pfc::string_base & out,bool b_include_playlists=true, bool b_include_archives = false);
@@ -51,10 +54,10 @@ class input_file_type_impl : public input_file_type
 	bool m_associatable;
 public:
 	input_file_type_impl(const char * p_name, const char * p_mask,bool p_associatable) : name(p_name), mask(p_mask), m_associatable(p_associatable) {}
-	unsigned get_count() {return 1;}
-	bool get_name(unsigned idx,pfc::string_base & out) {if (idx==0) {out = name; return true;} else return false;}
-	bool get_mask(unsigned idx,pfc::string_base & out) {if (idx==0) {out = mask; return true;} else return false;}
-	bool is_associatable(unsigned idx) {return m_associatable;}
+	unsigned get_count() override {return 1;}
+	bool get_name(unsigned idx,pfc::string_base & out) override {if (idx==0) {out = name; return true;} else return false;}
+	bool get_mask(unsigned idx,pfc::string_base & out) override {if (idx==0) {out = mask; return true;} else return false;}
+	bool is_associatable(unsigned idx) override { (void)idx; return m_associatable; }
 };
 
 
@@ -77,12 +80,14 @@ public:
 class input_file_type_v2_impl : public input_file_type_v2 {
 public:
 	input_file_type_v2_impl(const char * extensions,const char * name, const char * namePlural) : m_name(name), m_namePlural(namePlural), m_extensions(extensions) {}
-	unsigned get_count() {return 1;}
-	bool is_associatable(unsigned idx) {return true;}
-	void get_format_name(unsigned idx, pfc::string_base & out, bool isPlural) {
+	unsigned get_count() override {return 1;}
+	bool is_associatable(unsigned idx) override { (void)idx; return true; }
+	void get_format_name(unsigned idx, pfc::string_base & out, bool isPlural) override {
+		(void)idx;
 		out = isPlural ? m_namePlural : m_name;
 	}
-	void get_extensions(unsigned idx, pfc::string_base & out) {
+	void get_extensions(unsigned idx, pfc::string_base & out) override {
+		(void)idx;
 		out = m_extensions;
 	}
 

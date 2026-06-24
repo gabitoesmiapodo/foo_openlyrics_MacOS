@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,10 @@
 		0F14904D242E44C300D0BD81 /* notifyList.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F14904C242E44C300D0BD81 /* notifyList.h */; };
 		0F14904F242E44ED00D0BD81 /* autoref.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F14904E242E44ED00D0BD81 /* autoref.h */; };
 		0F149051242E454C00D0BD81 /* weakRef.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F149050242E454C00D0BD81 /* weakRef.h */; };
+		0F22012C2B0CCEA60074C1FC /* sortstring.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F2201292B0CCEA60074C1FC /* sortstring.h */; };
+		0F22012D2B0CCEA60074C1FC /* string_simple.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F22012A2B0CCEA60074C1FC /* string_simple.h */; };
+		0F22012E2B0CCEA60074C1FC /* sort2.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F22012B2B0CCEA60074C1FC /* sort2.h */; };
+		0F2201322B0CCF3D0074C1FC /* CFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F2201312B0CCF3D0074C1FC /* CFObject.h */; };
 		0F2F4BF7250BFF660014812D /* pfc-fb2k-hooks.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F2F4BEF250BFF660014812D /* pfc-fb2k-hooks.h */; };
 		0F2F4BF8250BFF660014812D /* killswitch.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F2F4BF0250BFF660014812D /* killswitch.h */; };
 		0F2F4BF9250BFF660014812D /* pfc-fb2k-hooks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F2F4BF1250BFF660014812D /* pfc-fb2k-hooks.cpp */; };
@@ -175,6 +179,11 @@
 		0F14904C242E44C300D0BD81 /* notifyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = notifyList.h; sourceTree = "<group>"; };
 		0F14904E242E44ED00D0BD81 /* autoref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autoref.h; sourceTree = "<group>"; };
 		0F149050242E454C00D0BD81 /* weakRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = weakRef.h; sourceTree = "<group>"; };
+		0F17B3DA2B5E8F0E00FC86C1 /* event_std.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = event_std.h; sourceTree = "<group>"; };
+		0F2201292B0CCEA60074C1FC /* sortstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sortstring.h; sourceTree = "<group>"; };
+		0F22012A2B0CCEA60074C1FC /* string_simple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string_simple.h; sourceTree = "<group>"; };
+		0F22012B2B0CCEA60074C1FC /* sort2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sort2.h; sourceTree = "<group>"; };
+		0F2201312B0CCF3D0074C1FC /* CFObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFObject.h; sourceTree = "<group>"; };
 		0F2F4BEF250BFF660014812D /* pfc-fb2k-hooks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "pfc-fb2k-hooks.h"; sourceTree = "<group>"; };
 		0F2F4BF0250BFF660014812D /* killswitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = killswitch.h; sourceTree = "<group>"; };
 		0F2F4BF1250BFF660014812D /* pfc-fb2k-hooks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "pfc-fb2k-hooks.cpp"; sourceTree = "<group>"; };
@@ -340,6 +349,11 @@
 		B1DD35C2198A701100EF7043 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				0F17B3DA2B5E8F0E00FC86C1 /* event_std.h */,
+				0F2201312B0CCF3D0074C1FC /* CFObject.h */,
+				0F22012B2B0CCEA60074C1FC /* sort2.h */,
+				0F2201292B0CCEA60074C1FC /* sortstring.h */,
+				0F22012A2B0CCEA60074C1FC /* string_simple.h */,
 				0F7A1B682A692C88004F89FB /* filetimetools.cpp */,
 				0F7A1B692A692C88004F89FB /* filetimetools.h */,
 				0F0794D227C90AA4006BAD7F /* charDownConvert.cpp */,
@@ -479,7 +493,9 @@
 				B1DD3635198A702E00EF7043 /* sort.h in Headers */,
 				B1DD3648198A702E00EF7043 /* win-objects.h in Headers */,
 				B1DD3607198A702E00EF7043 /* array.h in Headers */,
+				0F2201322B0CCF3D0074C1FC /* CFObject.h in Headers */,
 				B1DD360B198A702E00EF7043 /* binary_search.h in Headers */,
+				0F22012D2B0CCEA60074C1FC /* string_simple.h in Headers */,
 				B1DD3621198A702E00EF7043 /* memalign.h in Headers */,
 				B1B502D6198FF75000525EAF /* wildcard.h in Headers */,
 				B1DD361A198A702E00EF7043 /* guid.h in Headers */,
@@ -507,11 +523,13 @@
 				B1DD3627198A702E00EF7043 /* other.h in Headers */,
 				0F2F4BFC250BFF660014812D /* suppress_fb2k_hooks.h in Headers */,
 				B17EB26E1E85358D0057E2A4 /* pool.h in Headers */,
+				0F22012E2B0CCEA60074C1FC /* sort2.h in Headers */,
 				B17EB26F1E85358D0057E2A4 /* splitString.h in Headers */,
 				0F2F4BFF250BFF660014812D /* cmd_thread.h in Headers */,
 				B1DD362B198A702E00EF7043 /* primitives_part2.h in Headers */,
 				0F2F4BFD250BFF660014812D /* platform-objects.h in Headers */,
 				B1DD3632198A702E00EF7043 /* ref_counter.h in Headers */,
+				0F22012C2B0CCEA60074C1FC /* sortstring.h in Headers */,
 				B1DD3630198A702E00EF7043 /* ptr_list.h in Headers */,
 				B17EB2701E85358D0057E2A4 /* wait_queue.h in Headers */,
 				B1DD362C198A702E00EF7043 /* primitives.h in Headers */,
@@ -591,7 +609,7 @@
 				ORGANIZATIONNAME = "___FULLUSERNAME___";
 			};
 			buildConfigurationList = B1DD35AA198A6FAA00EF7043 /* Build configuration list for PBXProject "pfc" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -773,7 +791,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -825,7 +843,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};

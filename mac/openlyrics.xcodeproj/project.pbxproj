@@ -135,11 +135,11 @@
 		25543FC2712D4815AF91FD57 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		90B611BBC0924F24A91E26FB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		781A1B8653064DD097E8A7DF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpfc-Mac.a"; path = "../deps/foobar2000-sdk/pfc/build/Release/libpfc-Mac.a"; sourceTree = "<group>"; };
-		974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK.a; path = "../deps/foobar2000-sdk/foobar2000/SDK/build/Release/libfoobar2000_SDK.a"; sourceTree = "<group>"; };
-		A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK_helpers.a; path = "../deps/foobar2000-sdk/foobar2000/helpers/build/Release/libfoobar2000_SDK_helpers.a"; sourceTree = "<group>"; };
-		31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_component_client.a; path = "../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release/libfoobar2000_component_client.a"; sourceTree = "<group>"; };
-		7079C6FA865741CEBE3A5895 /* libshared.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libshared.a; path = "../deps/foobar2000-sdk/foobar2000/shared/build/Release/libshared.a"; sourceTree = "<group>"; };
+		AAF59F4062B44CD5BD82216D /* libpfc-Mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpfc-Mac.a"; path = "../3rdparty/foo_SDK/pfc/build/Release/libpfc-Mac.a"; sourceTree = "<group>"; };
+		974BBDC594154331A7A972D2 /* libfoobar2000_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK.a; path = "../3rdparty/foo_SDK/foobar2000/SDK/build/Release/libfoobar2000_SDK.a"; sourceTree = "<group>"; };
+		A4946BA892E04EEC9F2E8C5E /* libfoobar2000_SDK_helpers.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_SDK_helpers.a; path = "../3rdparty/foo_SDK/foobar2000/helpers/build/Release/libfoobar2000_SDK_helpers.a"; sourceTree = "<group>"; };
+		31C4B21F9C5A4825AA4C05E9 /* libfoobar2000_component_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfoobar2000_component_client.a; path = "../3rdparty/foo_SDK/foobar2000/foobar2000_component_client/build/Release/libfoobar2000_component_client.a"; sourceTree = "<group>"; };
+		7079C6FA865741CEBE3A5895 /* libshared.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libshared.a; path = "../3rdparty/foo_SDK/foobar2000/shared/build/Release/libshared.a"; sourceTree = "<group>"; };
 		/* src/ shared files */
 		EF1C23D43CF14E4D87B46A96 /* PCH.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PCH.cpp; path = "../src/PCH.cpp"; sourceTree = "<group>"; };
 		E248C0E0F11947AD953E74B3 /* lyric_metadb_index_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = lyric_metadb_index_client.cpp; path = "../src/lyric_metadb_index_client.cpp"; sourceTree = "<group>"; };
@@ -660,8 +660,8 @@
 				GCC_PREFIX_HEADER = stdafx.h;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../3rdparty/foo_SDK",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000",
 					"$(SRCROOT)/../deps/curl/include",
 					"$(SRCROOT)/../3rdparty",
 					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/include",
@@ -675,11 +675,11 @@
 				INFOPLIST_KEY_NSPrincipalClass = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/pfc/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/shared/build/Release",
 					"$(SRCROOT)/../deps/curl/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
@@ -714,8 +714,8 @@
 				GCC_PREFIX_HEADER = stdafx.h;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../3rdparty/foo_SDK",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000",
 					"$(SRCROOT)/../deps/curl/include",
 					"$(SRCROOT)/../3rdparty",
 					"$(SRCROOT)/../3rdparty/tidy-html5-5.8.0/include",
@@ -729,11 +729,11 @@
 				INFOPLIST_KEY_NSPrincipalClass = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/pfc/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/shared/build/Release",
 					"$(SRCROOT)/../deps/curl/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
@@ -767,19 +767,19 @@
 				GCC_PREFIX_HEADER = stdafx.h;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../3rdparty/foo_SDK",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000",
 					"$(SRCROOT)/../deps/curl/include",
 					"$(SRCROOT)/../3rdparty",
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/pfc/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/shared/build/Release",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";
@@ -802,19 +802,19 @@
 				GCC_PREFIX_HEADER = stdafx.h;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000",
+					"$(SRCROOT)/../3rdparty/foo_SDK",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000",
 					"$(SRCROOT)/../deps/curl/include",
 					"$(SRCROOT)/../3rdparty",
 					"$(SRCROOT)/../src",
 					"$(SRCROOT)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../deps/foobar2000-sdk/pfc/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/SDK/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/helpers/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/foobar2000_component_client/build/Release",
-					"$(SRCROOT)/../deps/foobar2000-sdk/foobar2000/shared/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/pfc/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/SDK/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/helpers/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/foobar2000_component_client/build/Release",
+					"$(SRCROOT)/../3rdparty/foo_SDK/foobar2000/shared/build/Release",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.jacquesh.foo-openlyrics.tests";

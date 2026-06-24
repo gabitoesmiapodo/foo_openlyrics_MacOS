@@ -71,10 +71,14 @@ public:
 
 	void get_default_state_(pfc::string_base & out);
 
-	enum {
-		flag_is_integer		= 1 << 0, 
-		flag_is_signed		= 1 << 1,
-	};
+	static constexpr uint32_t
+		flag_is_integer = 1 << 0,
+		flag_is_signed = 1 << 1,
+		// Since 2.2: hint to treat these fields as file/folder paths, providing hints if suitable
+		flag_is_file_path = 1 << 2,
+		flag_is_folder_path = 1 << 3,
+		// Since 2.2: multiple values, semicolon delimited
+		flag_semicolon_delimited = 1 << 4;
 
 	FB2K_MAKE_SERVICE_INTERFACE(advconfig_entry_string,advconfig_entry);
 };
@@ -84,6 +88,6 @@ class NOVTABLE advconfig_entry_string_v2 : public advconfig_entry_string {
 	FB2K_MAKE_SERVICE_INTERFACE(advconfig_entry_string_v2, advconfig_entry_string)
 public:
 	virtual void get_default_state(pfc::string_base & out) = 0;
-	virtual void validate(pfc::string_base & val) {}
+	virtual void validate(pfc::string_base& val) { (void)val; }
 	virtual t_uint32 get_preferences_flags() {return 0;} //signals whether changing this setting should trigger playback restart or app restart; see: preferences_state::* constants
 };

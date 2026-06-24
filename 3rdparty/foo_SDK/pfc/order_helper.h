@@ -14,6 +14,8 @@ namespace pfc {
     
     void create_move_item_permutation( size_t * p_output, size_t p_count, size_t from, size_t to );
     bool create_drop_permutation(size_t * out, size_t itemCount, pfc::bit_array const & maskSelected, size_t insertMark );
+
+	bool is_identity(size_t const* order, size_t count);
 }
 
 class order_helper

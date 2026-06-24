@@ -26,7 +26,7 @@ namespace foobar2000_io {
 	public:
 		listDirectoryCallbackImpl() {}
 		listDirectoryCallbackImpl( listDirectoryFunc_t f ) : m_func(f) {}
-		bool on_entry(filesystem * p_owner, abort_callback & p_abort, const char * p_url, bool p_is_subdirectory, const t_filestats & p_stats) {
+		bool on_entry(filesystem *, abort_callback &, const char * p_url, bool p_is_subdirectory, const t_filestats & p_stats) override {
 			m_func(p_url, p_stats, p_is_subdirectory);
 			return true;
 		}
@@ -43,6 +43,15 @@ namespace foobar2000_io {
 pfc::string8 file_path_canonical(const char* src);
 pfc::string8 file_path_display(const char* src);
 
+namespace fb2k {
+    //! Sane replacement for pfc::string_filename_ext(), which isn't safe to use in cross-platform code.
+    //! @returns Filename with extension extracted from path.
+    pfc::string8 filename_ext( const char * path );
+    pfc::string8 filename_ext( const char * path, filesystem::ptr & fs_reuse);
+    //! Sane replacement for pfc::string_filename(), which isn't safe to use in cross-platform code
+    //! @returns Filename without extension extracted from path.
+    pfc::string8 filename( const char * path );
+}
 
 class stream_reader_memblock_ref : public stream_reader
 {
@@ -65,17 +74,20 @@ public:
 	}
 
 	t_size read(void * p_buffer,t_size p_bytes,abort_callback & p_abort) {
+		p_abort.check();
 		t_size delta = pfc::min_t(p_bytes, get_remaining());
 		memcpy(p_buffer,m_data+m_pointer,delta);
 		m_pointer += delta;
 		return delta;
 	}
 	void read_object(void * p_buffer,t_size p_bytes,abort_callback & p_abort) {
+		p_abort.check();
 		if (p_bytes > get_remaining()) throw exception_io_data_truncation();
 		memcpy(p_buffer,m_data+m_pointer,p_bytes);
 		m_pointer += p_bytes;
 	}
 	t_filesize skip(t_filesize p_bytes,abort_callback & p_abort) {
+		p_abort.check();
 		t_size remaining = get_remaining();
 		if (p_bytes >= remaining) {
 			m_pointer = m_data_size; return remaining;
@@ -84,6 +96,7 @@ public:
 		}
 	}
 	void skip_object(t_filesize p_bytes,abort_callback & p_abort) {
+		p_abort.check();
 		if (p_bytes > get_remaining()) {
 			throw exception_io_data_truncation();
 		} else {
@@ -228,7 +241,7 @@ private:
 	unsigned char m_buffer[255];
 };
 
-class stream_reader_dummy : public stream_reader { t_size read(void * p_buffer,t_size p_bytes,abort_callback & p_abort) {return 0;} };
+class stream_reader_dummy : public stream_reader { t_size read(void *,t_size,abort_callback &) override {return 0;} };
 
 
 
@@ -365,7 +378,7 @@ public:
 };
 
 template<bool isBigEndian,typename TVal,size_t Count> stream_reader_formatter<isBigEndian> & operator>>(stream_reader_formatter<isBigEndian> & p_stream,TVal (& p_array)[Count]) {
-	if (_IsTypeByte<TVal>::value) {
+	if constexpr (_IsTypeByte<TVal>::value) {
 		p_stream.read_raw(p_array,Count);
 	} else {
 		for(t_size walk = 0; walk < Count; ++walk) p_stream >> p_array[walk];
@@ -374,7 +387,7 @@ template<bool isBigEndian,typename TVal,size_t Count> stream_reader_formatter<is
 }
 
 template<bool isBigEndian,typename TVal,size_t Count> stream_writer_formatter<isBigEndian> & operator<<(stream_writer_formatter<isBigEndian> & p_stream,TVal const (& p_array)[Count]) {
-	if (_IsTypeByte<TVal>::value) {
+	if constexpr (_IsTypeByte<TVal>::value) {
 		p_stream.write_raw(p_array,Count);
 	} else {
 		for(t_size walk = 0; walk < Count; ++walk) p_stream << p_array[walk];
@@ -549,7 +562,7 @@ private:
 		pfc::lores_timer timer; timer.start();	\
 		for(;;) {	\
 			try { {OP;} break;	}	\
-			catch(EXCEPTION) { if (timer.query() > TIMEOUT) throw;}	\
+			catch(const EXCEPTION &) { if (timer.query() > TIMEOUT) throw;}	\
 			ABORT.sleep(0.05);	\
 		}	\
 	}
@@ -559,8 +572,8 @@ private:
 		pfc::lores_timer timer; timer.start();	\
 		for(;;) {	\
 			try { {OP;} break;	}	\
-			catch(EXCEPTION1) { if (timer.query() > TIMEOUT) throw;}	\
-			catch(EXCEPTION2) { if (timer.query() > TIMEOUT) throw;}	\
+			catch(const EXCEPTION1 &) { if (timer.query() > TIMEOUT) throw;}	\
+			catch(const EXCEPTION2 &) { if (timer.query() > TIMEOUT) throw;}	\
 			ABORT.sleep(0.05);	\
 		}	\
 	}
@@ -570,9 +583,9 @@ private:
 		pfc::lores_timer timer; timer.start();	\
 		for(;;) {	\
 			try { {OP;} break;	}	\
-			catch(EXCEPTION1) { if (timer.query() > TIMEOUT) throw;}	\
-			catch(EXCEPTION2) { if (timer.query() > TIMEOUT) throw;}	\
-			catch(EXCEPTION3) { if (timer.query() > TIMEOUT) throw;}	\
+			catch(const EXCEPTION1 &) { if (timer.query() > TIMEOUT) throw;}	\
+			catch(const EXCEPTION2 &) { if (timer.query() > TIMEOUT) throw;}	\
+			catch(const EXCEPTION3 &) { if (timer.query() > TIMEOUT) throw;}	\
 			ABORT.sleep(0.05);	\
 		}	\
 	}

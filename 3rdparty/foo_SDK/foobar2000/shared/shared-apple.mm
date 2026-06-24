@@ -29,3 +29,38 @@ bool uGetClipboardString(pfc::string_base & out) {
     }
     return rv;
 }
+
+static void wrapNoExcept(std::function<void()> f) noexcept {f();}
+
+void fb2k::crashOnException(std::function<void()> f, const char * context) {
+#if 0
+    auto fail = [context] ( const char * msg ) {
+        if (context) {
+            fb2k::crashWithMessage(pfc::format(context, ": ", msg));
+        } else {
+            fb2k::crashWithMessage(msg);
+        }
+    };
+    try {
+        @autoreleasepool {
+            @try {
+                f();
+            } @catch(NSException * e) {
+                auto header = pfc::format("NSException: ", e.name.UTF8String, " reason: ", e.reason.UTF8String );
+                uAddDebugEvent( header );
+                uAddDebugEvent("Stack:");
+                for(NSString * str in e.callStackSymbols ) {
+                    uAddDebugEvent(str.UTF8String);
+                }
+                fail(header);
+            }
+        }
+    } catch(std::exception const & e) {
+        fail(pfc::format("C++ exception: ", e.what()));
+    } catch(...) {
+        fail("Invalid exception");
+    }
+#else
+    wrapNoExcept(f);
+#endif
+}

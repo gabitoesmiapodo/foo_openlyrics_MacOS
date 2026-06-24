@@ -139,7 +139,7 @@ namespace {
 
 				return ret;
 
-			} catch (exception_io_data) {
+			} catch (exception_io_data const &) {
 				// we get here as a result of stream formatter data error
 				// fall thru to return a blank record
 			}

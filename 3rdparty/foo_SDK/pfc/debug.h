@@ -7,11 +7,16 @@
 #endif
 
 namespace pfc {
+    void debugBreak();
     [[noreturn]] void crash();
     [[noreturn]] void crashWithMessageOnStack( const char * msg );
     void outputDebugLine(const char * msg);
     
-	// Debug logger service.
+#ifdef __APPLE__
+    [[noreturn]] void appleThrowException( const char * name, const char * reason );
+#endif
+
+    // Debug logger service.
 	// It is up to the caller to ensure thread safety. You want to create debugLineReceiver instances on app startup and never destroy them.
 	class debugLineReceiver {
 	public:
@@ -43,8 +48,10 @@ namespace pfc {
 #define PFC_SET_THREAD_DESCRIPTION(X) { ::pfc::setCurrentThreadDescription(X); }
 #define PFC_SET_THREAD_DESCRIPTION_SUPPORTED
 
+#define PFC_DEBUG_PRINT_FORCED(...) ::pfc::outputDebugLine(pfc::format(__VA_ARGS__))
+
 #if PFC_DEBUG
-#define PFC_DEBUG_PRINT(...) ::pfc::outputDebugLine(pfc::format(__VA_ARGS__))
+#define PFC_DEBUG_PRINT(...) PFC_DEBUG_PRINT_FORCED(pfc::format(__VA_ARGS__))
 #else
 #define PFC_DEBUG_PRINT(...)
 #endif

@@ -124,7 +124,7 @@ namespace { // anon namespace local classes for good measure
 				// In worker thread!
 				try {
 					work( shared, aborter );
-				} catch(exception_aborted) {
+				} catch(exception_aborted const &) {
 					return; // user abort?
 				} catch(std::exception const & e) {
 					// should not really get here

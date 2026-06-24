@@ -13,26 +13,26 @@ namespace pfc { namespace io { namespace path {
 
 string getFileName(string path) {
 	t_size split = path.lastIndexOfAnyChar(KPathSeparators);
-	if (split == ~0) return path;
+	if (split == SIZE_MAX) return path;
 	else return path.subString(split+1);
 }
 string getFileNameWithoutExtension(string path) {
 	string fn = getFileName(path);
 	t_size split = fn.lastIndexOf('.');
-	if (split == ~0) return fn;
+	if (split == SIZE_MAX) return fn;
 	else return fn.subString(0,split);
 }
 string getFileExtension(string path) {
 	string fn = getFileName(path);
 	t_size split = fn.lastIndexOf('.');
-	if (split == ~0) return "";
+	if (split == SIZE_MAX) return "";
 	else return fn.subString(split);
 }
 string getDirectory(string filePath) {return getParent(filePath);}
 
 string getParent(string filePath) {
 	t_size split = filePath.lastIndexOfAnyChar(KPathSeparators);
-	if (split == ~0) return "";
+	if (split == SIZE_MAX) return "";
 #ifdef _WINDOWS
 	if (split > 0 && getIllegalNameChars().contains(filePath[split-1])) {
 		if (split + 1 < filePath.length()) return filePath.subString(0,split+1);
@@ -183,8 +183,14 @@ string getIllegalNameChars(bool allowWC) {
 static const char * const specialIllegalNames[] = {
 	"con", "aux", "lst", "prn", "nul", "eof", "inp", "out"
 };
+#endif // _WINDOWS
 
-enum { maxPathComponent = 255 };
+#ifdef _WIN32
+static constexpr unsigned maxPathComponent = 255;
+#else
+static constexpr unsigned maxPathComponent = NAME_MAX;
+#endif
+
 static size_t safeTruncat( const char * str, size_t maxLen ) {
 	size_t i = 0;
 	size_t ret = 0;
@@ -226,7 +232,6 @@ static string truncatePathComponent( string name, bool preserveExt ) {
 	size_t truncat = safeTruncat( name.c_str(), maxPathComponent );
 	return name.subString(0, truncat);
 }
-#endif // _WINDOWS
 
 static string trailingSanity(string name, bool preserveExt, const char * lstIllegal) {
 
@@ -278,9 +283,9 @@ string validateFileName(string name, bool allowWC, bool preserveExt, charReplace
 		name = trailingSanity(name, preserveExt, lstIllegal);
 	}
 
-#ifdef _WINDOWS
 	name = truncatePathComponent(name, preserveExt);
 	
+#ifdef _WINDOWS
 	for( auto p : specialIllegalNames ) {
 		if (pfc::stringEqualsI_ascii( name.c_str(), p ) ) {
 			name += "-";

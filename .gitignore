@@ -20,4 +20,7 @@ metrics/.venv
 mac/build/
 deps/
 
+# Vendored foobar2000 SDK: source is tracked, locally-built libs are not
+3rdparty/foo_SDK/**/build/
+
 .claude/settings.local.json

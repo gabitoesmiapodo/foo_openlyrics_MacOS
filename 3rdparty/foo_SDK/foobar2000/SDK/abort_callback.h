@@ -38,18 +38,22 @@ public:
 	void sleep(double p_timeout_seconds) const;
 	//! Sleeps p_timeout_seconds or less when aborted, returns true when execution should continue, false when not.
 	bool sleep_ex(double p_timeout_seconds) const;
+	bool sleepNoThrow(double p_timeout_seconds) const { return sleep_ex(p_timeout_seconds); }
     
 	//! Waits for an event. Returns true if event is now signaled, false if the specified period has elapsed and the event did not become signaled. \n
 	//! Throws exception_aborted if aborted.
-    bool waitForEvent( pfc::eventHandle_t evtHandle, double timeOut );
+    bool waitForEvent( pfc::eventHandle_t evtHandle, double timeOut ) const;
 	//! Waits for an event. Returns true if event is now signaled, false if the specified period has elapsed and the event did not become signaled. \n
 	//! Throws exception_aborted if aborted.
-	bool waitForEvent(pfc::event& evt, double timeOut);
+	bool waitForEvent(pfc::event& evt, double timeOut) const;
 
 	//! Waits for an event. Returns once the event became signaled; throw exception_aborted if abort occurred first.
-	void waitForEvent(pfc::eventHandle_t evtHandle);
+	void waitForEvent(pfc::eventHandle_t evtHandle) const;
 	//! Waits for an event. Returns once the event became signaled; throw exception_aborted if abort occurred first.
-	void waitForEvent(pfc::event& evt);
+	void waitForEvent(pfc::event& evt) const;
+
+	bool waitForEventNoThrow(pfc::eventHandle_t evt) const;
+	bool waitForEventNoThrow(pfc::event& evt) const;
 
 	abort_callback( const abort_callback & ) = delete;
 	void operator=( const abort_callback & ) = delete;
@@ -90,10 +94,20 @@ public:
     
     bool is_aborting() const override;
     abort_callback_event get_abort_event() const override { return m_handle; }
-private:
+protected:
     const abort_callback_event m_handle;
 };
-    
+
+class abort_callback_clone : public abort_callback_usehandle {
+public:
+	abort_callback_clone(abort_callback_event handle) : abort_callback_usehandle(clone(handle)) {}
+	abort_callback_clone(abort_callback & arg) : abort_callback_usehandle(clone(arg.get_handle())) {}
+	~abort_callback_clone() { close(m_handle); }
+
+	static abort_callback_event clone(abort_callback_event);
+	static void close(abort_callback_event);
+};
+
 //! Dummy abort_callback that never gets aborted. \n
 //! Note that there's no need to create instances of it, use shared fb2k::noAbort object instead.
 class abort_callback_dummy : public abort_callback {

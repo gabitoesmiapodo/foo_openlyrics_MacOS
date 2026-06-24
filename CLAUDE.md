@@ -50,7 +50,7 @@ foo_openlyrics.component (macOS bundle, statically linked)
 # First time: build all deps + component + deploy to foobar2000
 bash scripts/deploy-component.sh --build
 
-# Rebuild deps only (needed if deps/foobar2000-sdk/ or deps/curl/ is missing)
+# Rebuild deps only (builds vendored SDK libs into 3rdparty/foo_SDK/ + libcurl into deps/curl/)
 bash scripts/build-deps.sh
 
 # Rebuild component only (if deps already built), then deploy
@@ -84,7 +84,7 @@ Always run `bash scripts/deploy-component.sh` (or with `--build`) after implemen
 ## Dependencies
 
 All statically linked:
-- **foobar2000 SDK**: `deps/foobar2000-sdk/` (pfc, SDK, helpers, component_client, shared)
+- **foobar2000 SDK**: source vendored in-tree at `3rdparty/foo_SDK/` (v20250307; pfc, SDK, helpers, component_client, shared). `build-deps.sh` compiles the static libs into `3rdparty/foo_SDK/<module>/build/Release/` (gitignored). No external/sibling-project dependency.
 - **libcurl**: for HTTP requests (upstream uses curl too)
 - **pugixml**: XML/HTML parsing (already in 3rdparty/)
 - **tidy-html5**: HTML cleanup (already in 3rdparty/)

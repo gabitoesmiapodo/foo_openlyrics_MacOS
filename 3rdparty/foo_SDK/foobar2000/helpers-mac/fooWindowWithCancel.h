@@ -1,9 +1,8 @@
 #import <Cocoa/Cocoa.h>
+#import "foobar2000-mac-helpers.h"
 
-NS_ASSUME_NONNULL_BEGIN
+#define fooWindowWithCancel FB2K_OBJC_CLASS(fooWindowWithCancel)
 
 @interface fooWindowWithCancel : NSWindow
 
 @end
-
-NS_ASSUME_NONNULL_END

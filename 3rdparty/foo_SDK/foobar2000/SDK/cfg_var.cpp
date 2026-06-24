@@ -9,11 +9,16 @@ namespace fb2k {
 	pfc::string8 advconfig_autoName(const GUID& id) {
 		return pfc::format("advconfig.unnamed.", pfc::print_guid(id));
 	}
+	pfc::string8 advconfig_autoName(const GUID& id, const char* specified) {
+		if (specified) return specified;
+		return advconfig_autoName(id);
+	}
 }
 namespace cfg_var_modern {
 
 #ifdef FOOBAR2000_HAVE_CFG_VAR_LEGACY
 	void cfg_string::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) {
+		(void)p_sizehint;
 		pfc::string8_fastalloc temp;
 		p_stream->read_string_raw(temp, p_abort);
 		this->set(temp);
@@ -31,6 +36,7 @@ namespace cfg_var_modern {
 	}
 
 	void cfg_bool::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) {
+		(void)p_sizehint;
 		uint8_t b;
 		if (p_stream->read(&b, 1, p_abort) == 1) {
 			this->set(b != 0);

@@ -36,7 +36,7 @@ namespace cfg_var_legacy {
 				stream_reader_limited_ref wrapper(p_stream, size);
 				try {
 					iter->m_value->set_data_raw(&wrapper, size, p_abort);
-				} catch (exception_io_data) {}
+				} catch (exception_io_data const&) {}
 				wrapper.flush_remaining(p_abort);
 			} else {
 				p_stream->skip_object(size, p_abort);
@@ -79,6 +79,7 @@ namespace cfg_var_legacy {
 	}
 
 	void cfg_string::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) {
+		(void)p_sizehint;
 		pfc::string8_fastalloc temp;
 		p_stream->read_string_raw(temp, p_abort);
 		set_string(temp);

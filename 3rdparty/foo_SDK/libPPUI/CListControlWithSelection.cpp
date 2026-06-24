@@ -304,9 +304,14 @@ LRESULT CListControlWithSelectionBase::OnRButtonUp(UINT,WPARAM,LPARAM,BOOL& bHan
 	return 0;
 }
 
+bool CListControlWithSelectionBase::ShouldBeginDrag(CPoint ptRef, CPoint ptNow) const {
+	auto threshold = PP::queryDragThresholdForDPI(this->GetDPI());
+	return abs(ptNow.x - ptRef.x) > threshold.cx || abs(ptNow.y - ptRef.y) > threshold.cy;
+}
+
 LRESULT CListControlWithSelectionBase::OnMouseMove(UINT,WPARAM,LPARAM p_lp,BOOL&) {
 	if (m_prepareDragDropMode) {
-		if (CPoint(p_lp) != m_prepareDragDropOrigin) {
+		if (ShouldBeginDrag(m_prepareDragDropOrigin, CPoint(p_lp))) {
 			AbortPrepareDragDropMode();
 			if (!m_ownDDActive) {
 				pfc::vartoggle_t<bool> ownDD(m_ownDDActive,true);
@@ -526,7 +531,7 @@ static HRGN FrameRectRgn(const CRect & rect) {
 
 void CListControlWithSelectionBase::HandleDragSel(const CPoint & p_pt) {
 	const CPoint pt = PointClientToAbs(p_pt);
-	if (pt != m_selectDragCurrentAbs) {
+	if (m_selectDragMoved || ShouldBeginDrag(m_selectDragCurrentAbs, pt)) {
 
 		if (!this->AllowRangeSelect()) {
 			// simplified
@@ -545,7 +550,7 @@ void CListControlWithSelectionBase::HandleDragSel(const CPoint & p_pt) {
 			CRgn rgn2 = FrameRectRgn(rcOld);
 			rgn.CombineRgn(rgn2,RGN_OR);
 			rgn.OffsetRgn( - GetViewOffset() );
-			InvalidateRgn(rgn);
+			InvalidateRgn(rgn, FALSE);
 		}
 
 		if (pt != m_selectDragOriginAbs) m_selectDragMoved = true;
@@ -944,7 +949,7 @@ void CListControlWithSelectionImpl::SetGroupFocusByItem(t_size item) {
 	FocusToUpdateRgn(update);
 	m_groupFocus = true; m_focus = item;
 	FocusToUpdateRgn(update);
-	InvalidateRgn(update);
+	InvalidateRgn(update, FALSE);
 
 	
 	CRect header; 
@@ -959,7 +964,7 @@ void CListControlWithSelectionImpl::SetFocusItem(t_size index) {
 	size_t oldFocus = m_focus;
 	m_groupFocus = false; m_focus = index;
 	FocusToUpdateRgn(update);
-	InvalidateRgn(update);
+	InvalidateRgn(update, FALSE);
 	
 	if ( index != SIZE_MAX ) {
 		EnsureVisibleRectAbs(GetItemRectAbs(index));
@@ -1021,7 +1026,7 @@ void CListControlWithSelectionImpl::SelHandleRemoval(const pfc::bit_array & mask
 
 void CListControlWithSelectionImpl::SelHandleInsertion(pfc::bit_array const& mask, size_t oldCount, size_t newCount, bool select) {
 	PFC_ASSERT(newCount == GetItemCount());
-	PFC_ASSERT(oldCount <= newCount);
+	PFC_ASSERT(oldCount <= newCount); (void)oldCount;
 
 	// To behave sanely in single-select mode, we'd have to alter selection of other items from here
 	// Let caller worry and outright deny select requests in modes other than multisel
@@ -1541,6 +1546,7 @@ int CListControlWithSelectionBase::OnCreatePassThru(LPCREATESTRUCT) {
 			return dda->dwEFfect;
 		};
 		target->HookDrop = [this, flags] ( IDataObject * obj, CPoint pt ) {
+			this->ToggleDDScroll(false);
 			this->ClearDropMark();
 			if ( this->m_ownDDActive ) {
 				// Do not generate OnDrop for reorderings

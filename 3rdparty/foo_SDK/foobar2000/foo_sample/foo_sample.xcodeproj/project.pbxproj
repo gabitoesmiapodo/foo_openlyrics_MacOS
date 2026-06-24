@@ -49,6 +49,7 @@
 		0F6244072AA1E4F4004FEC96 /* preferences.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = preferences.cpp; sourceTree = "<group>"; };
 		0F6D10EF2AA3C35C00774EED /* fooDecibelFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fooDecibelFormatter.m; sourceTree = "<group>"; };
 		0F6D10F02AA3C35C00774EED /* fooDecibelFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fooDecibelFormatter.h; sourceTree = "<group>"; };
+		0F7F817F2AB87BA70051262F /* foobar2000-mac-class-suffix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "foobar2000-mac-class-suffix.h"; sourceTree = "<group>"; };
 		0FBE14402AA1E85F00B1F71E /* NSView+embed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+embed.h"; sourceTree = "<group>"; };
 		0FBE14452AA1E85F00B1F71E /* NSView+embed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+embed.m"; sourceTree = "<group>"; };
 		0FBE14522AA1E8C800B1F71E /* fooSampleMacPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fooSampleMacPreferences.h; sourceTree = "<group>"; };
@@ -91,6 +92,7 @@
 		0F1FDDA42AA0AD9B00DE8967 = {
 			isa = PBXGroup;
 			children = (
+				0F7F817F2AB87BA70051262F /* foobar2000-mac-class-suffix.h */,
 				0FBE146B2AA1FF1500B1F71E /* ui_and_threads.cpp */,
 				0FBE14592AA1F74200B1F71E /* contextmenu.cpp */,
 				0FBE145B2AA1F74200B1F71E /* decode.cpp */,
@@ -311,7 +313,7 @@
 					..,
 					../..,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -361,6 +363,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = stdafx.h;
+				GCC_PREPROCESSOR_DEFINITIONS = "NDEBUG=1";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -371,7 +374,7 @@
 					..,
 					../..,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;

@@ -34,7 +34,7 @@
                         <constraint firstAttribute="width" constant="96" id="MP8-UH-dPx"/>
                     </constraints>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="eU5-n2-vgv">
-                        <customFormatter key="formatter" id="ClW-pw-Nfi" customClass="fooDecibelFormatter">
+                        <customFormatter key="formatter" id="ClW-pw-Nfi" customClass="fooDecibelFormatter_foo_sample">
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="number" keyPath="minValue">
                                     <integer key="value" value="-20"/>
