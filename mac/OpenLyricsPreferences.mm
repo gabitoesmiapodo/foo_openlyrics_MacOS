@@ -665,6 +665,11 @@ static NSTextField* make_field(NSString* placeholder)
     tf.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
     tf.bezelStyle = NSTextFieldSquareBezel;
     tf.bordered = YES;
+    // Fire the field's action when editing ends (focus loss or the Preferences window
+    // closing), not only when the user presses Return. Without this, edits such as the custom
+    // save path are silently discarded if the user clicks away without hitting Enter, leaving
+    // the previously-saved (often default) value in effect.
+    tf.cell.sendsActionOnEndEditing = YES;
     return tf;
 }
 
