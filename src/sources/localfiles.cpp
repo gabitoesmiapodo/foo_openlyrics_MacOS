@@ -59,24 +59,20 @@ std::vector<LyricDataRaw> LocalFileSource::search(metadb_handle_ptr track,
         file_path += (type == LyricType::Synced) ? ".lrc" : ".txt";
         LOG_INFO("Querying for lyrics in %s...", file_path.c_str());
 
-        try
+        // g_exists_safe, not filesystem::g_exists: on macOS a track without a lyrics file
+        // throws across the app/component boundary instead of returning false, which turned
+        // the normal "no lyrics saved for this track" case into a warning on every search.
+        if(g_exists_safe(file_path.c_str(), abort))
         {
-            if(filesystem::g_exists(file_path.c_str(), abort))
-            {
-                LyricDataRaw result = {};
-                result.source_id = id();
-                result.source_path = file_path;
-                result.artist = track_metadata(track_info, "artist");
-                result.album = track_metadata(track_info, "album");
-                result.title = track_metadata(track_info, "title");
-                result.lookup_id = file_path;
-                result.type = type;
-                output.push_back(std::move(result));
-            }
-        }
-        catch(const std::exception& e)
-        {
-            LOG_WARN("Failed to open lyrics file %s: %s", file_path.c_str(), e.what());
+            LyricDataRaw result = {};
+            result.source_id = id();
+            result.source_path = file_path;
+            result.artist = track_metadata(track_info, "artist");
+            result.album = track_metadata(track_info, "album");
+            result.title = track_metadata(track_info, "title");
+            result.lookup_id = file_path;
+            result.type = type;
+            output.push_back(std::move(result));
         }
     }
 

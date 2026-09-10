@@ -1,5 +1,8 @@
 #import "stdafx.h"
 #import "OpenLyricsView.h"
+
+#include <foobar2000/SDK/metadb_info_container_impl.h>
+
 #include "../src/tag_util.h"
 
 DECLARE_COMPONENT_VERSION("OpenLyrics MacOS", "0.9.2",
@@ -60,7 +63,7 @@ FB2K_SERVICE_FACTORY(ui_element_openlyrics_mac);
 class OpenLyricsPlayCallback : public play_callback_static {
 public:
     unsigned get_flags() override {
-        return flag_on_playback_stop | flag_on_playback_new_track;
+        return flag_on_playback_stop | flag_on_playback_new_track | flag_on_playback_dynamic_info_track;
     }
 
     void on_playback_new_track(metadb_handle_ptr track) override {
@@ -80,9 +83,20 @@ public:
     void on_playback_starting(play_control::t_track_command, bool) override {}
     void on_playback_seek(double) override {}
     void on_playback_pause(bool) override {}
+    // Internet radio only: a new song started inside the same stream, so refresh the
+    // displayed metadata and drop the previous song's lyrics.
+    void on_playback_dynamic_info_track(const file_info& info) override {
+        service_ptr_t<metadb_info_container_const_impl> container =
+            new service_impl_t<metadb_info_container_const_impl>();
+        container->m_info = info;
+
+        metadb_v2_rec_t record = {};
+        record.info = container;
+        set_now_playing_dynamic_info(std::move(record));
+    }
+
     void on_playback_edited(metadb_handle_ptr) override {}
     void on_playback_dynamic_info(const file_info&) override {}
-    void on_playback_dynamic_info_track(const file_info&) override {}
     void on_playback_time(double) override {}
     void on_volume_change(float) override {}
 };
