@@ -62,6 +62,9 @@ void announce_lyric_update(LyricUpdate update);
 /// Called on new track to set the now-playing state on all panels (any thread).
 void set_now_playing_track(metadb_handle_ptr track, metadb_v2_rec_t info);
 
+/// Called when an internet radio stream reports a new song (any thread).
+void set_now_playing_dynamic_info(metadb_v2_rec_t info);
+
 /// Returns a copy of the LyricData from the first active panel that has lyrics.
 /// Sets out_track and out_info from the currently-playing track if available.
 /// Must be called on the main thread.

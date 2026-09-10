@@ -589,8 +589,9 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     [self setNeedsDisplay:YES];
 }
 
-- (void)clearLyrics {
-    // Must be called on the main thread.
+// Drops the displayed lyrics and everything derived from them, leaving the
+// now-playing track untouched.
+- (void)_resetLyricState {
     _lyrics = LyricData();
 
     [_lyricsText release];
@@ -601,19 +602,42 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
     _manualScrollDelta  = 0.0;
     _currentLineIndex   = -1;
 
+    [self _stopTimer];
+    [self _invalidateLineCache];
+}
+
+- (void)clearLyrics {
+    // Must be called on the main thread.
+    [self _resetLyricState];
+
     _nowPlayingTrack = nullptr;
     _nowPlayingInfo  = {};
     _autoSearchAvoidedReason = SearchAvoidanceReason::Allowed;
 
-    [self _stopTimer];
-    [self _invalidateLineCache];
     [self setNeedsDisplay:YES];
 }
 
 - (void)setNowPlayingTrack:(metadb_handle_ptr)track info:(const metadb_v2_rec_t&)info {
     // Must be called on the main thread.
+    // Drop the previous track's lyrics, otherwise they stay on screen when the new track
+    // has none (upstream LyricPanel::on_playback_new_track does the same).
+    if(track != _nowPlayingTrack)
+    {
+        [self _resetLyricState];
+    }
+
     _nowPlayingTrack = track;
     _nowPlayingInfo  = info;
+    _autoSearchAvoidedReason = SearchAvoidanceReason::Allowed;
+    [self setNeedsDisplay:YES];
+}
+
+// Internet radio: the track handle never changes, so the new song's metadata arrives here.
+- (void)setNowPlayingDynamicInfo:(const metadb_v2_rec_t&)info {
+    // Must be called on the main thread.
+    [self _resetLyricState];
+
+    _nowPlayingInfo = info;
     _autoSearchAvoidedReason = SearchAvoidanceReason::Allowed;
     [self setNeedsDisplay:YES];
 }
@@ -1198,6 +1222,18 @@ void set_now_playing_track(metadb_handle_ptr track, metadb_v2_rec_t info) {
         NSArray *snapshot = capture_panels_snapshot();
         for (OpenLyricsView *v in snapshot) {
             [v setNowPlayingTrack:track info:*infoPtr];
+        }
+        [snapshot release];
+        delete infoPtr;
+    });
+}
+
+void set_now_playing_dynamic_info(metadb_v2_rec_t info) {
+    metadb_v2_rec_t *infoPtr = new metadb_v2_rec_t(std::move(info));
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *snapshot = capture_panels_snapshot();
+        for (OpenLyricsView *v in snapshot) {
+            [v setNowPlayingDynamicInfo:*infoPtr];
         }
         [snapshot release];
         delete infoPtr;
