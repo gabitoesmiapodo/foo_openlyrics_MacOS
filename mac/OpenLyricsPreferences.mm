@@ -1811,7 +1811,7 @@ static NSColorWell* make_colorwell(uint32_t colorref, id target, SEL action)
     int size = preferences::display::raw::font_size();
     if (name.empty())
         return [NSString stringWithFormat:@"System, %dpt", size];
-    return [NSString stringWithFormat:@"%s, %dpt", name.c_str(), size];
+    return [NSString stringWithFormat:@"%@, %dpt", [NSString stringWithUTF8String:name.c_str()], size];
 }
 
 - (void)onCustomFont:(NSButton*)sender
