@@ -899,7 +899,7 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
     // 2. No lyrics state
     if (!hasContent) {
-        [self _drawNoLyricsInContext:ctx];
+        [self _drawNoLyrics];
         return;
     }
 
@@ -1027,29 +1027,30 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 // No-lyrics placeholder
 // ---------------------------------------------------------------------------
 
-- (void)_drawNoLyricsInContext:(CGContextRef __unused)ctx {
+- (void)_drawNoLyrics {
     if (_nowPlayingTrack == nullptr) return;
 
+    NSMutableParagraphStyle *para = [[[NSMutableParagraphStyle alloc] init] autorelease];
+    para.alignment   = NSTextAlignmentCenter;
+    para.lineSpacing = 4.0;
     NSDictionary *attrs = @{
         NSFontAttributeName: [NSFont systemFontOfSize:14.0],
         NSForegroundColorAttributeName: [NSColor colorWithRed:kColorDim[0]
                                                         green:kColorDim[1]
                                                          blue:kColorDim[2]
-                                                        alpha:kColorDim[3]]
+                                                        alpha:kColorDim[3]],
+        NSParagraphStyleAttributeName: para
     };
 
     // Build lines: Artist / Album / Title, then progress or avoidance message.
     NSMutableArray<NSString *> *lines = [NSMutableArray array];
-    {
-        std::string artist = track_metadata(_nowPlayingInfo, "artist");
-        std::string album  = track_metadata(_nowPlayingInfo, "album");
-        std::string title  = track_metadata(_nowPlayingInfo, "title");
-        if (!artist.empty())
-            [lines addObject:[NSString stringWithFormat:@"Artist: %s", artist.c_str()]];
-        if (!album.empty())
-            [lines addObject:[NSString stringWithFormat:@"Album: %s",  album.c_str()]];
-        if (!title.empty())
-            [lines addObject:[NSString stringWithFormat:@"Title: %s",  title.c_str()]];
+    static const std::pair<NSString *, const char *> kFields[] = {
+        {@"Artist", "artist"}, {@"Album", "album"}, {@"Title", "title"}};
+    for (const auto& [label, key] : kFields) {
+        std::string value = track_metadata(_nowPlayingInfo, key);
+        if (!value.empty())
+            [lines addObject:[NSString stringWithFormat:@"%@: %@", label,
+                              [NSString stringWithUTF8String:value.c_str()]]];
     }
 
     std::optional<std::string> progress = get_autosearch_progress_message();
@@ -1079,16 +1080,13 @@ static NSString *plain_text_from_lyrics(const LyricData& lyrics) {
 
     if (lines.count == 0) return;
 
-    CGFloat lineH = [@"A" sizeWithAttributes:attrs].height + 4.0;
-    CGFloat totalH = lineH * lines.count;
-    CGFloat y = NSMidY(self.bounds) + totalH / 2.0 - lineH;
-
-    for (NSString *line in lines) {
-        NSSize sz = [line sizeWithAttributes:attrs];
-        NSPoint pt = NSMakePoint(NSMidX(self.bounds) - sz.width / 2.0, y);
-        [line drawAtPoint:pt withAttributes:attrs];
-        y -= lineH;
-    }
+    NSString *text = [lines componentsJoinedByString:@"\n"];
+    const CGFloat usableWidth = NSWidth(self.bounds) - 2.0 * kSidePadding;
+    const CGFloat textH = ceil(NSHeight([text boundingRectWithSize:NSMakeSize(usableWidth, CGFLOAT_MAX)
+                                                            options:NSStringDrawingUsesLineFragmentOrigin
+                                                         attributes:attrs]));
+    [text drawInRect:NSMakeRect(kSidePadding, NSMidY(self.bounds) - textH / 2.0, usableWidth, textH)
+      withAttributes:attrs];
 }
 
 @end
